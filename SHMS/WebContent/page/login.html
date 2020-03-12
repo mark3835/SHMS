@@ -10,26 +10,110 @@
 	</div>
 	<br>
 	<div>
-		<table style="border:2px solid; text-align:center; margin:auto;">
-		<tr>
-			<td>
-				使用者請輸入
-			</td>			
-		</tr>
-		<tr>
-			<td>			
-				帳號:<input type="text" id="account" name="account"/>
-				<br>
-				密碼:<input type="password" id="passw" name="passw"/>
-				<br>
-				<input type="button" name="loginBtn" id="loginBtn" value="登入">	
-				<input type="button" name="clearBtn" id="clearBtn" value="清除">	
-			</td>
-		</tr>	
-		</table>
+		<form  id="validateForm" >
+			<table style="border:2px solid; text-align:center; margin:auto;">
+			<tr>
+				<td>
+					使用者請輸入
+				</td>						
+			</tr>
+			<tr>
+				<td>			
+					<p>
+				      <label for="account">帳號</label>
+				      <input type="text" id="account" name="account"  required>
+				    </p>
+				    <p>
+				      <label for="cemail">密碼</label>
+				      <input type="password" id="passw" name="passw" required>
+				    </p>
+					<input type="submit" name="loginBtn" id="loginBtn" value="登入">	
+					<input type="button" name="clearBtn" id="clearBtn" value="清除">	
+				</td>
+			</tr>	
+			</table>
+		</form>
 	</div>
 </body>
 </html>
+<link rel="stylesheet" href="../resources/css/bootstrap.min.css">
 <script src="../resources/js/require.js"></script>
-<script src="../resources/js/requireConfig.js"/></script>
-<script src="../resources/js/page/login.js"/></script>
+<script src="../resources/js/requireConfig.js"></script>
+<style>
+//錯誤訊息style
+input.error { border: 1px solid red; }
+p.error {
+  padding-left: 16px;
+  padding-bottom: 2px;
+  font-weight: bold;
+  color: #EA5200;
+}
+</style>
+<script type="text/javascript">
+	//需要用的JS
+	require(["jquery", "popper", "bootstrap", "jquery_validate"], function (jquery, popper, bootstrap) {
+		//頁面讀取後執行
+		$(document).ready(function(){
+						
+			//檢核
+			$("#validateForm").validate({
+				//錯誤訊息元素預設為label改成p會換行
+				errorElement: "p",
+			    rules: {
+			    	account: {
+			          required: true,
+			          minlength: 2
+			        },
+			        passw: {
+			          required: true,
+			          minlength: 5
+			        }
+			      },
+			      messages: {
+			        account: {
+			          required: "請輸入帳號",
+			          minlength: "至少兩個字母"
+			        },
+			        passw: {
+			          required: "請輸入密碼",
+			          minlength: "密碼長度不得小於五個字母"
+			        }
+				  },
+				  //檢核後送出
+				  submitHandler: function(form) 
+				   {      
+					  $.ajax({
+						    url: "/"+CONFIG.SYSTEM_NAME + "/login",
+						    data: '{"account":' + $("#account").val() + ',"pasw":' + $("#passw").val() + '}', //要用雙引號!!
+						    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+						    type: "POST",
+						    headers: {
+						        Accept: "application/json",
+						    },
+						    success: function(data, textStatus){
+						        if(data == true){
+						        	location.href = "index.html";
+						        }else{
+						        	alert("登入失敗!!");
+						        }
+						    },
+						    error: function (data, textStatus, errorThrown) {
+						        console.log(data);
+						    },
+						});
+				   }  
+			});
+			
+			//清除按鈕
+			$("#clearBtn").click(function(){
+				$("#account").val("");
+				$("#passw").val("");
+				
+				validator.resetForm();
+			});
+			
+		}) 
+	});
+		
+</script>
+

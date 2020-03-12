@@ -26,13 +26,7 @@ public class UserAction extends GenericAction<User>{
 	
 	@Autowired
 	UserService userService;
-	
-	@RequestMapping(value="/tttt", method=RequestMethod.GET)
-	public String showTTTT(Model model){
-		model.addAttribute("msg", "Fuck you all!");//
-		return "index";
-	}
-	
+		
 //	@RequestMapping(value="/user/test", method=RequestMethod.GET)
 //    public @ResponseBody String getStockPrice(@RequestBody Map<String, Object> params) {     
 //		String jsonInString = null;

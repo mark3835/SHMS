@@ -27,7 +27,7 @@ http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<!-- 自動掃描web包 ,將帶有註解的類 納入spring容器管理 -->  
 	<context:annotation-config />
-	<context:component-scan base-package="tcb.shms.module"></context:component-scan>
+	<context:component-scan base-package="tcb.shms"></context:component-scan>
 	
 	<!-- 引入jdbc配置檔案 --> 
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"> 

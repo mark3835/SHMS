@@ -17,6 +17,7 @@
         
 	<context:annotation-config />
 	<context:component-scan	base-package="tcb.shms.module.controller" />
+	<context:component-scan	base-package="tcb.shms.core.controller" />
 
 	<mvc:annotation-driven />
 	

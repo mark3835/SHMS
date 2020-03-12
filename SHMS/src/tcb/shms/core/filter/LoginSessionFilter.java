@@ -79,7 +79,7 @@ public class LoginSessionFilter implements Filter{
         // 获得session
         HttpSession session = request.getSession();
         // 从session中获取SessionKey对应值,若值不存在,则重定向到redirectUrl
-        Object user = session.getAttribute(SystemConfig.SESSION_KEY.LOGIN_SESSION_KEY);
+        Object user = session.getAttribute(SystemConfig.SESSION_KEY.LOGIN);
         log.info("user:" + user);
         if (user != null) {
             filterChain.doFilter(request, response);
