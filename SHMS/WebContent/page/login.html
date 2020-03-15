@@ -86,10 +86,8 @@ p.error {
 						    url: "/"+CONFIG.SYSTEM_NAME + "/login",
 						    data: '{"account":' + $("#account").val() + ',"pasw":' + $("#passw").val() + '}', //要用雙引號!!
 						    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+						    async: false,
 						    type: "POST",
-						    headers: {
-						        Accept: "application/json",
-						    },
 						    success: function(data, textStatus){
 						        if(data == true){
 						        	location.href = "index.html";

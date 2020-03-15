@@ -1,5 +1,7 @@
 package tcb.shms.core.dao;
 
+import java.util.List;
+
 import tcb.shms.core.entity.Entity;
 
 /**
@@ -45,6 +47,21 @@ public interface Dao<T extends Entity> {
 	 * @throws Exception
 	 */
 	public void deleteById(Long id) throws Exception;
+	
+	/**
+	 * query BY SQL
+	 * @param id
+	 * @throws Exception
+	 */
+	public List<Object[]> createSQLQuery(String sql) throws Exception;
+	
+	
+	/**
+	 * query list
+	 * @param id
+	 * @throws Exception
+	 */
+	public List<T> findList(T entity) throws Exception;
 	
 
 }

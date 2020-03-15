@@ -1,5 +1,7 @@
 package tcb.shms.core.service;
 
+import java.util.List;
+
 import tcb.shms.core.entity.Entity;
 
 /**
@@ -12,9 +14,12 @@ public interface Service<T extends Entity> {
 	public T save(T entity)  throws Exception;
 	
 	public T getById(Long id) throws Exception;
+	
+	public List<T> getList(T entity) throws Exception;
 		
 	public T update(T entity) throws Exception;	
 	
 	public void deleteById(Long id) throws Exception;
 	
+	public List<Object[]> getListBySQLQuery(String sql) throws Exception;
 }

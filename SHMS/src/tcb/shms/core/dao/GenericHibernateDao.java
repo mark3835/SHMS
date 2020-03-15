@@ -4,11 +4,17 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
@@ -78,5 +84,26 @@ public abstract class GenericHibernateDao<T extends GenericEntity> extends Gener
 		getSession().delete(entity);
 	}
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Object[]> createSQLQuery(String sql) throws Exception{
+		List<Object[]> queryList = getSession().createNativeQuery(sql).list();
+		return queryList;
+	}
+	
+	/**
+	 * query list
+	 * @param id
+	 * @throws Exception
+	 */
+	public List<T> findList(T entity) throws Exception{
+		CriteriaBuilder builder = getSession().getCriteriaBuilder();
+		CriteriaQuery<T> query = builder.createQuery(entityClass);
+		Root<T> root = query.from(entityClass);
+		query.select(root);
+		Query<T> q = getSession().createQuery(query);
+		List<T> list = q.getResultList();
+		return list;		
+	}
 	
 }

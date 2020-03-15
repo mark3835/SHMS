@@ -38,12 +38,12 @@ public class LoginAction{
 	@RequestMapping(value="/login", method=RequestMethod.POST)
     public @ResponseBody String login(@RequestBody String data) {     
 		String jsonInString = null;
-		boolean result;
+		boolean result = true;
         try {
         	
         	@SuppressWarnings("unchecked")
 			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);
-        	result = ldapService.checkADAccount(MapUtils.getString(map, "account"), MapUtils.getString(map, "pasw"));        
+//        	result = ldapService.checkADAccount(MapUtils.getString(map, "account"), MapUtils.getString(map, "pasw"));        
         	
         	request.getSession().setAttribute(SystemConfig.SESSION_KEY.LOGIN, MapUtils.getString(map, "account"));;
 			jsonInString = new Gson().toJson(result);

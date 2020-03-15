@@ -14,6 +14,7 @@ import tcb.shms.module.entity.User;
  * @author Mark Huang
  * @date 2020/3/3
  **/
+@Transactional
 @Service
 public class UserService extends GenericService<User>{
 
@@ -25,7 +26,6 @@ public class UserService extends GenericService<User>{
 		return userDao;
 	}
 
-	@Transactional
 	public User getByRocid(String rocId) throws Exception {
 		Assert.notNull(rocId, "rocId不能為null");
 		

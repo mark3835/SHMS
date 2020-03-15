@@ -19,19 +19,31 @@
 	<context:component-scan	base-package="tcb.shms.module.controller" />
 	<context:component-scan	base-package="tcb.shms.core.controller" />
 
-	<mvc:annotation-driven />
-	
 	<mvc:resources location="/resources/css/" mapping="/resources/css/**" />
 	<mvc:resources location="/resources/js/" mapping="/resources/js/**" />
 	<mvc:resources location="/resources/image/" mapping="/resources/image/**" />
 	<mvc:resources location="/page/" mapping="/page/**" />
 
-	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="viewClass"
-			value="org.springframework.web.servlet.view.JstlView" />
-		<property name="prefix" value="/WEB-INF/jsp/" />
-		<property name="suffix" value=".jsp" />
-	</bean>
+	<!-- 处理请求返回json字符串的中文乱码问题 -->	
+	 <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                    <property name="supportedMediaTypes">
+                        <list>
+                            <bean class="org.springframework.http.MediaType">
+				                <constructor-arg value="application"/>
+				                <constructor-arg value="json"/>
+				                <constructor-arg value="UTF-8"/>
+				            </bean>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+ 
+    <mvc:annotation-driven/>
 	
     
 </beans>
