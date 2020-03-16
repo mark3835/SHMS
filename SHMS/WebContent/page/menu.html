@@ -1,32 +1,86 @@
 <nav class="navbar navbar-default" role="navigation">
 	<ul class="nav flex-column" id="menuUl">
-		<li class="nav-item">
-			<a class="nav-link" href="#"> 
-				<span data-feather="layers"></span> Integrations
-			</a>
-		</li>
-		<li class="nav-item" id="dropdown">
-			<a	data-toggle="collapse" href="#dropdown-lvl1">
-				Sub Level 
-				<span class="dropdown-toggle"></span>
-			</a> 
-			<!-- Dropdown level 1 -->
-			<div id="dropdown-lvl1" class="collapse">
-				<ul class="nav flex-column">
-					<li><a href="#">Link</a></li>
-					<li><a href="#">Link</a></li>
-					<li><a href="#">Link</a></li>
-				</ul>
-			</div
-		></li>
+		
 	</ul>
 </nav>
+
+<li class="nav-item" id="menuTemplate" style="display:none">
+	<a class="nav-link" href="#"> 
+		<span data-feather="layers"></span> @MENU_NAME@
+	</a>
+</li>
+
+<li class="nav-item" id="dropdownTemplate" style="display:none">
+	<a	data-toggle="collapse" href="#@DROPDOWN_ID@" class="collapsed" aria-expanded="false">
+		@MENU_NAME@
+		<span class="dropdown-toggle"></span>
+	</a> 
+	<!-- Dropdown level 1 -->
+	<div id="@DROPDOWN_ID@" class="collapse">
+		<ul class="nav flex-column">
+			
+		</ul>
+	</div
+></li>
+
+<li id="dropdownLiTemplate" style="display:none">
+	<a class="nav-link" style="padding-top: 0rem;padding-bottom: 0.5rem;" href="#">@MENU_NAME@</a>
+</li>
+
+
 <script>
-	function createMenu() {
-		var menuli = '<li class="nav-item">';
-		menuli += '<a class="nav-link active" href="#">';
-		menuli += '</span>tttttttttttttttttt</span></a></li>';
-		$("#menuUl").append(menuli);
+	function createMenu(name, url) {
+		var menu = $("#menuTemplate").clone();
+		menu.removeAttr("id");
+		menu.show();
+		menu.html(menu.html().replace('@MENU_NAME@',name));
+		$("#menuUl").append(menu);
+		menu.click(function(){
+			bodyHref(url);
+		});
 	}
-	createMenu();
+	function createTie2Menu(name, menuId) {
+		var menu = $("#dropdownTemplate").clone().show();
+		menu.removeAttr("id");
+		menu.show();
+		menu.html(menu.html().replace('@MENU_NAME@',name).replace('@DROPDOWN_ID@', 'menuDropdown'+menuId).replace('@DROPDOWN_ID@', 'menuDropdown'+menuId));
+		return menu;
+	}
+	
+	
+	$.ajax({
+	    url: "/"+CONFIG.SYSTEM_NAME + "/menu/getMenu",
+	    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+	    async: false,
+	    type: "GET",
+	    success: function(data, textStatus){
+	    	$.each(data, function (index, value) {
+	    		if(value.menuTierTwo){
+	    			return;
+	    		}
+	    		if(value.menuUrl){
+	    			createMenu(value.menuName, value.menuUrl);
+	    		}else{
+	    			var menuId = value.id;
+	    			var menu = createTie2Menu(value.menuName, menuId);	    			
+	    			$.each(data, function (index2, value2) {
+	    				if(value2.menuTierTwo == menuId){
+	    					var menu2 = $("#dropdownLiTemplate").clone();
+	    					menu2.removeAttr("id");
+	    					menu2.show();
+	    					menu2.html(menu2.html().replace('@MENU_NAME@', value2.menuName));	
+	    					menu2.click(function(){
+	    						bodyHref(value2.menuUrl);
+	    					});
+	    					menu.find("ul").append(menu2);
+	    				}
+	    			});
+	    			$("#menuUl").append(menu);
+	    		}
+    	    });
+	    },
+	    error: function (data, textStatus, errorThrown) {
+	        console.log(data);
+	    },
+	});
 </script>

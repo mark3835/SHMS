@@ -25,5 +25,5 @@ public class AuthorizastionService extends GenericService<Authorizastion>{
 		return authorizastionDao;
 	}
 
-
+	
 }

@@ -1,5 +1,8 @@
 package tcb.shms.module.controller;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,36 +18,66 @@ import com.google.gson.Gson;
 
 import tcb.shms.core.controller.GenericAction;
 import tcb.shms.module.config.SystemConfig;
+import tcb.shms.module.entity.Authorizastion;
 import tcb.shms.module.entity.Menu;
+import tcb.shms.module.service.AuthorizastionService;
 import tcb.shms.module.service.MenuService;
 
 /**
- *  @author MARK3835
+ * @author MARK3835
  *
  */
 @Controller
-public class MenuAction extends GenericAction<Menu>{
-	
+public class MenuAction extends GenericAction<Menu> {
+
 	@Autowired
 	MenuService menuService;
-	
-	@Autowired 
+
+	@Autowired
+	AuthorizastionService authorizastionService;
+
+	@Autowired
 	HttpServletRequest request;
-	
-	@RequestMapping(value="/menu/getMenu", method=RequestMethod.GET)
-    public @ResponseBody String getStockPrice() {     
+
+	@RequestMapping(value = "/menu/getMenu", method = RequestMethod.GET)
+	public @ResponseBody String getMenu() {
 		String jsonInString = null;
-        try {
-        	String account = ObjectUtils.identityToString(request.getSession().getAttribute(SystemConfig.SESSION_KEY.LOGIN));
-        	List<Menu> menuList = menuService.getList(new Menu());
+		try {
+			//@TODO 撈取使用者權限
+			String account = ObjectUtils
+					.identityToString(request.getSession().getAttribute(SystemConfig.SESSION_KEY.LOGIN));
+			int accountAuthLv = 0;
+			Authorizastion authorizastion = new Authorizastion();
+			authorizastion.setAuthLv(accountAuthLv);
+			List<Authorizastion> authorizastionList = authorizastionService.getList(authorizastion);
+			List<Menu> menuList = menuService.getList(new Menu());
+			Iterator<Menu> it = menuList.iterator();
+			while (it.hasNext()) {
+				Menu menuObj = it.next();
+				boolean exist = false;
+				for(Authorizastion authObj:authorizastionList) {					
+					if (menuObj.getId().equals(authObj.getId())) {
+						exist = true;
+						break;
+					}
+				}	
+				if(!exist) {
+					it.remove();
+				}
+			}
+			// List 自訂排序
+			Collections.sort(menuList, new Comparator<Menu>() {
+				public int compare(Menu m1, Menu m2) {
+					// 回傳值: -1 前者比後者小, 0 前者與後者相同, 1 前者比後者大
+					return m1.getMenuOrder().compareTo(m2.getMenuOrder());
+				}
+			});
 			jsonInString = new Gson().toJson(menuList);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-               
-        return jsonInString;
-    }
-    
+		return jsonInString;
+	}
 
 }

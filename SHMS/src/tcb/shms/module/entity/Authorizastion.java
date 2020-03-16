@@ -27,27 +27,27 @@ public class Authorizastion extends GenericEntity{
 	 * menu ID
 	 */
 	@Column(name="MENU_ID")
-	private String menuId;
+	private Long menuId;
 	
 	/**
 	 *    可以看得權限
 	 */
 	@Column(name="AUTH_LV")
-	private String authLv;
+	private int authLv;
 
-	public String getMenuId() {
+	public Long getMenuId() {
 		return menuId;
 	}
 
-	public void setMenuId(String menuId) {
+	public void setMenuId(Long menuId) {
 		this.menuId = menuId;
 	}
 
-	public String getAuthLv() {
+	public int getAuthLv() {
 		return authLv;
 	}
 
-	public void setAuthLv(String authLv) {
+	public void setAuthLv(int authLv) {
 		this.authLv = authLv;
 	}
 	

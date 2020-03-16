@@ -39,7 +39,7 @@ public class Menu extends GenericEntity{
 	 * menu如果是第二層會有植 放第一層的MenuId
 	 */
 	@Column(name="MENU_TIER_TWO")
-	private String menuTierTwo;
+	private Long menuTierTwo;
 	
 	/**
 	 * menu順序
@@ -63,11 +63,11 @@ public class Menu extends GenericEntity{
 		this.menuUrl = menuUrl;
 	}
 
-	public String getMenuTierTwo() {
+	public Long getMenuTierTwo() {
 		return menuTierTwo;
 	}
 
-	public void setMenuTierTwo(String menuTierTwo) {
+	public void setMenuTierTwo(Long menuTierTwo) {
 		this.menuTierTwo = menuTierTwo;
 	}
 

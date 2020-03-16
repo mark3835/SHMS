@@ -23,6 +23,7 @@
 	<mvc:resources location="/resources/js/" mapping="/resources/js/**" />
 	<mvc:resources location="/resources/image/" mapping="/resources/image/**" />
 	<mvc:resources location="/page/" mapping="/page/**" />
+	<mvc:resources location="/content/" mapping="/content/**" />
 
 	<!-- 处理请求返回json字符串的中文乱码问题 -->	
 	 <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">

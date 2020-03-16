@@ -1,10 +1,18 @@
 <nav class="navbar navbar-expand navbar-light flex-column flex-md-row bd-navbar">
-  
-  <img  class="navbar-brand mr-2" src="/SHMS/resources/image/tcb.jpeg" height="45px"/>
+	<img style="padding-left: 2rem; cursor: pointer;"
+		class="navbar-brand mr-2" src="/SHMS/resources/image/tcb.jpeg"
+		height="45px" id="tcbImg"/>
+		
+	<div class="navbar-nav mr-auto">
+		<h2 class="navbar-brand col-sm-3 col-md-2 mr-0"
+			style="font-weight: bold; padding-left: 2rem;">職業安全衛生管理系統</h2>
+	</div>
 
-    <div class="navbar-nav mr-auto">
-     	<h2 class="navbar-brand col-sm-3 col-md-2 mr-0" style="font-weight: bold;">職業安全衛生管理系統</h2>
-    </div>
-
-  <button type="button" class="btn btn-link">Sign out</button> 
+	<button type="button" class="btn btn-link">Sign out</button>
 </nav>
+
+<script>
+$("#tcbImg").click(function(){
+	window.location.href = "/SHMS/page/index.html";
+});
+</script>

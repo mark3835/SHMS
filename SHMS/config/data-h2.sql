@@ -8,7 +8,18 @@ insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE,
 values( 'SYSTEM_CONFIG_ADMIN', 'SYSTEM_CONFIG', 'ADMIN', 'MARK', 'TEST', 1, 'MARK', sysdate(), 'MARK', sysdate());
 
 --MENU
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '單位職安業務基本資料維護', '1', null, 10);
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '職業安全衛生訓練證照登陸', '1', null, 20);
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '平安通報作業', '4', null, 30);
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '單位職安業務基本資料維護', '/content/unitData.html', null, 10);
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '職業安全衛生訓練證照登陸', '/content/certificate.html', null, 20);
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '平安通報作業', null, null, 30);
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '平安通報公告', '4', '3', 30);
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '平安通報資料維護', '4', '3', 30);
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '安全狀況反應通報表作業', '7', null, 40);
+
+--AUTHORIZASTION
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 1, 0);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 2, 0);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 3, 0);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 4, 0);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 5, 0);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 6, 0);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 7, 0);
