@@ -36,6 +36,12 @@ public class User extends GenericEntity{
 	private String name;
 	
 	/**
+	 * 帳號
+	 */
+	@Column(name="ACCOUNT")
+	private String account;
+	
+	/**
 	 * 單位代號
 	 */
 	@Column(name="UNIT_ID")
@@ -51,7 +57,7 @@ public class User extends GenericEntity{
 	 * 職稱等級
 	 */
 	@Column(name="JOB_LEVEL")
-	private int jobLevel;
+	private Integer jobLevel;
 	
 	/**
 	 * 電話
@@ -60,10 +66,16 @@ public class User extends GenericEntity{
 	private String phone;
 	
 	/**
+	 * EMAIL
+	 */
+	@Column(name="EMAIL")
+	private String email;
+	
+	/**
 	 * 是否離職 0在職 1離職
 	 */
 	@Column(name="IS_LEAVE")
-	private int isLeave;
+	private Integer isLeave;
 
 	public String getRocId() {
 		return rocId;
@@ -97,11 +109,11 @@ public class User extends GenericEntity{
 		this.jobName = jobName;
 	}
 
-	public int getJobLevel() {
+	public Integer getJobLevel() {
 		return jobLevel;
 	}
 
-	public void setJobLevel(int jobLevel) {
+	public void setJobLevel(Integer jobLevel) {
 		this.jobLevel = jobLevel;
 	}
 
@@ -119,6 +131,26 @@ public class User extends GenericEntity{
 
 	public void setIsLeave(int isLeave) {
 		this.isLeave = isLeave;
+	}
+
+	public String getAccount() {
+		return account;
+	}
+
+	public void setAccount(String account) {
+		this.account = account;
+	}
+
+	public void setIsLeave(Integer isLeave) {
+		this.isLeave = isLeave;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
 	

@@ -2,36 +2,61 @@ package tcb.shms.core.service;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 import javax.naming.Context;
+import javax.naming.NamingEnumeration;
+import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.collections4.map.HashedMap;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tcb.shms.module.config.SystemConfig;
+import tcb.shms.module.entity.Unit;
+import tcb.shms.module.entity.User;
+import tcb.shms.module.service.ErrorLogService;
+import tcb.shms.module.service.UnitService;
+import tcb.shms.module.service.UserService;
 
 @Service
 public class LdapService {
 
-	@SuppressWarnings("unused")
-	private final Logger log = LogManager.getLogger(getClass());
+	private final static Logger log = LogManager.getLogger(LdapService.class);
+	
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private UnitService unitService;
+	
+	@Autowired
+	ErrorLogService  errorLogService;
 	
 	static String returnedAtts[] = { 
 			"cn", 
-			"sn", 
-			"distinguishedName", 
+			"department", 
+			"tcbDeptID", 
 			"displayname", 
-			"userAccountControl", 
-			"name", 
-			"memberOf",
-			"rocid" 
+			"mail", 
+			"tcbJobLevel", 
+			"title",
+			"rocid",
+			"info",
+			"ou"
 	};
 		
 	public boolean checkADAccount(String account, String password){
@@ -42,33 +67,16 @@ public class LdapService {
 	    tbl.put(Context.SECURITY_AUTHENTICATION, "simple");
 	    tbl.put(Context.SECURITY_PRINCIPAL, account + "@tcb.com");
 	    tbl.put(Context.SECURITY_CREDENTIALS, password);
-	    System.out.println("env setting");
 	    DirContext context = null;
 	    try {
-	        System.out.println("login verification begins...");
+	    	log.info("login verification begins...");
 	        trustSelfSignedSSL();
 	        context = new InitialDirContext(tbl);
-//	        String searchBase = "DC=tcb,DC=com";
-//	        String searchFilter = "((objectClass=user)&(cn=" + account + "))";
-//			SearchControls ctrl = new SearchControls();
-//			ctrl.setSearchScope(SearchControls.SUBTREE_SCOPE);
-//			ctrl.setReturningAttributes(returnedAtts);
-//			NamingEnumeration answer = context.search(searchBase, searchFilter, ctrl);
-//
-//			int count = 0;
-//			while (answer.hasMore()) {
-//				SearchResult result = (SearchResult) answer.next();
-//				System.out.println(result);
-//				count++;
-//			}
-//			answer.close();
-	        System.out.println("login successfully.");
+	        log.info("login successfully.");
 	        
-//	        System.out.println("查詢筆數:" + count);
 	    } catch (Exception ex) {
-	        System.out.println("login failed.");
-	        System.out.println(ex.getMessage());
-            ex.printStackTrace();
+	    	log.error(ex);
+			errorLogService.addErrorLog(this.getClass().getName(), ex);
             return false;
 	    } finally {
 	        try {
@@ -78,7 +86,7 @@ public class LdapService {
 	            }
 	            tbl.clear();
 	        } catch (Exception e) {
-	            System.out.println("exception happened.");	           
+	        	log.info(" finally exception happened.");	           
 	        }
 	    }
 		return true;
@@ -109,8 +117,196 @@ public class LdapService {
 	        ctx.init(null, new TrustManager[] { tm }, null);
 	        SSLContext.setDefault(ctx);
 	        } catch (Exception ex) {
-	            ex.printStackTrace();
+	        	log.error(ex);
 	        }
+	}
+	
+	
+	public static void main(String args[]) {
+		new LdapService().getADUserTest("mark3835", "5tgb^YHN");
+	}
+	
+	/**
+	   *   撈取 AD user資料跟單位 新增或更新
+	 * @param account
+	 * @param password
+	 * @return
+	 */
+	public void getADUserAndUnitToDb(String account, String password){
+		Hashtable<String, String> tbl = new Hashtable<String, String>(4);
+	    String LDAP_URL = SystemConfig.LDAP.URL;
+	    tbl.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+	    tbl.put(Context.PROVIDER_URL, LDAP_URL);
+	    tbl.put(Context.SECURITY_AUTHENTICATION, "simple");
+	    tbl.put(Context.SECURITY_PRINCIPAL, account + "@tcb.com");
+	    tbl.put(Context.SECURITY_CREDENTIALS, password);
+	    System.out.println("env setting");
+	    DirContext context = null;
+	    try {
+	    	log.info("login verification begins...");
+	        trustSelfSignedSSL();
+	        context = new InitialDirContext(tbl);
+	        String searchFilter = "(&(objectClass=user)(rocid=*)(ou=*))";
+	        String searchBase = "DC=tcb,DC=com";
+			SearchControls ctrl = new SearchControls();
+			ctrl.setSearchScope(SearchControls.SUBTREE_SCOPE);
+			ctrl.setReturningAttributes(returnedAtts);
+			NamingEnumeration answer = context.search(searchBase, searchFilter, ctrl);
+
+			int count = 0;
+			List<User> userList = new ArrayList<User>();
+			Map<String, Unit> unitMap = new HashedMap<String, Unit>();
+			while (answer.hasMore()) {
+				SearchResult result = (SearchResult) answer.next();
+				Attributes  attrs= result.getAttributes();
+				User user = new User();
+				user.setRocId(String.valueOf(attrs.get("rocid").get()));
+				
+				//用ROCID查詢是否已存在
+				List<User> queryList = userService.getList(user);
+				if(attrs.get("displayname").get() != null) {
+					user.setName(String.valueOf(attrs.get("displayname").get()));
+				}
+				if(attrs.get("ou").get() != null) {
+					user.setUnitId(String.valueOf(attrs.get("ou").get()));
+				}
+				if(attrs.get("title").get() != null) {
+					user.setJobName(String.valueOf(attrs.get("title").get()));
+				}
+				if(attrs.get("tcbJobLevel").get() != null) {
+					user.setJobLevel(Integer.valueOf(attrs.get("tcbJobLevel").get().toString()));
+				}
+				if(attrs.get("cn").get() != null) {
+					user.setAccount(String.valueOf(attrs.get("cn").get()));
+				}
+				if(attrs.get("mail").get() != null) {
+					user.setEmail(String.valueOf(attrs.get("mail").get()));
+				}
+				user.setIsLeave(0);
+				
+				//已存在 比對資料
+				if(queryList.size() > 0) {
+					User oldUser = queryList.get(0);
+					boolean isChange = false;
+					//比對資料是否有異動
+					if(oldUser.getJobLevel() != user.getJobLevel()) {
+						isChange = true;
+					}else if(oldUser.getJobName() != user.getJobName()) {
+						isChange = true;
+					}else if(oldUser.getUnitId() != user.getUnitId()) {
+						isChange = true;
+					}else if(oldUser.getEmail() != user.getEmail()) {
+						isChange = true;
+					}else if(oldUser.getAccount() != user.getAccount()) {
+						isChange = true;
+					}
+					if(isChange) {
+						userService.update(user);
+					}
+				}else {
+					userService.save(user);
+				}
+				
+				
+				String unitId = String.valueOf(attrs.get("ou").get());
+				if(!unitMap.containsKey(unitId)) {
+					Unit unit = new Unit();
+					unit.setUnitId(unitId);
+					List<Unit> unitList = unitService.getList(unit);
+					if(unitList.size() == 0) {
+						unit.setUnitName(String.valueOf(attrs.get("department").get()));
+						unitService.save(unit);
+					}	
+					unitMap.put(unitId, unit);
+				}
+				
+				
+				count++;
+			}
+			answer.close();
+	        log.info("login successfully.");
+	        
+	        log.info("查詢筆數:" + count);
+	    } catch (Exception ex) {
+	    	log.error(ex);
+			errorLogService.addErrorLog(this.getClass().getName(), ex);
+	    } finally {
+	        try {
+	            if (context != null) {
+	                context.close();
+	                context = null;
+	            }
+	            tbl.clear();
+	        } catch (Exception e) {
+	        	log.info("finally exception happened.");	           
+	        }
+	    }
+	  
+	}
+	
+	
+	
+	/**
+	   *   撈取 AD user資料跟單位 新增或更新
+	 * @param account
+	 * @param password
+	 * @return
+	 */
+	public void getADUserTest(String account, String password){
+		Hashtable<String, String> tbl = new Hashtable<String, String>(4);
+	    String LDAP_URL = SystemConfig.LDAP.URL;
+	    tbl.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+	    tbl.put(Context.PROVIDER_URL, LDAP_URL);
+	    tbl.put(Context.SECURITY_AUTHENTICATION, "simple");
+	    tbl.put(Context.SECURITY_PRINCIPAL, account + "@tcb.com");
+	    tbl.put(Context.SECURITY_CREDENTIALS, password);
+	    System.out.println("env setting");
+	    DirContext context = null;
+	    try {
+	    	log.info("login verification begins...");
+	        trustSelfSignedSSL();
+	        context = new InitialDirContext(tbl);
+	        String searchFilter = "(&(objectClass=user)(rocid=*)(ou=*))";
+	        String searchBase = "DC=tcb,DC=com";
+			SearchControls ctrl = new SearchControls();
+			ctrl.setSearchScope(SearchControls.SUBTREE_SCOPE);
+			ctrl.setReturningAttributes(returnedAtts);
+			NamingEnumeration answer = context.search(searchBase, searchFilter, ctrl);
+
+			int count = 0;
+			while (answer.hasMore()) {
+				SearchResult result = (SearchResult) answer.next();
+				Attributes  attrs= result.getAttributes();
+				
+				//用ROCID查詢是否已存在
+				try {
+					String aaa = attrs.get("cn").get() + " ; " + attrs.get("displayname").get() + " ; " + attrs.get("ou").get();
+				} catch (Exception e) {
+					log.info(attrs.get("cn").get());
+				}
+				
+				
+				count++;
+			}
+			answer.close();
+	        log.info("login successfully.");
+	        
+	        log.info("查詢筆數:" + count);
+	    } catch (Exception ex) {
+	    	log.error(ex);
+			errorLogService.addErrorLog(this.getClass().getName(), ex);
+	    } finally {
+	        try {
+	            if (context != null) {
+	                context.close();
+	                context = null;
+	            }
+	            tbl.clear();
+	        } catch (Exception e) {
+	        	log.info("finally exception happened.");	           
+	        }
+	    }
+	  
 	}
 	
 	

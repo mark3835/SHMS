@@ -5,10 +5,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -17,6 +20,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
@@ -87,10 +91,10 @@ public abstract class GenericHibernateDao<T extends GenericEntity> extends Gener
 		getSession().delete(entity);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes", "deprecation" })
 	@Override
-	public List<Object[]> createSQLQuery(String sql) throws Exception {
-		List<Object[]> queryList = getSession().createNativeQuery(sql).list();
+	public List<Map> createSQLQuery(String sql) throws Exception {
+		List<Map> queryList = getSession().createNativeQuery(sql).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
 		return queryList;
 	}
 
@@ -106,9 +110,10 @@ public abstract class GenericHibernateDao<T extends GenericEntity> extends Gener
 		CriteriaQuery<T> query = builder.createQuery(entityClass);
 		Root<T> root = query.from(entityClass);
 		query.select(root);		
-		//用反射塞WHERE條件
+		//用反射取entity值塞WHERE條件
 		Class<?> c = entityClass;
 		Field[] fields = c.getDeclaredFields();
+		List<Predicate> predicateList = new ArrayList();
 		for (Field field : fields) {
 			try {
 				field.setAccessible(true);
@@ -117,11 +122,11 @@ public abstract class GenericHibernateDao<T extends GenericEntity> extends Gener
 				}
 				if(ObjectUtils.isNotEmpty(field.get(entity))) {
 					if (field.getType().getCanonicalName().equals("java.lang.String")) {
-						query.where(builder.equal(root.get(field.getName().toString()), field.get(entity)));
+						predicateList.add(builder.equal(root.get(field.getName().toString()), field.get(entity)));
 					} else if (field.getType().getCanonicalName().equals("java.lang.Integer") || field.getType().getCanonicalName().equals("int")) {
-						query.where(builder.equal(root.get(field.getName().toString()), field.get(entity)));
+						predicateList.add(builder.equal(root.get(field.getName().toString()), field.get(entity)));
 					} else if (field.getType().getCanonicalName().equals("java.lang.Long") || field.getType().getCanonicalName().equals("long")) {
-						query.where(builder.equal(root.get(field.getName().toString()), field.get(entity)));
+						predicateList.add(builder.equal(root.get(field.getName().toString()), field.get(entity)));
 					}
 				}
 				
@@ -131,6 +136,7 @@ public abstract class GenericHibernateDao<T extends GenericEntity> extends Gener
 				e1.printStackTrace();
 			}
 		}
+		query.where(predicateList.toArray(new Predicate[predicateList.size()]));
 		Query<T> q = getSession().createQuery(query);
 		List<T> list = q.getResultList();
 		return list;

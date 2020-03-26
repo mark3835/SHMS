@@ -1,0 +1,124 @@
+<div>
+	<h4>參數設定</h4>
+	
+	    <div id="jsGrid"></div>
+</div>
+
+<div id="detailsDialog">
+    <form id="detailsForm">
+        <div class="details-form-field">
+            <label for="cfgType">參數類型</label>
+            <input id="cfgType" name="cfgType" type="text" />
+        </div>
+        <div class="details-form-field">
+            <label for="cfgKey">參數KEY</label>
+            <input id="cfgKey" name="cfgKey" type="text" />
+        </div>
+        <div class="details-form-field">
+            <label for="cfgName">參數名稱</label>
+            <input id="cfgName" name="cfgName" type="text" />
+        </div>
+        <div class="details-form-field">
+            <label for="cfgValue">參數值</label>
+            <input id="cfgValue" name="cfgValue" type="text" />
+        </div>
+        <div class="details-form-field">
+            <label for="cfgMemo">Is Married</label>
+            <textarea  id="cfgMemo" name="cfgMemo" ></textarea>
+        </div>
+        <div class="details-form-field">
+            <button type="submit" id="save">Save</button>
+        </div>
+    </form>
+</div>
+
+<script>
+
+//需要用的JS
+require(["jquery", "popper", "bootstrap", "jquery_validate"], function (jquery, popper, bootstrap) {
+	//頁面讀取後執行
+	$(document).ready(function(){
+		
+		var dialog;
+	
+		 $.ajax({
+			    url: "/"+CONFIG.SYSTEM_NAME + '/config/api/getConfig',
+			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+			    async: false,
+			    type: "GET",
+			    success: function(data, textStatus){    
+			    	 if(data && data == "<script>alert('no rule')<\/script>"){
+			    		 alert('no rule');
+			    	 }else{
+			    	 	$("#jsGrid").jsGrid({
+			    	        width: "100%",
+			    	        height: "100%",
+			    	 
+			    	        heading: true,
+			    		    filtering: false,
+			    		    inserting: true,
+			    		    editing: true,
+			    		    selecting: true,
+			    		    sorting: true,
+			    		    paging: false,
+			    		    pageLoading: false,
+			    	 
+			    	        data: data,
+			    	 
+			    	        fields: [
+			    	            { title:"參數類型", name: "cfgType", type: "text", width: 100, validate: "required" },
+			    	            { title:"參數KEY", name: "cfgKey", type: "text	", width: 200 },
+			    	            { title:"參數名稱", name: "cfgName", type: "text	", width: 130 },
+			    	            { title:"參數值", name: "cfgValue", type: "text	", width: 200 },
+			    	            { title:"參數註記", name: "cfgMemo", type: "text	", width: 130 },
+			    	            { title:"參數是否停用", name: "cfgInUse", type: "text	", width: 50 },
+			    	            { type: "control" }
+			    	        ],
+				    	 	rowClick: function(args) {
+				                dialog.dialog("open");
+				            }
+			    	    });
+			    	 }
+			    },
+			    error: function (data, textStatus, errorThrown) {
+			        console.log(data);
+			    },
+			});
+	
+		 
+		 dialog = $("#detailsDialog").dialog({
+			 title: "參數設定",
+	         autoOpen: false,
+	         width: 400,
+	         close: function() {
+	             $("#detailsForm").validate().resetForm();
+	             $("#detailsForm").find(".error").removeClass("error");
+	         }
+	     });
+	
+	     $("#detailsForm").validate({
+	    	 //錯誤訊息元素預設為label改成p會換行
+			 errorElement: "p",
+	         rules: {
+	             name: "required",
+	             age: { required: true, range: [18, 150] },
+	             address: { required: true, minlength: 10 },
+	             country: "required"
+	         },
+	         messages: {
+	             name: "Please enter name",
+	             age: "Please enter valid age",
+	             address: "Please enter address (more than 10 chars)",
+	             country: "Please select country"
+	         },
+	         submitHandler: function() {
+	             formSubmitHandler();
+	         }
+	     });
+	
+	
+	
+	    
+	});
+});
+</script>

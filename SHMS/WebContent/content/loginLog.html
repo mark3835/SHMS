@@ -1,0 +1,46 @@
+<div>
+	<h4>登入紀錄</h4>
+	
+	<table id="table_id" class="display">
+	    <thead>
+	        <tr>
+	            <th>帳號</th>
+	            <th>登入時間</th>
+	        </tr>
+	    </thead>
+	    <tbody>
+	        <tr>
+	            <td></td>
+	            <td></td>
+	        </tr>
+	        <tr>
+	            <td></td>
+	            <td></td>
+	        </tr>
+	    </tbody>
+	</table>
+</div>
+
+<script>
+$(document).ready( function () {
+	
+    $.ajax({
+	    url: "/"+CONFIG.SYSTEM_NAME + '/loginLog/getLoginLog',
+	    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+	    async: false,
+	    type: "GET",
+	    success: function(data, textStatus){
+	    	 $('#table_id').DataTable({
+	    		 data: data,
+	    	        columns: [
+	    	            { data: 'account' },
+	    	            { data: 'loginTime' }
+	    	    ]});
+	    },
+	    error: function (data, textStatus, errorThrown) {
+	        console.log(data);
+	    },
+	});
+    
+});
+</script>

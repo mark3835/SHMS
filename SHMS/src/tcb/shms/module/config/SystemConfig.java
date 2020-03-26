@@ -9,6 +9,10 @@ public class SystemConfig {
 	}
 
 	public class LDAP{
-		public static final String URL= "LDAPS://ITDC01.TCB.COM:636";
+		public static final String URL= "LDAPS://ITDC01.TCB.COM:3269";
+	}
+	
+	public class CFG_TYPE{
+		public static final String DEFAULT_AUTH_URL= "DEFAULT_AUTH_URL";
 	}
 }

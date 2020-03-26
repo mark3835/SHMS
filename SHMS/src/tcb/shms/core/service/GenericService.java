@@ -1,6 +1,7 @@
 package tcb.shms.core.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,8 +67,9 @@ public abstract class GenericService<T extends GenericEntity> implements Service
 		return getDao().findList(entity);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Override
-	public List<Object[]> getListBySQLQuery(String sql) throws Exception{
+	public List<Map> getListBySQLQuery(String sql) throws Exception{
 		return getDao().createSQLQuery(sql);
 	}
 	

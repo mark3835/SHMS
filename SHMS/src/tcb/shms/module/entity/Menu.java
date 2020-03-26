@@ -36,6 +36,12 @@ public class Menu extends GenericEntity{
 	private String menuUrl;
 	
 	/**
+	 * 功能api URL 權限控管用
+	 */
+	@Column(name="MENU_API_URL")
+	private String menuApiUrl;
+	
+	/**
 	 * menu如果是第二層會有植 放第一層的MenuId
 	 */
 	@Column(name="MENU_TIER_TWO")
@@ -45,7 +51,7 @@ public class Menu extends GenericEntity{
 	 * menu順序
 	 */
 	@Column(name="MENU_ORDER")
-	private String menuOrder;
+	private Integer menuOrder;
 
 	public String getMenuName() {
 		return menuName;
@@ -71,12 +77,20 @@ public class Menu extends GenericEntity{
 		this.menuTierTwo = menuTierTwo;
 	}
 
-	public String getMenuOrder() {
+	public Integer getMenuOrder() {
 		return menuOrder;
 	}
 
-	public void setMenuOrder(String menuOrder) {
+	public void setMenuOrder(Integer menuOrder) {
 		this.menuOrder = menuOrder;
+	}
+
+	public String getMenuApiUrl() {
+		return menuApiUrl;
+	}
+
+	public void setMenuApiUrl(String menuApiUrl) {
+		this.menuApiUrl = menuApiUrl;
 	}
 		
 }

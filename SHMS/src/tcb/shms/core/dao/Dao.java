@@ -1,6 +1,7 @@
 package tcb.shms.core.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import tcb.shms.core.entity.Entity;
 
@@ -53,7 +54,8 @@ public interface Dao<T extends Entity> {
 	 * @param id
 	 * @throws Exception
 	 */
-	public List<Object[]> createSQLQuery(String sql) throws Exception;
+	@SuppressWarnings("rawtypes")
+	public List<Map> createSQLQuery(String sql) throws Exception;
 	
 	
 	/**

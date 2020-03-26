@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 
 import tcb.shms.core.controller.GenericAction;
 import tcb.shms.module.entity.User;
+import tcb.shms.module.service.ErrorLogService;
 import tcb.shms.module.service.UserService;
 
 /**
@@ -21,6 +22,9 @@ public class UserAction extends GenericAction<User>{
 	
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	ErrorLogService  errorLogService;
 		
 //	@RequestMapping(value="/user/test", method=RequestMethod.GET)
 //    public @ResponseBody String getStockPrice(@RequestBody Map<String, Object> params) {     
@@ -32,7 +36,8 @@ public class UserAction extends GenericAction<User>{
 //			 User user = userService.getByRocid(rocId);
 //			 jsonInString = new Gson().toJson(maps);
 //		} catch (Exception e) {
-//			e.printStackTrace();
+//			log.error(e);
+//			errorLogService.addErrorLog(this.getClass().getName(), e);
 //		}
 //
 //               
@@ -45,7 +50,8 @@ public class UserAction extends GenericAction<User>{
 			 User user = userService.getByRocid("123");
 			 jsonInString = new Gson().toJson(user);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e);
+			errorLogService.addErrorLog(this.getClass().getName(), e);
 		}
 
                

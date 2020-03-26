@@ -1,3 +1,47 @@
 <div>
-	<h2>公告事項</h2>
-</div>0
+	<h4>公告事項</h4>
+	
+	<div id="jsGrid" >
+	</div>
+</div>
+
+<script>
+require(["jquery", "popper", "bootstrap", "jquery_validate", "jsgrid"], function (jquery, popper, bootstrap) {
+	
+    $.ajax({
+	    url: "/"+CONFIG.SYSTEM_NAME + '/announcement/getAnnouncement',
+	    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+	    async: false,
+	    type: "GET",
+	    success: function(data, textStatus){    	
+	    	 
+	    	 $("#jsGrid").jsGrid({
+    	        width: "100%",
+    	        height: "100%",
+    	 
+    	        heading: true,
+    		    filtering: false,
+    		    inserting: false,
+    		    editing: false,
+    		    selecting: true,
+    		    sorting: true,
+    		    paging: false,
+    		    pageLoading: false,
+    	 
+    	        data: data,
+    	 
+    	        fields: [
+    	            { title:"發佈時間", name: "announcementDate", type: "text", width: 50, validate: "required" },
+    	            { title:"公告標題", name: "announcementName", type: "text	", width: 150 }
+    	        ]
+    	    });
+	    	 
+	    },
+	    error: function (data, textStatus, errorThrown) {
+	        console.log(data);
+	    },
+	});
+    
+    
+});
+</script>

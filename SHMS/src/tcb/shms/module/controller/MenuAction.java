@@ -21,6 +21,7 @@ import tcb.shms.module.config.SystemConfig;
 import tcb.shms.module.entity.Authorizastion;
 import tcb.shms.module.entity.Menu;
 import tcb.shms.module.service.AuthorizastionService;
+import tcb.shms.module.service.ErrorLogService;
 import tcb.shms.module.service.MenuService;
 
 /**
@@ -35,6 +36,9 @@ public class MenuAction extends GenericAction<Menu> {
 
 	@Autowired
 	AuthorizastionService authorizastionService;
+	
+	@Autowired
+	ErrorLogService  errorLogService;
 
 	@Autowired
 	HttpServletRequest request;
@@ -51,6 +55,7 @@ public class MenuAction extends GenericAction<Menu> {
 			authorizastion.setAuthLv(accountAuthLv);
 			List<Authorizastion> authorizastionList = authorizastionService.getList(authorizastion);
 			List<Menu> menuList = menuService.getList(new Menu());
+			//loop MENU 判斷是否有權限 沒有則移除
 			Iterator<Menu> it = menuList.iterator();
 			while (it.hasNext()) {
 				Menu menuObj = it.next();
@@ -65,7 +70,7 @@ public class MenuAction extends GenericAction<Menu> {
 					it.remove();
 				}
 			}
-			// List 自訂排序
+			// List 自訂排序  MENU依照order值排序
 			Collections.sort(menuList, new Comparator<Menu>() {
 				public int compare(Menu m1, Menu m2) {
 					// 回傳值: -1 前者比後者小, 0 前者與後者相同, 1 前者比後者大
@@ -74,7 +79,8 @@ public class MenuAction extends GenericAction<Menu> {
 			});
 			jsonInString = new Gson().toJson(menuList);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e);
+			errorLogService.addErrorLog(this.getClass().getName(), e);
 		}
 
 		return jsonInString;

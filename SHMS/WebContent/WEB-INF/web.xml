@@ -27,6 +27,11 @@
             </param-value>
         </init-param>
         <init-param>
+            <param-name>passH2URL</param-name>
+            <param-value>/h2/
+            </param-value>
+        </init-param>
+        <init-param>
             <param-name>redirectURL</param-name>
             <param-value>page/login.html</param-value>
         </init-param>
@@ -60,7 +65,7 @@
 	</servlet>
 	<servlet-mapping>
 	    <servlet-name>H2Console</servlet-name>
-	    <url-pattern>/console/*</url-pattern>
+	    <url-pattern>/h2/*</url-pattern>
 	</servlet-mapping>
     
 </web-app>

@@ -1,6 +1,7 @@
 package tcb.shms.core.service;
 
 import java.util.List;
+import java.util.Map;
 
 import tcb.shms.core.entity.Entity;
 
@@ -21,5 +22,6 @@ public interface Service<T extends Entity> {
 	
 	public void deleteById(Long id) throws Exception;
 	
-	public List<Object[]> getListBySQLQuery(String sql) throws Exception;
+	@SuppressWarnings("rawtypes")
+	public List<Map> getListBySQLQuery(String sql) throws Exception;
 }

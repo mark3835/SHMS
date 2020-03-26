@@ -1,0 +1,40 @@
+<div>
+	<h4>錯誤訊息</h4>
+	
+	<table id="table_id" class="display">
+	    <thead>
+	        <tr>
+	            <th>class</th>
+	            <th>錯誤訊息</th>
+	            <th>發生時間</th>
+	        </tr>
+	    </thead>
+	    <tbody>
+	    </tbody>
+	</table>
+</div>
+
+<script>
+$(document).ready( function () {
+	
+    $.ajax({
+	    url: "/"+CONFIG.SYSTEM_NAME + '/errorLog/getErrorLog',
+	    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+	    async: false,
+	    type: "GET",
+	    success: function(data, textStatus){
+	    	 $('#table_id').DataTable({
+	    		 data: data,
+	    	        columns: [
+	    	            { data: 'errorClass' },
+	    	            { data: 'errorMsg' },
+	    	            { data: 'errorTime' }
+	    	    ]});
+	    },
+	    error: function (data, textStatus, errorThrown) {
+	        console.log(data);
+	    },
+	});
+    
+});
+</script>
