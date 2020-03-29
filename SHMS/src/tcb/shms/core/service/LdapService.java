@@ -19,7 +19,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.collections4.map.HashedMap;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,7 +139,6 @@ public class LdapService {
 	    tbl.put(Context.SECURITY_AUTHENTICATION, "simple");
 	    tbl.put(Context.SECURITY_PRINCIPAL, account + "@tcb.com");
 	    tbl.put(Context.SECURITY_CREDENTIALS, password);
-	    System.out.println("env setting");
 	    DirContext context = null;
 	    try {
 	    	log.info("login verification begins...");
@@ -159,27 +157,37 @@ public class LdapService {
 			while (answer.hasMore()) {
 				SearchResult result = (SearchResult) answer.next();
 				Attributes  attrs= result.getAttributes();
+				
+				//有帳號沒有tcbJobLevel  董事長也沒 讓他過
+				if(attrs.get("tcbJobLevel") == null && attrs.get("title") != null  && !String.valueOf(attrs.get("title").get()).equals("董事長")) {
+					continue;
+				}
+				
 				User user = new User();
 				user.setRocId(String.valueOf(attrs.get("rocid").get()));
 				
 				//用ROCID查詢是否已存在
 				List<User> queryList = userService.getList(user);
-				if(attrs.get("displayname").get() != null) {
+				if(attrs.get("displayname") != null && attrs.get("displayname").get() != null) {
 					user.setName(String.valueOf(attrs.get("displayname").get()));
 				}
-				if(attrs.get("ou").get() != null) {
+				if(attrs.get("ou") != null && attrs.get("ou").get() != null) {
 					user.setUnitId(String.valueOf(attrs.get("ou").get()));
 				}
-				if(attrs.get("title").get() != null) {
+				if(attrs.get("title") != null && attrs.get("title").get() != null) {
 					user.setJobName(String.valueOf(attrs.get("title").get()));
 				}
-				if(attrs.get("tcbJobLevel").get() != null) {
+				//董事長 沒 tcbJobLevel				
+				if(attrs.get("tcbJobLevel") != null && attrs.get("tcbJobLevel").get() != null) {
 					user.setJobLevel(Integer.valueOf(attrs.get("tcbJobLevel").get().toString()));
+				}else if(String.valueOf(attrs.get("title").get()).equals("董事長")) {
+					//總經理15 顧問16 董事長給個20等好了
+					user.setJobLevel(20);
 				}
-				if(attrs.get("cn").get() != null) {
+				if(attrs.get("cn") != null && attrs.get("cn").get() != null) {
 					user.setAccount(String.valueOf(attrs.get("cn").get()));
 				}
-				if(attrs.get("mail").get() != null) {
+				if(attrs.get("mail") != null && attrs.get("mail").get() != null) {
 					user.setEmail(String.valueOf(attrs.get("mail").get()));
 				}
 				user.setIsLeave(0);
@@ -188,6 +196,7 @@ public class LdapService {
 				if(queryList.size() > 0) {
 					User oldUser = queryList.get(0);
 					boolean isChange = false;
+					user.setId(oldUser.getId());
 					//比對資料是否有異動
 					if(oldUser.getJobLevel() != user.getJobLevel()) {
 						isChange = true;
@@ -228,6 +237,7 @@ public class LdapService {
 	        
 	        log.info("查詢筆數:" + count);
 	    } catch (Exception ex) {
+	    	ex.printStackTrace();
 	    	log.error(ex);
 			errorLogService.addErrorLog(this.getClass().getName(), ex);
 	    } finally {

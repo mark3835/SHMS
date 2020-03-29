@@ -7,11 +7,37 @@
 		<h3	style="padding-left: 3rem;">職業安全衛生管理系統</h3>
 	</div>
 
-	<button type="button" class="btn btn-link">Sign out</button>
+	<button type="button" class="btn btn-link" id="loginOut">登出</button>
 </nav>
 
 <script>
-$("#tcbImg").click(function(){
-	window.location.href = "/SHMS/page/index.html";
+//需要用的JS
+require(["jquery"], function (jquery) {
+	//頁面讀取後執行
+	$(document).ready(function(){
+		$("#tcbImg").click(function(){
+			window.location.href = "/SHMS/page/index.html";
+		});
+		
+		$("#loginOut").click(function(){
+			   $.ajax({
+				    url: "/"+CONFIG.SYSTEM_NAME + '/login/loginOut',
+				    contentType: "application/html;charset=utf-8", // 因為上面是JSON數據
+				    dataType:'text',
+				    async: false,
+				    type: "GET",
+				    success: function(data, textStatus){    	
+				    	 if(data == 'success'){
+				    		 location.href = 'login.html';
+				    	 }else{
+				    		 alert('登出錯誤');
+				    	 }
+				    },
+				    error: function (data, textStatus, errorThrown) {
+				        console.log(data);
+				    },
+				});
+		});
+	});
 });
 </script>

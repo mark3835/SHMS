@@ -2,7 +2,7 @@
  <Configuration status="INFO">
    <Appenders>
      <Console name="Console" target="SYSTEM_OUT">
-       <PatternLayout pattern="%-5level %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %logger{36} - %m%n"/>
+       <PatternLayout pattern="%-5level %d{yyyy-MM-dd HH:mm:ss.SSS} %class{36} %L %M - %m%n"/>
      </Console>
      
      <RollingFile  name="log" fileName="/logs/shms.log" 

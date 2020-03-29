@@ -148,7 +148,8 @@ public class LoginSessionFilter implements Filter{
         	//登入後還需驗證權限
         	if(!this.checkUrlHaveAuth(user, subUrl)) {
         		log.info("user:" + user);
-        		response.getWriter().write("<script>alert('no rule')</script>");
+        		response.setContentType("text/html; charset=utf-8"); 
+        		response.getWriter().write("<script>alert('沒有權限')</script>");
         		return;
         	};
         	

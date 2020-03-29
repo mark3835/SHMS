@@ -4,8 +4,8 @@
 	    <div id="jsGrid"></div>
 </div>
 
-<div id="detailsDialog">
-    <form id="detailsForm">
+<div id="tableDialog" >
+    <form id="dialogForm">
         <div class="details-form-field">
             <label for="cfgType">參數類型</label>
             <input id="cfgType" name="cfgType" type="text" />
@@ -23,47 +23,85 @@
             <input id="cfgValue" name="cfgValue" type="text" />
         </div>
         <div class="details-form-field">
-            <label for="cfgMemo">Is Married</label>
+            <label for="cfgMemo">參數註記</label>
             <textarea  id="cfgMemo" name="cfgMemo" ></textarea>
         </div>
         <div class="details-form-field">
-            <button type="submit" id="save">Save</button>
+            <label for="cfgInUse">參數是否停用</label>
+            <input id="cfgInUse_0" name="cfgInUse" type="radio" value="0"/>啟用
+            <input id="cfgInUse_1" name="cfgInUse" type="radio" value="1"/>停用
+        </div>
+        <div class="details-form-field">
+            <button type="submit" id="dialogFormSubmit">送出</button>
         </div>
     </form>
 </div>
 
-<script>
+<link rel="stylesheet" href="../resources/css/bootstrap.min.css">
+<link rel="stylesheet" href="../resources/css/jsgrid.min.css">
+<link rel="stylesheet" href="../resources/css/jsgrid-theme.min.css">
+<link rel="stylesheet" href="../resources/css/jquery-ui.min.css">
+<link rel="stylesheet" href="../resources/css/jquery-ui.theme.min.css">
+<style>
+	//讓TD裡面文字會換行
+	.jsgrid-table td{
+		word-wrap:break-word;
+	}
+	
+	//錯誤訊息style
+	input.error { border: 1px solid red; }
+	p.error {
+	  padding-left: 16px;
+	  padding-bottom: 2px;
+	  font-weight: bold;
+	  color: #EA5200;
+	}
+</style>
+<script src="../resources/js/require.js"></script>
+<script src="../resources/js/requireConfig.js"/></script>
 
+<script>
 //需要用的JS
-require(["jquery", "popper", "bootstrap", "jquery_validate"], function (jquery, popper, bootstrap) {
+require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, jquery_validate, jsgrid, jquery_ui ) {
 	//頁面讀取後執行
 	$(document).ready(function(){
-		
-		var dialog;
-	
+			
 		 $.ajax({
 			    url: "/"+CONFIG.SYSTEM_NAME + '/config/api/getConfig',
 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    async: false,
 			    type: "GET",
 			    success: function(data, textStatus){    
-			    	 if(data && data == "<script>alert('no rule')<\/script>"){
-			    		 alert('no rule');
+			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+			    		 alert("沒有權限");
 			    	 }else{
 			    	 	$("#jsGrid").jsGrid({
 			    	        width: "100%",
-			    	        height: "100%",
 			    	 
-			    	        heading: true,
-			    		    filtering: false,
-			    		    inserting: true,
-			    		    editing: true,
+			    	        heading: true, //是否显示表头
+			    		    filtering: false, //启动查找
+			    		    inserting: false, //启动新增  關掉使用自定義的
+			    		    editing: true,  //启动编辑 
 			    		    selecting: true,
-			    		    sorting: true,
-			    		    paging: false,
-			    		    pageLoading: false,
-			    	 
-			    	        data: data,
+			    		    sorting: true, //启动排序
+			    		    paging: true, //启动分页 
+			    		    pageLoading: false, //是否支持分页加载数据（相比较paging，这个属性是向服务器请求数据时要求分页，而paging是本地进行分页，无关服务器）
+			    		    autoload: true,
+			    		    
+			    		    controller: {
+			    		        loadData: function(filter) {
+			    		            return data;
+			    		        },
+			    		        insertItem: function(insertingClient) {
+			    		        	
+			    		        },
+			    		        updateItem: function(updatingClient) { 
+			    		        	
+			    		        },
+			    		        deleteItem: function(deletingClient) {
+			    		        	
+			    		        }
+			    		    },
 			    	 
 			    	        fields: [
 			    	            { title:"參數類型", name: "cfgType", type: "text", width: 100, validate: "required" },
@@ -72,11 +110,23 @@ require(["jquery", "popper", "bootstrap", "jquery_validate"], function (jquery, 
 			    	            { title:"參數值", name: "cfgValue", type: "text	", width: 200 },
 			    	            { title:"參數註記", name: "cfgMemo", type: "text	", width: 130 },
 			    	            { title:"參數是否停用", name: "cfgInUse", type: "text	", width: 50 },
-			    	            { type: "control" }
+			    	            { type: "control",
+			                        editButton: false,
+			                        modeSwitchButton: false,
+			                        headerTemplate: function() {
+			                            return $("<button>").attr("type", "button").text("新增")
+			                                .on("click", function () {
+			                                	showDetailsDialog("Add", {});
+			                                });
+			                        }
+			    	            }             
 			    	        ],
 				    	 	rowClick: function(args) {
-				                dialog.dialog("open");
-				            }
+				    	 		 showDetailsDialog("Edit", args.item);
+				            },
+			    		    deleteConfirm: function(item) {
+			                    return "參數\"" + item.cfgName + "\"確認刪除?";
+			                },
 			    	    });
 			    	 }
 			    },
@@ -86,17 +136,33 @@ require(["jquery", "popper", "bootstrap", "jquery_validate"], function (jquery, 
 			});
 	
 		 
-		 dialog = $("#detailsDialog").dialog({
+		 var tableDialog = $("#tableDialog").dialog({
 			 title: "參數設定",
 	         autoOpen: false,
-	         width: 400,
+	         width: 350,
 	         close: function() {
-	             $("#detailsForm").validate().resetForm();
-	             $("#detailsForm").find(".error").removeClass("error");
+	             $("#dialogForm").validate().resetForm();
+	             $("#dialogForm").find(".error").removeClass("error");
 	         }
 	     });
+		 
+		 var showDetailsDialog = function(dialogType, item) {
+             $("#cfgType").val(item.cfgType);
+             $("#cfgKey").val(item.cfgKey);
+             $("#cfgName").val(item.cfgName);
+             $("#cfgValue").val(item.cfgValue);
+             $("#cfgMemo").val(item.cfgMemo);
+             $("#cfgInUse").prop("checked", item.cfgInUse);
+
+             formSubmitHandler = function() {
+                 saveClient(item, dialogType === "Add");
+             };
+
+             $("#tableDialog").dialog("option", "title", dialogType + " Client")
+                 .dialog("open");
+         };
 	
-	     $("#detailsForm").validate({
+	     $("#dialogForm").validate({
 	    	 //錯誤訊息元素預設為label改成p會換行
 			 errorElement: "p",
 	         rules: {

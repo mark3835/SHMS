@@ -72,6 +72,19 @@ public class LoginAction{
                
         return jsonInString;
     }
+	
+	@RequestMapping(value="/login/loginOut", method=RequestMethod.GET)
+    public @ResponseBody String loginOut() {     
+		String result = "success";
+        try {
+        	request.getSession().removeAttribute(SystemConfig.SESSION_KEY.LOGIN);			
+		} catch (Exception e) {
+			result = "error";
+			log.error(e);
+			errorLogService.addErrorLog(this.getClass().getName(), e);
+		}
+        return result;
+    }
     
 	
 	@RequestMapping(value="/login/api/addUserAndUnitTest", method=RequestMethod.GET)

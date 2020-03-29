@@ -11,7 +11,7 @@
 		<div class="container-fluid">
 			<div class="row">
 				<div id="menuContent" src="/page/menu.html"></div>
-				<div  class="col-md-8 col-xl-9">
+				<div  class="col-md-9 col-xl-10">
 					<div id="bodyContent" src="/page/body.html"></div>	
 				</div>
 			</div>
@@ -40,11 +40,12 @@
 </style>
 <script src="../resources/js/require.js"></script>
 <script src="../resources/js/requireConfig.js"/></script>
+
 <script type="text/javascript">
 
 	var bodyHref;
 	//需要用的JS
-	require(["jquery", "popper", "bootstrap", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, popper, bootstrap) {
+	require(["jquery", "popper", "bootstrap", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, popper, bootstrap, jquery_validate, jsgrid, jquery_ui) {
 		$("#headerContent").load("/" + CONFIG.SYSTEM_NAME + $("#headerContent").attr("src")); 
 		$("#menuContent").load("/" +CONFIG.SYSTEM_NAME	 +$("#menuContent").attr("src")); 
 		$("#bodyContent").load("/" +CONFIG.SYSTEM_NAME +$("#bodyContent").attr("src")); 	

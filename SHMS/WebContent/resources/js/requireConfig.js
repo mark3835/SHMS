@@ -29,7 +29,7 @@ requirejs.config({
             deps: ['jquery']      
         },
         'jquery_ui': {
-            deps: ['jquery']      
+            deps: ['jquery','bootstrap']      
         }
     }
 });
