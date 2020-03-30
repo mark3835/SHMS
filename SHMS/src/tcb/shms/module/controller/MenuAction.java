@@ -5,9 +5,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,9 +14,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.gson.Gson;
 
 import tcb.shms.core.controller.GenericAction;
-import tcb.shms.module.config.SystemConfig;
 import tcb.shms.module.entity.Authorizastion;
 import tcb.shms.module.entity.Menu;
+import tcb.shms.module.entity.User;
 import tcb.shms.module.service.AuthorizastionService;
 import tcb.shms.module.service.ErrorLogService;
 import tcb.shms.module.service.MenuService;
@@ -40,16 +37,12 @@ public class MenuAction extends GenericAction<Menu> {
 	@Autowired
 	ErrorLogService  errorLogService;
 
-	@Autowired
-	HttpServletRequest request;
-
 	@RequestMapping(value = "/menu/getMenu", method = RequestMethod.GET)
 	public @ResponseBody String getMenu() {
 		String jsonInString = null;
 		try {
 			//@TODO 撈取使用者權限
-			String account = ObjectUtils
-					.identityToString(request.getSession().getAttribute(SystemConfig.SESSION_KEY.LOGIN));
+			User user = super.getSessionUser();
 			int accountAuthLv = 0;
 			Authorizastion authorizastion = new Authorizastion();
 			authorizastion.setAuthLv(accountAuthLv);

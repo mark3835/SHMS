@@ -31,9 +31,6 @@ public class AnnouncementAction extends GenericAction<Menu> {
 	@Autowired
 	ErrorLogService  errorLogService;
 
-	@Autowired
-	HttpServletRequest request;
-
 	@RequestMapping(value = "/announcement/getAnnouncement", method = RequestMethod.GET)
 	public @ResponseBody String getAnnouncement() {
 		String jsonInString = null;

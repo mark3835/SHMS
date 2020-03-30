@@ -3,8 +3,6 @@ package tcb.shms.core.controller;
 import java.sql.Timestamp;
 import java.util.HashMap;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,15 +18,17 @@ import com.google.gson.Gson;
 import tcb.shms.core.service.LdapService;
 import tcb.shms.module.config.SystemConfig;
 import tcb.shms.module.entity.LoginLog;
+import tcb.shms.module.entity.User;
 import tcb.shms.module.service.ErrorLogService;
 import tcb.shms.module.service.LoginLogService;
+import tcb.shms.module.service.UserService;
 
 /**
  *  @author MARK3835
  *
  */
 @Controller
-public class LoginAction{
+public class LoginAction extends GenericAction{
 	
 	private final Logger log = LogManager.getLogger(getClass());
 	
@@ -41,9 +41,9 @@ public class LoginAction{
 	@Autowired
 	ErrorLogService  errorLogService;
 	
-	@Autowired 
-	HttpServletRequest request;
-	
+	@Autowired
+	UserService  userService;
+		
 	@RequestMapping(value="/login", method=RequestMethod.POST)
     public @ResponseBody String login(@RequestBody String data) {     
 		String jsonInString = null;
@@ -54,7 +54,9 @@ public class LoginAction{
 			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);
 //        	result = ldapService.checkADAccount(MapUtils.getString(map, "account"), MapUtils.getString(map, "pasw"));        
         	
-        	request.getSession().setAttribute(SystemConfig.SESSION_KEY.LOGIN, MapUtils.getString(map, "account"));
+        	User loginUser = userService.getByAccount(MapUtils.getString(map, "account"));
+        	
+        	request.getSession().setAttribute(SystemConfig.SESSION_KEY.LOGIN, loginUser);
 			jsonInString = new Gson().toJson(result);
 			
 			if(result){

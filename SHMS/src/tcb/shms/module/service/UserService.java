@@ -27,10 +27,14 @@ public class UserService extends GenericService<User>{
 	}
 
 	public User getByRocid(String rocId) throws Exception {
-		Assert.notNull(rocId, "rocId不能為null");
-		
-		User entity = getDao().findByRocId(rocId);
-		
+		Assert.notNull(rocId, "rocId不能為null");		
+		User entity = getDao().findByRocId(rocId);		
+		return entity;
+	}
+	
+	public User getByAccount(String account) throws Exception {
+		Assert.notNull(account, "account不能為null");		
+		User entity = getDao().findByAccount(account);	
 		return entity;
 	}
 

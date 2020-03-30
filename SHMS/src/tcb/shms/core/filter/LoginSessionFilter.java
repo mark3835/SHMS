@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -26,6 +25,7 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
 import tcb.shms.module.config.SystemConfig;
 import tcb.shms.module.entity.Authorizastion;
 import tcb.shms.module.entity.Config;
+import tcb.shms.module.entity.User;
 import tcb.shms.module.service.AuthorizastionService;
 import tcb.shms.module.service.ConfigService;
 import tcb.shms.module.service.ErrorLogService;
@@ -136,7 +136,7 @@ public class LoginSessionFilter implements Filter{
         // 获得session
         HttpSession session = request.getSession();
         // 从session中获取SessionKey对应值,若值不存在,则重定向到redirectUrl
-        Object user = session.getAttribute(SystemConfig.SESSION_KEY.LOGIN);
+        User user = (User) session.getAttribute(SystemConfig.SESSION_KEY.LOGIN);
         log.info("user:" + user);
         if (user != null) {
         	//公告跟MENU只要登入就能看到 預設放行
@@ -167,10 +167,10 @@ public class LoginSessionFilter implements Filter{
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private boolean checkUrlHaveAuth(Object user, String subUrl){
+	private boolean checkUrlHaveAuth(User user, String subUrl){
 		try {
 			//@TODO 撈取使用者權限
-			String account = ObjectUtils.identityToString(user);
+			//get user auth
 			int accountAuthLv = 0;
 			Authorizastion authorizastion = new Authorizastion();
 			authorizastion.setAuthLv(accountAuthLv);

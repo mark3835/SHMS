@@ -93,13 +93,76 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		            return data;
 			    		        },
 			    		        insertItem: function(insertingClient) {
-			    		        	
+			    		        	alert("insert");
+			    		        	$.ajax({
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/config/api/addConfig',
+			    		 			    data: JSON.stringify(insertingClient),
+			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+			    		 			    async: false,
+			    		 			    type: "POST",
+			    		 			    success: function(data, textStatus){   
+			    		 			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+			    					    		 alert("沒有權限");
+			    					    	 }else{
+			    					    		 if(data.result == "success"){
+			    					    			 insertingClient.id = data.id;
+			    					    			 alert("新增成功");
+			    					    		 }else{
+			    					    			 alert("新增失敗");
+			    					    		 }
+			    					    	 }
+			    		 			    },
+			    		 			    error: function (data, textStatus, errorThrown) {
+			    		 			        console.log(data);
+			    		 			    },
+			    		 			});
 			    		        },
 			    		        updateItem: function(updatingClient) { 
-			    		        	
+			    		        	alert("update");
+			    		        	$.ajax({
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/config/api/updateConfig',
+			    		 			    data: JSON.stringify(updatingClient),
+			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+			    		 			    async: false,
+			    		 			    type: "POST",
+			    		 			    success: function(data, textStatus){   
+			    		 			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+			    					    		 alert("沒有權限");
+			    					    	 }else{
+			    					    		 if(data.result == "success"){
+			    					    			 alert("更新成功");
+			    					    		 }else{
+			    					    			 alert("更新失敗");
+			    					    		 }
+			    					    	 }
+			    		 			    },
+			    		 			    error: function (data, textStatus, errorThrown) {
+			    		 			        console.log(data);
+			    		 			    },
+			    		 			});
 			    		        },
 			    		        deleteItem: function(deletingClient) {
-			    		        	
+			    		        	 $.ajax({
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/config/api/deleteConfig',
+			    		 			    data: '{"ID":' + deletingClient.id + '}',
+			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+			    		 			    async: false,
+			    		 			    type: "POST",
+			    		 			    success: function(data, textStatus){   
+			    		 			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+			    					    		 alert("沒有權限");
+			    					    	 }else{
+			    					    		 if(data.result == "success"){
+			    					    			 alert("刪除成功");
+			    					    		 }else{
+			    					    			 alert("刪除失敗");
+			    					    		 }
+			    					    	 }
+			    		 			    },
+			    		 			    error: function (data, textStatus, errorThrown) {
+			    		 			        console.log(data);
+			    		 			    },
+			    		 			});
 			    		        }
 			    		    },
 			    	 
@@ -151,11 +214,11 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
              $("#cfgKey").val(item.cfgKey);
              $("#cfgName").val(item.cfgName);
              $("#cfgValue").val(item.cfgValue);
-             $("#cfgMemo").val(item.cfgMemo);
-             $("#cfgInUse").prop("checked", item.cfgInUse);
-
+             $("#cfgMemo").val(item.cfgMemo);             
+             $("input[name*='cfgInUse'][value='" + item.cfgInUse + "']").prop("checked", true);
+			 alert("showDetailsDialog:" + dialogType);
              formSubmitHandler = function() {
-                 saveClient(item, dialogType === "Add");
+            	 saveItem(item, dialogType === "Add");
              };
 
              $("#tableDialog").dialog("option", "title", dialogType + " Client")
@@ -166,23 +229,54 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 	    	 //錯誤訊息元素預設為label改成p會換行
 			 errorElement: "p",
 	         rules: {
-	             name: "required",
-	             age: { required: true, range: [18, 150] },
-	             address: { required: true, minlength: 10 },
-	             country: "required"
+	        	 cfgType: { required: true, rangelength: [2, 20] },
+	        	 cfgKey: { required: true, rangelength: [4, 30] },
+	        	 cfgName: { required: true, rangelength: [2, 30] },
+	        	 cfgValue: { required: true, rangelength: [2, 30] },
+	        	 cfgInUse: { required: true }
 	         },
 	         messages: {
-	             name: "Please enter name",
-	             age: "Please enter valid age",
-	             address: "Please enter address (more than 10 chars)",
-	             country: "Please select country"
+	        	 	cfgType:{
+			          required: "請輸入參數類型",
+			          rangelength: "密碼長度不得小於2個字母大於20個字母"
+			        },
+			     	cfgKey:{
+			          required: "請輸入參數key",
+			          rangelength: "參數key不得小於4個字母大於30個字母"
+			        },
+			     	cfgName:{
+			          required: "請輸入參數名稱",
+			          rangelength: "參數名稱不得小於4個字母大於30個字母"
+			        },
+			     	cfgValue:{
+			          required: "請輸入參數值",
+			          rangelength: "參數值不得小於4個字母大於30個字母"
+			        },
+			        cfgInUse:{
+			          required: "請選擇是否啟用"
+			        }
 	         },
 	         submitHandler: function() {
 	             formSubmitHandler();
 	         }
 	     });
+	     
+	     var saveItem = function(item, isNew) {
+             $.extend(item, {
+            	 cfgType: $("#cfgType").val(),
+            	 cfgKey: $("#cfgType").val(),
+            	 cfgName: $("#cfgName").val(),
+            	 cfgValue: $("#cfgValue").val(),
+            	 cfgMemo: $("#cfgMemo").val(),
+            	 cfgInUse: $('input[name*=cfgInUse]:checked').val()
+             });
+             alert("saveItem:" + isNew);
+             $("#jsGrid").jsGrid(isNew ? "insertItem" : "updateItem", item);
+
+             $("#tableDialog").dialog("close");
+         };
 	
-	
+         var formSubmitHandler = $.noop;
 	
 	    
 	});

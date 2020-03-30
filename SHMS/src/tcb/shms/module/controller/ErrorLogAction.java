@@ -2,8 +2,6 @@ package tcb.shms.module.controller;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,9 +23,6 @@ public class ErrorLogAction extends GenericAction<ErrorLog> {
 
 	@Autowired
 	ErrorLogService  errorLogService;
-
-	@Autowired
-	HttpServletRequest request;
 
 	@RequestMapping(value = "/errorLog/getErrorLog", method = RequestMethod.GET)
 	public @ResponseBody String getAnnouncement() {
