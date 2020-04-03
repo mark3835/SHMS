@@ -72,6 +72,24 @@ public class User extends GenericEntity{
 	private String email;
 	
 	/**
+	 * BIRTHDAY
+	 */
+	@Column(name="BIRTHDAY")
+	private String birthday;
+	
+	/**
+	 * PAGER
+	 */
+	@Column(name="PAGER")
+	private String pager;
+	
+	/**
+	 * TEL
+	 */
+	@Column(name="TEL")
+	private String tel;
+	
+	/**
 	 * 是否離職 0在職 1離職
 	 */
 	@Column(name="IS_LEAVE")
@@ -151,6 +169,30 @@ public class User extends GenericEntity{
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getBirthday() {
+		return birthday;
+	}
+
+	public void setBirthday(String birthday) {
+		this.birthday = birthday;
+	}
+
+	public String getPager() {
+		return pager;
+	}
+
+	public void setPager(String pager) {
+		this.pager = pager;
+	}
+
+	public String getTel() {
+		return tel;
+	}
+
+	public void setTel(String tel) {
+		this.tel = tel;
 	}
 	
 	

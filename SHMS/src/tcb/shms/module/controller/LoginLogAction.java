@@ -12,7 +12,6 @@ import com.google.gson.Gson;
 
 import tcb.shms.core.controller.GenericAction;
 import tcb.shms.module.entity.LoginLog;
-import tcb.shms.module.service.ErrorLogService;
 import tcb.shms.module.service.LoginLogService;
 
 /**
@@ -25,10 +24,7 @@ public class LoginLogAction extends GenericAction<LoginLog> {
 	@Autowired
 	LoginLogService loginLogService;
 	
-	@Autowired
-	ErrorLogService  errorLogService;
-
-	@RequestMapping(value = "/loginLog/getLoginLog", method = RequestMethod.GET)
+	@RequestMapping(value = "/loginLog/api/getLoginLog", method = RequestMethod.GET)
 	public @ResponseBody String getAnnouncement() {
 		String jsonInString = null;
 		try {

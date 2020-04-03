@@ -2,7 +2,9 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<link rel="icon" href="/SHMS/resources/image/tcb.jpeg" type="image/x-icon" / >
+
+<title>職業安全衛生管理系統</title>
 </head>
 	<body>		
 		<div>		
@@ -51,6 +53,8 @@
 		$("#bodyContent").load("/" +CONFIG.SYSTEM_NAME +$("#bodyContent").attr("src")); 	
 		
 		bodyHref = function(page){
+			//dialong換頁前移除 不然會重複生長
+			$('.ui-dialog').empty().remove();
 			$("#bodyContent").load("/" +CONFIG.SYSTEM_NAME + page); 	
 		}
 	});

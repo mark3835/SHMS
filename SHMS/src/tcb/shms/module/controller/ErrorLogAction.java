@@ -21,10 +21,7 @@ import tcb.shms.module.service.ErrorLogService;
 @Controller
 public class ErrorLogAction extends GenericAction<ErrorLog> {
 
-	@Autowired
-	ErrorLogService  errorLogService;
-
-	@RequestMapping(value = "/errorLog/getErrorLog", method = RequestMethod.GET)
+	@RequestMapping(value = "/errorLog/api/getErrorLog", method = RequestMethod.GET)
 	public @ResponseBody String getAnnouncement() {
 		String jsonInString = null;
 		try {

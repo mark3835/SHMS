@@ -1,0 +1,235 @@
+<div>
+	<h4>menu設定</h4>
+	
+	    <div id="jsGrid"></div>
+</div>
+
+<div id="tableDialog" style="display:none">
+    <form id="dialogForm">
+        <div class="details-form-field">
+            <label for="menuName">menu名稱</label>
+            <input id="menuName" name="menuName" type="text" />
+        </div>
+        <div class="details-form-field">
+            <label for="menuUrl">menu連結</label>
+            <input id="menuUrl" name="menuUrl" type="text" />
+        </div>
+        <div class="details-form-field">
+            <label for="menuTierTwo">menu第二層(放第一層MENU的ID)</label>
+            <input id="menuTierTwo" name="menuTierTwo" type="text" />
+        </div>
+        <div class="details-form-field">
+            <label for="menuOrder">menu排序</label>
+            <input id="menuOrder" name="menuOrder" type="text" />
+        </div>
+        <div class="details-form-field">
+            <label for="menuApiUrl">menuApiUrl權限用的連結</label>
+            <input  id="menuApiUrl" name="menuApiUrl"  type="text"/>
+        </div>
+        <div class="details-form-field">
+            <button type="submit" id="dialogFormSubmit">送出</button>
+        </div>
+    </form>
+</div>
+
+<script>
+//需要用的JS
+require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, jquery_validate, jsgrid, jquery_ui ) {
+	//頁面讀取後執行
+	$(document).ready(function(){
+			
+		 $.ajax({
+			    url: "/"+CONFIG.SYSTEM_NAME + '/menu/api/getMenu',
+			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+			    async: false,
+			    type: "GET",
+			    success: function(data, textStatus){    
+			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+			    		 alert("沒有權限");
+			    	 }else{
+			    	 	$("#jsGrid").jsGrid({
+			    	        width: "100%",
+			    	 
+			    	        heading: true, //是否显示表头
+			    		    filtering: false, //启动查找
+			    		    inserting: false, //启动新增  關掉使用自定義的
+			    		    editing: true,  //启动编辑 
+			    		    selecting: true,
+			    		    sorting: true, //启动排序
+			    		    paging: true, //启动分页 
+			    		    pageLoading: false, //是否支持分页加载数据（相比较paging，这个属性是向服务器请求数据时要求分页，而paging是本地进行分页，无关服务器）
+			    		    autoload: true,
+			    		    pageSize: 10,
+			    		    
+			    		    controller: {
+			    		        loadData: function(filter) {
+			    		            return data;
+			    		        },
+			    		        insertItem: function(insertingItem) {
+			    		        	$.ajax({
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/menu/api/addMenu',
+			    		 			    data: JSON.stringify(insertingItem),
+			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+			    		 			    async: false,
+			    		 			    type: "POST",
+			    		 			    success: function(data, textStatus){   
+			    		 			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+			    					    		 alert("沒有權限");
+			    					    	 }else{
+			    					    		 if(data.result == "success"){
+			    					    			 insertingItem.id = data.id;
+			    					    			 alert("新增成功");
+			    					    		 }else{
+			    					    			 alert("新增失敗");
+			    					    		 }
+			    					    	 }
+			    		 			    },
+			    		 			    error: function (data, textStatus, errorThrown) {
+			    		 			        console.log(data);
+			    		 			    },
+			    		 			});
+			    		        },
+			    		        updateItem: function(updatingItem) { 
+			    		        	$.ajax({
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/menu/api/updateMenu',
+			    		 			    data: JSON.stringify(updatingItem),
+			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+			    		 			    async: false,
+			    		 			    type: "POST",
+			    		 			    success: function(data, textStatus){   
+			    		 			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+			    					    		 alert("沒有權限");
+			    					    	 }else{
+			    					    		 if(data.result == "success"){
+			    					    			 alert("更新成功");
+			    					    		 }else{
+			    					    			 alert("更新失敗");
+			    					    		 }
+			    					    	 }
+			    		 			    },
+			    		 			    error: function (data, textStatus, errorThrown) {
+			    		 			        console.log(data);
+			    		 			    },
+			    		 			});
+			    		        },
+			    		        deleteItem: function(deletingItem) {
+			    		        	 $.ajax({
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/menu/api/deleteMenu',
+			    		 			    data: '{"ID":' + deletingItem.id + '}',
+			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+			    		 			    async: false,
+			    		 			    type: "POST",
+			    		 			    success: function(data, textStatus){   
+			    		 			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+			    					    		 alert("沒有權限");
+			    					    	 }else{
+			    					    		 if(data.result == "success"){
+			    					    			 alert("刪除成功");
+			    					    		 }else{
+			    					    			 alert("刪除失敗");
+			    					    		 }
+			    					    	 }
+			    		 			    },
+			    		 			    error: function (data, textStatus, errorThrown) {
+			    		 			        console.log(data);
+			    		 			    },
+			    		 			});
+			    		        }
+			    		    },
+			    	 
+			    	        fields: [
+			    	            { title:"menu名稱", name: "menuName", type: "text", width: 150},
+			    	            { title:"menu連結", name: "menuUrl", type: "text	", width: 200 },
+			    	            { title:"menu第二層", name: "menuTierTwo", type: "text	", width: 80 },
+			    	            { title:"menu排序", name: "menuOrder", type: "text	", width: 80 },
+			    	            { title:"menuApiUrl權限用的連結", name: "menuApiUrl", type: "text	", width: 150 },
+			    	            { type: "control",
+			                        editButton: false,
+			                        modeSwitchButton: false,
+			                        headerTemplate: function() {
+			                            return $("<button>").attr("type", "button").text("新增")
+			                                .on("click", function () {
+			                                	showDetailsDialog("Add", {});
+			                                });
+			                        }
+			    	            }             
+			    	        ],
+				    	 	rowClick: function(args) {
+				    	 		 showDetailsDialog("Edit", args.item);
+				            },
+			    		    deleteConfirm: function(item) {
+			                    return "參數\"" + item.menuName + "\"確認刪除?";
+			                },
+			    	    });
+			    	 }
+			    },
+			    error: function (data, textStatus, errorThrown) {
+			        console.log(data);
+			    },
+			});
+	
+		 $("#tableDialog").dialog({
+			 title: "參數設定",
+	         autoOpen: false,
+	         width: 350,
+	         close: function() {
+	             $("#dialogForm").validate().resetForm();
+	             $("#dialogForm").find(".error").removeClass("error");
+	         }
+	     });
+		 
+		 var formSubmitHandler = $.noop;
+		 
+		 var showDetailsDialog = function(dialogType, item) {
+             $("#menuName").val(item.menuName);
+             $("#menuUrl").val(item.menuUrl);
+             $("#menuTierTwo").val(item.menuTierTwo);
+             $("#menuOrder").val(item.menuOrder);
+             $("#menuApiUrl").val(item.menuApiUrl);
+             formSubmitHandler = function() {
+            	 saveItem(item, dialogType === "Add");
+             };
+
+             $("#tableDialog").dialog("option", "title", dialogType + " menu").dialog("open");
+         };
+	
+	     $("#dialogForm").validate({
+	    	 //錯誤訊息元素預設為label改成p會換行
+			 errorElement: "p",
+	         rules: {
+	        	 menuName: { required: true, rangelength: [2, 30] },
+	        	 menuOrder: { required: true, range: [0, 999] }
+	         },
+	         messages: {
+	        	 	menuName:{
+			          required: "請輸入menu名稱",
+			          rangelength: "長度不得小於2個字母大於20個字母"
+			        },
+			        menuOrder:{
+			          required: "請輸入menu排序",
+			          rangelength: "不得小於0大於999"
+			        }
+	         },
+	         submitHandler: function() {
+	             formSubmitHandler();
+	         }
+	     });
+	     
+	     var saveItem = function(item, isNew) {
+             $.extend(item, {
+            	 menuName: $("#menuName").val(),
+            	 menuUrl: $("#menuUrl").val(),
+            	 menuTierTwo: $("#menuTierTwo").val(),
+            	 menuOrder: $("#menuOrder").val(),
+            	 menuApiUrl: $("#menuApiUrl").val()
+             });
+             
+             $("#jsGrid").jsGrid(isNew ? "insertItem" : "updateItem", item);
+
+             $("#tableDialog").dialog("close");
+         };
+	
+	    
+	});
+});
+</script>

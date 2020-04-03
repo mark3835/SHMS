@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import tcb.shms.core.entity.GenericEntity;
 import tcb.shms.module.config.SystemConfig;
 import tcb.shms.module.entity.User;
+import tcb.shms.module.service.ErrorLogService;
 
 /**
  * GenericAction
@@ -21,6 +22,9 @@ public abstract class GenericAction<T extends GenericEntity> implements Action<T
 	
 	@Autowired
 	protected HttpServletRequest request;
+	
+	@Autowired
+	protected ErrorLogService  errorLogService;
 	
 	public User getSessionUser() {
 		return (User) request.getSession().getAttribute(SystemConfig.SESSION_KEY.LOGIN);	

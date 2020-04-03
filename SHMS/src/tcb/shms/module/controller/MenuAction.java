@@ -2,11 +2,14 @@ package tcb.shms.module.controller;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -18,7 +21,6 @@ import tcb.shms.module.entity.Authorizastion;
 import tcb.shms.module.entity.Menu;
 import tcb.shms.module.entity.User;
 import tcb.shms.module.service.AuthorizastionService;
-import tcb.shms.module.service.ErrorLogService;
 import tcb.shms.module.service.MenuService;
 
 /**
@@ -33,9 +35,6 @@ public class MenuAction extends GenericAction<Menu> {
 
 	@Autowired
 	AuthorizastionService authorizastionService;
-	
-	@Autowired
-	ErrorLogService  errorLogService;
 
 	@RequestMapping(value = "/menu/getMenu", method = RequestMethod.GET)
 	public @ResponseBody String getMenu() {
@@ -77,6 +76,80 @@ public class MenuAction extends GenericAction<Menu> {
 		}
 
 		return jsonInString;
+	}
+	
+	@RequestMapping(value = "/menu/api/getMenu", method = RequestMethod.GET)
+	public @ResponseBody String getAnnouncement() {
+		String jsonInString = null;
+		try {
+			List<Menu> menuList = menuService.getList(new Menu());
+			jsonInString = new Gson().toJson(menuList);
+		} catch (Exception e) {
+			log.error(e);
+			errorLogService.addErrorLog(this.getClass().getName(), e);
+		}
+
+		return jsonInString;
+	}
+	
+	@RequestMapping(value = "/menu/api/addMenu", method = RequestMethod.POST)
+	public @ResponseBody String addMenu(@RequestBody String data) {
+		HashMap<String,String> resultMap = new HashMap<String, String>();
+		try {			
+			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);			
+			Menu menu = new Menu();
+			menu.setMenuName(MapUtils.getString(map, "menuName"));
+			menu.setMenuUrl(MapUtils.getString(map, "menuUrl"));
+			menu.setMenuTierTwo(MapUtils.getLong(map, "menuTierTwo"));
+			menu.setMenuOrder(MapUtils.getInteger(map, "menuOrder"));
+			menu.setMenuApiUrl(MapUtils.getString(map, "menuApiUrl"));
+			menu = menuService.save(menu);
+			resultMap.put("result", "success");
+			resultMap.put("id", menu.getId().toString());					
+		} catch (Exception e) {
+			log.error(e);
+			errorLogService.addErrorLog(this.getClass().getName(), e);
+			resultMap.put("result", "error");		
+		}
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/menu/api/updateMenu", method = RequestMethod.POST)
+	public @ResponseBody String updateMenu(@RequestBody String data) {
+		HashMap<String,String> resultMap = new HashMap<String, String>();
+		try {
+			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);			
+			Menu menu = menuService.getById(MapUtils.getLong(map, "id"));
+			menu.setMenuName(MapUtils.getString(map, "menuName"));
+			menu.setMenuUrl(MapUtils.getString(map, "menuUrl"));
+			menu.setMenuTierTwo(MapUtils.getLong(map, "menuTierTwo"));
+			menu.setMenuOrder(MapUtils.getInteger(map, "menuOrder"));
+			menu.setMenuApiUrl(MapUtils.getString(map, "menuApiUrl"));
+			menuService.update(menu);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			log.error(e);
+			errorLogService.addErrorLog(this.getClass().getName(), e);
+			resultMap.put("result", "error");	
+		}
+
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/menu/api/deleteMenu", method = RequestMethod.POST)
+	public @ResponseBody String deleteConfig(@RequestBody String data) {
+		HashMap<String,String> resultMap = new HashMap<String, String>();
+		try {
+			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);	
+			menuService.deleteById(MapUtils.getLong(map, "ID"));
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			log.error(e);
+			errorLogService.addErrorLog(this.getClass().getName(), e);
+			resultMap.put("result", "error");	
+		}
+
+		return new Gson().toJson(resultMap);
 	}
 
 }

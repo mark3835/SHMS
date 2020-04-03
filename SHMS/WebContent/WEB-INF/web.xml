@@ -23,7 +23,7 @@
         <filter-class>tcb.shms.core.filter.LoginSessionFilter</filter-class>
         <init-param>
             <param-name>passURL</param-name>
-            <param-value>login,login.do,login.jsp,js,css,image,page/login.html
+            <param-value>js,jpg,jpeg,css,img,png,page/login.html,loginCheck
             </param-value>
         </init-param>
         <init-param>

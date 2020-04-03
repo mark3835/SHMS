@@ -19,7 +19,6 @@ import tcb.shms.core.service.LdapService;
 import tcb.shms.module.config.SystemConfig;
 import tcb.shms.module.entity.LoginLog;
 import tcb.shms.module.entity.User;
-import tcb.shms.module.service.ErrorLogService;
 import tcb.shms.module.service.LoginLogService;
 import tcb.shms.module.service.UserService;
 
@@ -37,14 +36,11 @@ public class LoginAction extends GenericAction{
 	
 	@Autowired
 	LoginLogService  loginLogService;
-	
-	@Autowired
-	ErrorLogService  errorLogService;
-	
+		
 	@Autowired
 	UserService  userService;
 		
-	@RequestMapping(value="/login", method=RequestMethod.POST)
+	@RequestMapping(value="/loginCheck", method=RequestMethod.POST)
     public @ResponseBody String login(@RequestBody String data) {     
 		String jsonInString = null;
 		boolean result = true;

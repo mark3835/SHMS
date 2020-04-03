@@ -55,7 +55,11 @@ public class LdapService {
 			"title",
 			"rocid",
 			"info",
-			"ou"
+			"ou",
+			"birthday",
+			"memberOf",
+			"telephoneNumber",
+			"pager"
 	};
 		
 	public boolean checkADAccount(String account, String password){
@@ -189,6 +193,15 @@ public class LdapService {
 				}
 				if(attrs.get("mail") != null && attrs.get("mail").get() != null) {
 					user.setEmail(String.valueOf(attrs.get("mail").get()));
+				}
+				if(attrs.get("birthday") != null && attrs.get("birthday").get() != null) {
+					user.setBirthday(String.valueOf(attrs.get("birthday").get()));
+				}
+				if(attrs.get("pager") != null && attrs.get("pager").get() != null) {
+					user.setPager(String.valueOf(attrs.get("pager").get()));
+				}
+				if(attrs.get("telephoneNumber") != null && attrs.get("telephoneNumber").get() != null) {
+					user.setTel(String.valueOf(attrs.get("telephoneNumber").get()));
 				}
 				user.setIsLeave(0);
 				

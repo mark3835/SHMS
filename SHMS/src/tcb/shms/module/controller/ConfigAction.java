@@ -30,9 +30,6 @@ public class ConfigAction extends GenericAction<Config> {
 	@Autowired
 	ConfigService configService;
 
-	@Autowired
-	ErrorLogService  errorLogService;
-
 	@RequestMapping(value = "/config/api/getConfig", method = RequestMethod.GET)
 	public @ResponseBody String getConfig() {
 		String jsonInString = null;
@@ -59,6 +56,7 @@ public class ConfigAction extends GenericAction<Config> {
 			config.setCfgType(MapUtils.getString(map, "cfgType"));
 			config.setCfgValue(MapUtils.getString(map, "cfgValue"));
 			config.setCfgMemo(MapUtils.getString(map, "cfgMemo"));
+			config.setCfgInUse(MapUtils.getInteger(map, "cfgInUse"));
 			User user = getSessionUser();
 			config.setCreateId(user.getRocId());
 			config.setCreateTime(new Timestamp(System.currentTimeMillis()));
@@ -78,8 +76,7 @@ public class ConfigAction extends GenericAction<Config> {
 		HashMap<String,String> resultMap = new HashMap<String, String>();
 		try {
 			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);			
-			Config config = new Config();
-			config.setId(MapUtils.getLong(map, "ID"));
+			Config config = configService.getById(MapUtils.getLong(map, "id"));
 			config.setCfgName(MapUtils.getString(map, "cfgName"));
 			config.setCfgKey(MapUtils.getString(map, "cfgKey"));
 			config.setCfgType(MapUtils.getString(map, "cfgType"));

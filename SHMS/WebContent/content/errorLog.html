@@ -1,40 +1,55 @@
 <div>
-	<h4>錯誤訊息</h4>
+	<h4>錯誤LOG</h4>
 	
-	<table id="table_id" class="display">
-	    <thead>
-	        <tr>
-	            <th>class</th>
-	            <th>錯誤訊息</th>
-	            <th>發生時間</th>
-	        </tr>
-	    </thead>
-	    <tbody>
-	    </tbody>
-	</table>
+	<div id="jsGrid" >
+	</div>
 </div>
 
 <script>
-$(document).ready( function () {
-	
-    $.ajax({
-	    url: "/"+CONFIG.SYSTEM_NAME + '/errorLog/getErrorLog',
-	    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
-	    async: false,
-	    type: "GET",
-	    success: function(data, textStatus){
-	    	 $('#table_id').DataTable({
-	    		 data: data,
-	    	        columns: [
-	    	            { data: 'errorClass' },
-	    	            { data: 'errorMsg' },
-	    	            { data: 'errorTime' }
-	    	    ]});
-	    },
-	    error: function (data, textStatus, errorThrown) {
-	        console.log(data);
-	    },
-	});
+//需要用的JS
+require(["jquery", "jsgrid"], function (jquery, jsgrid) {
+	//頁面讀取後執行
+	$(document).ready(function(){
+	    $.ajax({
+		    url: "/"+CONFIG.SYSTEM_NAME + '/loginLog/api/getLoginLog',
+		    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+		    async: false,
+		    type: "GET",
+		    success: function(data, textStatus){    	
+		    	
+		    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+		    		 alert("沒有權限");
+		    	 }else{
+		    	 
+			    	 $("#jsGrid").jsGrid({
+		    	        width: "100%",
+		    	        height: "100%",
+		    	 
+		    	        heading: true,
+		    		    filtering: false,
+		    		    inserting: false,
+		    		    editing: false,
+		    		    selecting: true,
+		    		    sorting: true,
+		    		    paging: false,
+		    		    pageLoading: false,
+		    	 
+		    	        data: data,
+		    	 
+		    	        fields: [
+		    	        	{ title:"錯誤class", name: "errorClass", type: "text", width: 50 },
+		    	            { title:"錯誤訊息", name: "errorMsg", type: "text", width: 150 },
+		    	            { title:"發生時間", name: "errorTime", type: "text	", width: 50 }
+		    	        ]
+		    	    });
+		    	 }
+		    	 
+		    },
+		    error: function (data, textStatus, errorThrown) {
+		        console.log(data);
+		    },
+		});
     
+	});  
 });
 </script>

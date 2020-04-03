@@ -83,7 +83,7 @@ p.error {
 				  submitHandler: function(form) 
 				   {      
 					  $.ajax({
-						    url: "/"+CONFIG.SYSTEM_NAME + "/login",
+						    url: "/"+CONFIG.SYSTEM_NAME + "/loginCheck",
 						    data: '{"account":' + $("#account").val() + ',"pasw":' + $("#passw").val() + '}', //要用雙引號!!
 						    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 						    async: false,
