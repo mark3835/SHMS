@@ -1,13 +1,10 @@
 package tcb.shms.module.controller;
 
-import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,9 +17,7 @@ import com.google.gson.Gson;
 import tcb.shms.core.controller.GenericAction;
 import tcb.shms.module.entity.Announcement;
 import tcb.shms.module.entity.Menu;
-import tcb.shms.module.entity.User;
 import tcb.shms.module.service.AnnouncementService;
-import tcb.shms.module.service.ErrorLogService;
 
 /**
  * @author MARK3835
@@ -33,6 +28,8 @@ public class AnnouncementAction extends GenericAction<Menu> {
 
 	@Autowired
 	AnnouncementService announcementService;
+	
+	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
 	@RequestMapping(value = "/announcement/getAnnouncement", method = RequestMethod.GET)
 	public @ResponseBody String getAnnouncement() {
@@ -54,15 +51,11 @@ public class AnnouncementAction extends GenericAction<Menu> {
 		try {			
 			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);			
 			Announcement announcement = new Announcement();
-			announcement.setAnnouncementDate(new DateUtils().parseDate((MapUtils.getString(map, "announcementDate")));
+			announcement.setAnnouncementDate(format.parse(MapUtils.getString(map, "announcementDate")));
 			announcement.setAnnouncementName(MapUtils.getString(map, "announcementName"));
-			user.setAccount(MapUtils.getString(map, "account"));
-			user.setUnitId(MapUtils.getString(map, "unitId"));
-			user.setJobName(MapUtils.getString(map, "jobName"));
-			user.setJobLevel(MapUtils.getInteger(map, "JobLevel"));
-			user = announcementService.save(user);
+			announcement = announcementService.save(announcement);
 			resultMap.put("result", "success");
-			resultMap.put("id", user.getId().toString());					
+			resultMap.put("id", announcement.getId().toString());					
 		} catch (Exception e) {
 			log.error(e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
@@ -76,17 +69,10 @@ public class AnnouncementAction extends GenericAction<Menu> {
 		HashMap<String,String> resultMap = new HashMap<String, String>();
 		try {
 			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);			
-			User user = announcementService.getById(MapUtils.getLong(map, "id"));
-			user.setRocId(MapUtils.getString(map, "rocId"));
-			user.setName(MapUtils.getString(map, "name"));
-			user.setAccount(MapUtils.getString(map, "account"));
-			user.setUnitId(MapUtils.getString(map, "unitId"));
-			user.setJobName(MapUtils.getString(map, "jobName"));
-			user.setJobLevel(MapUtils.getInteger(map, "jobLevel"));
-			user.setPhone(MapUtils.getString(map, "phone"));
-			user.setEmail(MapUtils.getString(map, "email"));
-			user.setBirthday(MapUtils.getString(map, "birthday"));
-			userService.update(user);
+			Announcement announcement = announcementService.getById(MapUtils.getLong(map, "id"));
+			announcement.setAnnouncementDate(format.parse(MapUtils.getString(map, "announcementDate")));
+			announcement.setAnnouncementName(MapUtils.getString(map, "announcementName"));
+			announcementService.update(announcement);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			log.error(e);
