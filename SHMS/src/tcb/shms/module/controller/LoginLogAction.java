@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import tcb.shms.core.controller.GenericAction;
 import tcb.shms.module.entity.LoginLog;
@@ -29,7 +29,7 @@ public class LoginLogAction extends GenericAction<LoginLog> {
 		String jsonInString = null;
 		try {
 			List<LoginLog> logingLogList = loginLogService.getList(new LoginLog());
-			jsonInString = new Gson().toJson(logingLogList);
+			jsonInString = new GsonBuilder().setDateFormat("yyyy/MM/dd HH:mm:ss").create().toJson(logingLogList);
 		} catch (Exception e) {
 			log.error(e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);

@@ -5,19 +5,20 @@
 </div>
 
 <div id="tableDialog" style="display:none">
-    <form id="dialogForm">
+    <form id="dialogForm"  enctype="multipart/form-data">
         <div class="details-form-field">
             <label for="announcementDate">發佈日期</label>
-            <input id="announcementDate" name="announcementDate" type="text" />
+            <input id="announcementDate" name="announcementDate" type="text" readonly="readonly" />
         </div>
         <div class="details-form-field">
             <label for="announcementName">公告標題</label>
-            <input id="announcementName" name="announcementName" type="text" />
+            <textarea  id="announcementName" name="announcementName"  rows="5" cols="60"></textarea>
         </div>
         <div class="details-form-field">
-            <label for="announcementFile">上傳檔案</label>
-            <input id="announcementFile" name="announcementFile" type="file" />
+            <label for="announcementFile">上傳附件(限定pdf)</label>
+            <input id="announcementFile" name="announcementFile" type="file" accept="application/pdf"/>
         </div>
+        <input type="hidden" id="id" name="id">
         <div class="details-form-field">
             <button type="submit" id="dialogFormSubmit">送出</button>
         </div>
@@ -29,9 +30,16 @@
 require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, jquery_validate, jsgrid, jquery_ui ) {
 	//頁面讀取後執行
 	$(document).ready(function(){
+		
+		$.validator.addMethod('filesize', function(value, element, param) {
+            // param = size (en bytes) 
+            // element = element to validate (<input>)
+            // value = value of the element (file name)
+            return this.optional(element) || (element.files[0].size <= param) 
+        });
 			
 		 $.ajax({
-			    url: "/"+CONFIG.SYSTEM_NAME + '/announcement/api/getannouncement',
+			    url: "/"+CONFIG.SYSTEM_NAME + '/announcement/api/getAnnouncement',
 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    async: false,
 			    type: "GET",
@@ -58,10 +66,14 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		            return data;
 			    		        },
 			    		        insertItem: function(insertingItem) {
+			    		        	
+			    		        	var formData = new FormData($('#dialogForm')[0]);
+			    		        	
 			    		        	$.ajax({
-			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/announcement/api/addannouncement',
-			    		 			    data: JSON.stringify(insertingItem),
-			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/announcement/api/addAnnouncement',
+			    		 			    data: formData,
+			    		 			    processData: false,  // tell jQuery not to process the data
+			    		 		        contentType: false,  // tell jQuery not to set contentType
 			    		 			    async: false,
 			    		 			    type: "POST",
 			    		 			    success: function(data, textStatus){   
@@ -83,7 +95,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		        },
 			    		        updateItem: function(updatingItem) { 
 			    		        	$.ajax({
-			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/announcement/api/updateannouncement',
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/announcement/api/updateAnnouncement',
 			    		 			    data: JSON.stringify(updatingItem),
 			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    		 			    async: false,
@@ -106,7 +118,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		        },
 			    		        deleteItem: function(deletingItem) {
 			    		        	 $.ajax({
-			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/announcement/api/deleteannouncement',
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/announcement/api/deleteAnnouncement',
 			    		 			    data: '{"ID":' + deletingItem.id + '}',
 			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    		 			    async: false,
@@ -130,14 +142,8 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		    },
 			    	 
 			    	        fields: [
-			    	        	{ title:"發佈時間", name: "announcementDate", type: "text", width: 100, validate: "required" },
-			    	            { title:"公告標題", name: "announcementName", type: "text	", width: 150 }
-			    	            { title:"檔案名稱", name: "fileName", type: "text", width: 150},
-			    	            { title:"檔案目錄", name: "filePath", type: "text	", width: 200 },
-			    	            { title:"建立者", name: "createId", type: "text	", width: 80 },
-			    	            { title:"建立時間", name: "createTime", type: "text	", width: 100 },
-			    	            { title:"修改者", name: "editId", type: "text	", width: 80 },
-			    	            { title:"修改時間", name: "editTime", type: "text	", width: 100 },
+			    	        	{ title:"發佈時間", name: "announcementDate", type: "text", width: 100 },
+			    	            { title:"公告標題", name: "announcementName", type: "text	", width: 150 },
 			    	            { type: "control",
 			                        editButton: false,
 			                        modeSwitchButton: false,
@@ -166,10 +172,15 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 		 $("#tableDialog").dialog({
 			 title: "參數設定",
 	         autoOpen: false,
-	         width: 350,
+	         width: 550,
 	         close: function() {
 	             $("#dialogForm").validate().resetForm();
 	             $("#dialogForm").find(".error").removeClass("error");
+	             $('#announcementDate').datepicker('disable');
+	         },
+		 	 open: function (event, ui)
+	         {
+		 		 $('#announcementDate').datepicker('enable');
 	         }
 	     });
 		 
@@ -191,8 +202,8 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			 errorElement: "p",
 	         rules: {
 	        	 announcementDate: { required: true},
-	        	 announcementName: { required: true, rangeLength: [2, 50] },
-	        	 announcementFile: { required: true}
+	        	 announcementName: { required: true, maxlength:150, minlength:2},
+	        	 announcementFile: { required: true, filesize: 1024000 }
 	         },
 	         messages: {
 	        	 	announcementDate:{
@@ -200,13 +211,16 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			        },
 	        	 	announcementName:{
 			          required: "請輸入公告名稱",
-			          rangelength: "長度不得小於2個字母大於50個字母"
+			          minlength:"至少2個字元",
+					  maxlength:"最多150個字元"
 			        },
 			        announcementFile:{
-			          required: "請選擇檔案"
+			          required: "請選擇檔案",
+			          filesize: "檔案只能是PDF檔"
 			        }
 	         },
 	         submitHandler: function() {
+	        	 debugger;
 	             formSubmitHandler();
 	         }
 	     });
@@ -219,13 +233,17 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
             	 announcementOrder: $("#announcementOrder").val(),
             	 announcementApiUrl: $("#announcementApiUrl").val()
              });
-             
+             debugger;
              $("#jsGrid").jsGrid(isNew ? "insertItem" : "updateItem", item);
 
              $("#tableDialog").dialog("close");
          };
 	
-	    
+        $( "#announcementDate" ).datepicker({
+      	  	dateFormat: "yy/mm/dd",
+    		disabled: true 
+       	});
+        
 	});
 });
 </script>

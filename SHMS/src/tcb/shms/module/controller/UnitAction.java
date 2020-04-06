@@ -78,6 +78,7 @@ public class UnitAction extends GenericAction<Unit> {
 			unit.setFireHelper(MapUtils.getString(map, "fireHelper"));
 			unit.setHelper(MapUtils.getString(map, "helper"));
 			unit.setAffairs(MapUtils.getString(map, "affairs"));
+			unit = unitService.save(unit);
 			unitService.update(unit);
 			resultMap.put("result", "success");
 		} catch (Exception e) {

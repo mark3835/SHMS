@@ -141,13 +141,13 @@ public class LoginSessionFilter implements Filter{
         if (user != null) {
         	//公告跟MENU只要登入就能看到 預設放行
         	if(this.checkUrlDefaultAuth(subUrl)) {
-        		log.info("user:" + user);
+        		log.info("公告跟MENU只要登入就能看到 預設放行");
         		filterChain.doFilter(request, response);
         		return;
         	};
         	//登入後還需驗證權限
         	if(!this.checkUrlHaveAuth(user, subUrl)) {
-        		log.info("user:" + user);
+        		log.info("登入後還需驗證權限:沒有權限");
         		response.setContentType("text/html; charset=utf-8"); 
         		response.getWriter().write("<script>alert('沒有權限')</script>");
         		return;

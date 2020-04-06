@@ -21,7 +21,7 @@ insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '平安
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '平安通報資料維護', '4', '1', 12); 
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '後台管理', null, null, 20, 'login/api/'); 
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '系統參數設定', '/content/configSetting.html', '4', 21, 'config/api/'); 
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '公告設定', '/content/announcementSetting.html', '4', 22, 'announcemnet/api/'); 
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '公告設定', '/content/announcementSetting.html', '4', 22, 'announcement/api/'); 
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( 'MENU設定', '/content/menuSetting.html', '4', 23, 'menu/api/');
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '權限設定', '/content/authorizastionSetting.html', '4', 24, 'auth/api/');
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '登入LOG', '/content/loginLog.html', '4', 25, 'loginLog/api/'); 
