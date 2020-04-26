@@ -1,5 +1,7 @@
 package tcb.shms.module.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,5 +27,7 @@ public class AnnouncementService extends GenericService<Announcement>{
 		return announcementDao;
 	}
 
-	
+	public List<Announcement> getAnnouncementListBeforeToday(Announcement announcement) throws Exception {
+		return announcementDao.getAnnouncementListBeforeToday(announcement);
+	}
 }

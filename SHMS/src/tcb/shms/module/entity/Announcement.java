@@ -39,6 +39,12 @@ public class Announcement extends GenericEntity{
 	private Date announcementDate;
 	
 	/**
+	 *    檔案名稱
+	 */
+	@Column(name="FILE_NAME")
+	private String fileName;
+	
+	/**
 	 *    檔案路徑
 	 */
 	@Column(name="FILE_PATH")
@@ -122,6 +128,16 @@ public class Announcement extends GenericEntity{
 
 	public void setEditTime(Timestamp editTime) {
 		this.editTime = editTime;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}	
+	
+	
 	
 }

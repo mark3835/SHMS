@@ -1,7 +1,22 @@
-<div>
-	<h4>公告事項</h4>
-	
+<div class="row">
+	<div>
+		<h4>使用人員權限說明：</h4>
+		<h5>1 總務</h5>
+		<h5>2 職業安全衛生業務主管(副理) </h5>
+		<h5>3 防火管理人</h5>
+		<h5>4 急救人員</h5>
+		<h5>5 單位主管</h5>
+		<h5>6 襄理</h5>
+		<h5>7 系統管理人員</h5>
+	</div>
 	<div id="jsGrid" >
+	
+		<table id="authTable">
+		
+		</table>
+	</div>
+	<div>
+		<button id="btnChange">修改</button>
 	</div>
 </div>
 
@@ -11,38 +26,86 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 	//頁面讀取後執行
 	$(document).ready(function(){
 	    $.ajax({
-		    url: "/"+CONFIG.SYSTEM_NAME + '/announcement/getAnnouncement',
+		    url: "/"+CONFIG.SYSTEM_NAME + '/auth/api/getAuthorizastion',
 		    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 		    async: false,
 		    type: "GET",
-		    success: function(data, textStatus){    	
-		    	 
-		    	 $("#jsGrid").jsGrid({
-	    	        width: "100%",
-	    	        height: "100%",
-	    	 
-	    	        heading: true,
-	    		    filtering: false,
-	    		    inserting: false,
-	    		    editing: false,
-	    		    selecting: true,
-	    		    sorting: true,
-	    		    paging: false,
-	    		    pageLoading: false,
-	    	 
-	    	        data: data,
-	    	 
-	    	        fields: [
-	    	            { title:"發佈時間", name: "announcementDate", type: "text", width: 50, validate: "required" },
-	    	            { title:"公告標題", name: "announcementName", type: "text	", width: 150 }
-	    	        ]
-	    	    });
-		    	 
+		    success: function(data, textStatus){    
+		    	console.log(data);
+		    	var table = document.getElementById("authTable");
+		    	var rowCount = 0;	
+		    	var cellCount = 7;	
+		    	var row0 = table.insertRow(rowCount);
+		    	rowCount++;
+		    	row0.className = "jsgrid-header-row";		    	
+		    	var cell0 = row0.insertCell(0);
+		    	cell0.className = "jsgrid-header-cell";			    	
+		    	for(var i = 1; i <= cellCount; i++){
+		    		  var cell = row0.insertCell(i);
+		    		  cell.innerHTML = i;
+		    		  cell.className = "jsgrid-header-cell";
+		    	};
+
+		    	$.each(data.menuList, function( index, item ) {
+		    		  var row = table.insertRow(rowCount);
+		    		  rowCount++;
+		    		  row.className = "jsgrid-row";
+		    		  for(var i = 0; i <= cellCount; i++){
+		    			  var cell = row.insertCell(i);
+		    			  cell.className = "jsgrid-cell";
+		    			  if(i == 0){
+		    				  cell.innerHTML = item.MENU_NAME;
+		    			  }else{
+		    				  var key =item.ID + "_" + i;
+		    				  
+		    				  var chk = document.createElement('input');  // CREATE CHECK BOX.
+		    		          chk.setAttribute('type', 'checkbox');       // SPECIFY THE TYPE OF ELEMENT.
+		    		          chk.setAttribute('id', 'auth_' + i);     // SET UNIQUE ID.
+		    		          chk.setAttribute('value', key);
+		    		          chk.setAttribute('name', "authCheckbox");
+		    		          chk.setAttribute("style", "zoom:1.5;");	    		          	
+		    		          
+		    		          if(data.authKeyMap.hasOwnProperty(key)){
+		    		        	  chk.setAttribute("checked", "checked");
+		    		          }
+		    		          cell.appendChild(chk);
+		    			  }
+		    		  }	    		  
+		    	});
+		    	
 		    },
 		    error: function (data, textStatus, errorThrown) {
 		        console.log(data);
 		    },
 		});
+	    
+	    $("#btnChange").click(function(){
+	    	var dataList = [];
+	    	$('input[name="authCheckbox"]:checked').each(function() {	    		
+	    		dataList.push(this.value);
+	    	});
+	    	$.ajax({
+ 			    url: "/"+CONFIG.SYSTEM_NAME + '/auth/api/updateAuthorizastion',
+ 			    data: JSON.stringify(dataList),
+ 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+ 			    async: false,
+ 			    type: "POST",
+ 			    success: function(data, textStatus){   
+ 			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+			    		 alert("沒有權限");
+			    	 }else{
+			    		 if(data.result == "success"){
+			    			 alert("更新成功");
+			    		 }else{
+			    			 alert("更新失敗");
+			    		 }
+			    	 }
+ 			    },
+ 			    error: function (data, textStatus, errorThrown) {
+ 			        console.log(data);
+ 			    },
+ 			});
+	    });
     
 	});  
 });

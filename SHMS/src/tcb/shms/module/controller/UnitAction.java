@@ -34,7 +34,7 @@ public class UnitAction extends GenericAction<Unit> {
 			List<Unit> unitList = unitService.getList(new Unit());
 			jsonInString = new Gson().toJson(unitList);
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
 		}
 
@@ -42,7 +42,7 @@ public class UnitAction extends GenericAction<Unit> {
 	}
 	    
 	@RequestMapping(value = "/unit/api/addUnit", method = RequestMethod.POST)
-	public @ResponseBody String addMenu(@RequestBody String data) {
+	public @ResponseBody String addUnit(@RequestBody String data) {
 		HashMap<String,String> resultMap = new HashMap<String, String>();
 		try {			
 			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);			
@@ -58,15 +58,16 @@ public class UnitAction extends GenericAction<Unit> {
 			resultMap.put("result", "success");
 			resultMap.put("id", unit.getId().toString());					
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
-			resultMap.put("result", "error");		
+			resultMap.put("result", "error");
+			resultMap.put("errorMsg", e.getMessage());
 		}
 		return new Gson().toJson(resultMap);
 	}
 	
 	@RequestMapping(value = "/unit/api/updateUnit", method = RequestMethod.POST)
-	public @ResponseBody String updateMenu(@RequestBody String data) {
+	public @ResponseBody String updateUnit(@RequestBody String data) {
 		HashMap<String,String> resultMap = new HashMap<String, String>();
 		try {
 			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);			
@@ -82,25 +83,27 @@ public class UnitAction extends GenericAction<Unit> {
 			unitService.update(unit);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
-			resultMap.put("result", "error");	
+			resultMap.put("result", "error");
+			resultMap.put("errorMsg", e.getMessage());
 		}
 
 		return new Gson().toJson(resultMap);
 	}
 	
 	@RequestMapping(value = "/unit/api/deleteUnit", method = RequestMethod.POST)
-	public @ResponseBody String deleteConfig(@RequestBody String data) {
+	public @ResponseBody String deleteUnit(@RequestBody String data) {
 		HashMap<String,String> resultMap = new HashMap<String, String>();
 		try {
 			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);	
 			unitService.deleteById(MapUtils.getLong(map, "ID"));
 			resultMap.put("result", "success");
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
-			resultMap.put("result", "error");	
+			resultMap.put("result", "error");
+			resultMap.put("errorMsg", e.getMessage());
 		}
 
 		return new Gson().toJson(resultMap);

@@ -39,7 +39,10 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 		    	        fields: [
 		    	            { title:"發佈時間", name: "announcementDate", type: "text", width: 50, validate: "required" },
 		    	            { title:"公告標題", name: "announcementName", type: "text	", width: 150 }
-		    	        ]
+		    	        ],
+		    	        rowClick: function(args) {
+			    	 		window.open("/"+CONFIG.SYSTEM_NAME + '/announcement/getAnnouncementFile/' + args.item.id , '_blank');
+			            }
 		    	    });
 		    	 }
 		    	 

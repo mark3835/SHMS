@@ -124,11 +124,6 @@ public class LdapService {
 	        }
 	}
 	
-	
-	public static void main(String args[]) {
-		new LdapService().getADUserTest("mark3835", "5tgb^YHN");
-	}
-	
 	/**
 	   *   撈取 AD user資料跟單位 新增或更新
 	 * @param account

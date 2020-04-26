@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.gson.Gson;
 
 import tcb.shms.core.controller.GenericAction;
-import tcb.shms.module.entity.Authorizastion;
 import tcb.shms.module.entity.Menu;
 import tcb.shms.module.entity.User;
 import tcb.shms.module.service.AuthorizastionService;
@@ -42,18 +41,15 @@ public class MenuAction extends GenericAction<Menu> {
 		try {
 			//@TODO 撈取使用者權限
 			User user = super.getSessionUser();
-			int accountAuthLv = 0;
-			Authorizastion authorizastion = new Authorizastion();
-			authorizastion.setAuthLv(accountAuthLv);
-			List<Authorizastion> authorizastionList = authorizastionService.getList(authorizastion);
+			List<String> authMenuList =  authorizastionService.getByAuth(authorizastionService.getAuthByUser(user));
 			List<Menu> menuList = menuService.getList(new Menu());
 			//loop MENU 判斷是否有權限 沒有則移除
 			Iterator<Menu> it = menuList.iterator();
 			while (it.hasNext()) {
 				Menu menuObj = it.next();
 				boolean exist = false;
-				for(Authorizastion authObj:authorizastionList) {					
-					if (menuObj.getId().equals(authObj.getId())) {
+				for(String authMenu:authMenuList) {					
+					if (menuObj.getId().equals(Long.parseLong(authMenu))) {
 						exist = true;
 						break;
 					}
@@ -71,7 +67,7 @@ public class MenuAction extends GenericAction<Menu> {
 			});
 			jsonInString = new Gson().toJson(menuList);
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
 		}
 
@@ -85,7 +81,7 @@ public class MenuAction extends GenericAction<Menu> {
 			List<Menu> menuList = menuService.getList(new Menu());
 			jsonInString = new Gson().toJson(menuList);
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
 		}
 
@@ -107,9 +103,10 @@ public class MenuAction extends GenericAction<Menu> {
 			resultMap.put("result", "success");
 			resultMap.put("id", menu.getId().toString());					
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
-			resultMap.put("result", "error");		
+			resultMap.put("result", "error");
+			resultMap.put("errorMsg", e.getMessage());
 		}
 		return new Gson().toJson(resultMap);
 	}
@@ -128,9 +125,10 @@ public class MenuAction extends GenericAction<Menu> {
 			menuService.update(menu);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
-			resultMap.put("result", "error");	
+			resultMap.put("result", "error");
+			resultMap.put("errorMsg", e.getMessage());
 		}
 
 		return new Gson().toJson(resultMap);
@@ -144,9 +142,10 @@ public class MenuAction extends GenericAction<Menu> {
 			menuService.deleteById(MapUtils.getLong(map, "ID"));
 			resultMap.put("result", "success");
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
-			resultMap.put("result", "error");	
+			resultMap.put("result", "error");
+			resultMap.put("errorMsg", e.getMessage());
 		}
 
 		return new Gson().toJson(resultMap);

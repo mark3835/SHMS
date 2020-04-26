@@ -1,7 +1,8 @@
 package tcb.shms.module.entity;
 
-import java.sql.Date;
+
 import java.sql.Timestamp;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,7 +37,7 @@ public class Certificate extends GenericEntity{
 	 * 證照類型
 	 */
 	@Column(name="CERTIFICATE_TYPE")
-	private Date certificateType;
+	private String certificateType;
 	
 	/**
 	 * 證照名稱
@@ -118,11 +119,11 @@ public class Certificate extends GenericEntity{
 		this.rocId = rocId;
 	}
 
-	public Date getCertificateType() {
+	public String getCertificateType() {
 		return certificateType;
 	}
 
-	public void setCertificateType(Date certificateType) {
+	public void setCertificateType(String certificateType) {
 		this.certificateType = certificateType;
 	}
 

@@ -35,6 +35,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
             // param = size (en bytes) 
             // element = element to validate (<input>)
             // value = value of the element (file name)
+            $.validator.messages.filesize = "檔案大小超過限制";
             return this.optional(element) || (element.files[0].size <= param) 
         });
 			
@@ -83,8 +84,8 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    					    		 if(data.result == "success"){
 			    					    			 insertingItem.id = data.id;
 			    					    			 alert("新增成功");
-			    					    		 }else{
-			    					    			 alert("新增失敗");
+			    					    		 }else if(data.errorMsg){
+			    					    			 alert(data.errorMsg);
 			    					    		 }
 			    					    	 }
 			    		 			    },
@@ -94,10 +95,12 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		 			});
 			    		        },
 			    		        updateItem: function(updatingItem) { 
+			    		        	var formData = new FormData($('#dialogForm')[0]);
 			    		        	$.ajax({
 			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/announcement/api/updateAnnouncement',
-			    		 			    data: JSON.stringify(updatingItem),
-			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+			    		 			    data: formData,
+			    		 			    processData: false,  // tell jQuery not to process the data
+			    		 		        contentType: false,  // tell jQuery not to set contentType
 			    		 			    async: false,
 			    		 			    type: "POST",
 			    		 			    success: function(data, textStatus){   
@@ -106,8 +109,8 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    					    	 }else{
 			    					    		 if(data.result == "success"){
 			    					    			 alert("更新成功");
-			    					    		 }else{
-			    					    			 alert("更新失敗");
+			    					    		 }else if(data.errorMsg){
+			    					    			 alert(data.errorMsg);
 			    					    		 }
 			    					    	 }
 			    		 			    },
@@ -129,8 +132,8 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    					    	 }else{
 			    					    		 if(data.result == "success"){
 			    					    			 alert("刪除成功");
-			    					    		 }else{
-			    					    			 alert("刪除失敗");
+			    					    		 }else if(data.errorMsg){
+			    					    			 alert(data.errorMsg);
 			    					    		 }
 			    					    	 }
 			    		 			    },
@@ -142,8 +145,14 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		    },
 			    	 
 			    	        fields: [
-			    	        	{ title:"發佈時間", name: "announcementDate", type: "text", width: 100 },
-			    	            { title:"公告標題", name: "announcementName", type: "text	", width: 150 },
+			    	        	{ title:"發佈時間", name: "announcementDate", type: "text", width: 60 },
+			    	            { title:"公告標題", name: "announcementName", type: "text	", width: 160 },
+			    	            { title:"檔案名稱", name: "fileName", type: "text	", width: 120 },
+			    	            { title:"檔案路徑", name: "filePath", type: "text	", width: 140 },
+			    	            { title:"建立者", name: "createId", type: "text	", width: 50 },
+			    	            { title:"建立時間", name: "createTime", type: "text	", width: 60 },
+			    	            { title:"修改者", name: "editId", type: "text	", width: 50 },
+			    	            { title:"修改時間", name: "editTime", type: "text	", width: 60 },
 			    	            { type: "control",
 			                        editButton: false,
 			                        modeSwitchButton: false,
@@ -189,6 +198,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 		 var showDetailsDialog = function(dialogType, item) {
              $("#announcementDate").val(item.announcementDate);
              $("#announcementName").val(item.announcementName);
+             $("#id").val(item.id);
              
              formSubmitHandler = function() {
             	 saveItem(item, dialogType === "Add");
@@ -215,33 +225,24 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 					  maxlength:"最多150個字元"
 			        },
 			        announcementFile:{
-			          required: "請選擇檔案",
-			          filesize: "檔案只能是PDF檔"
+			          required: "請選擇檔案，檔案只能是PDF檔，最大不得超過10MB"
 			        }
 	         },
 	         submitHandler: function() {
-	        	 debugger;
 	             formSubmitHandler();
 	         }
 	     });
 	     
 	     var saveItem = function(item, isNew) {
-             $.extend(item, {
-            	 announcementName: $("#announcementName").val(),
-            	 announcementUrl: $("#announcementUrl").val(),
-            	 announcementTierTwo: $("#announcementTierTwo").val(),
-            	 announcementOrder: $("#announcementOrder").val(),
-            	 announcementApiUrl: $("#announcementApiUrl").val()
-             });
-             debugger;
              $("#jsGrid").jsGrid(isNew ? "insertItem" : "updateItem", item);
-
              $("#tableDialog").dialog("close");
+             bodyHref("/content/announcementSetting.html");
          };
 	
         $( "#announcementDate" ).datepicker({
       	  	dateFormat: "yy/mm/dd",
-    		disabled: true 
+    		disabled: true ,
+    		minDate: new Date()         
        	});
         
 	});

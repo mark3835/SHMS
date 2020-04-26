@@ -31,7 +31,7 @@ public class LoginLogAction extends GenericAction<LoginLog> {
 			List<LoginLog> logingLogList = loginLogService.getList(new LoginLog());
 			jsonInString = new GsonBuilder().setDateFormat("yyyy/MM/dd HH:mm:ss").create().toJson(logingLogList);
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
 		}
 

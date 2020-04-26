@@ -34,7 +34,7 @@ public class UserAction extends GenericAction<User>{
 			List<User> userList = userService.getList(new User());
 			jsonInString = new Gson().toJson(userList);
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
 		}
 
@@ -42,7 +42,7 @@ public class UserAction extends GenericAction<User>{
 	}
     
 	@RequestMapping(value = "/user/api/addUser", method = RequestMethod.POST)
-	public @ResponseBody String addMenu(@RequestBody String data) {
+	public @ResponseBody String addUser(@RequestBody String data) {
 		HashMap<String,String> resultMap = new HashMap<String, String>();
 		try {			
 			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);			
@@ -52,20 +52,25 @@ public class UserAction extends GenericAction<User>{
 			user.setAccount(MapUtils.getString(map, "account"));
 			user.setUnitId(MapUtils.getString(map, "unitId"));
 			user.setJobName(MapUtils.getString(map, "jobName"));
-			user.setJobLevel(MapUtils.getInteger(map, "JobLevel"));
+			user.setJobLevel(MapUtils.getInteger(map, "jobLevel"));
+			user.setPhone(MapUtils.getString(map, "phone"));
+			user.setEmail(MapUtils.getString(map, "email"));
+			user.setBirthday(MapUtils.getString(map, "birthday"));
+			user.setIsLeave(MapUtils.getInteger(map, "isLeave"));
 			user = userService.save(user);
 			resultMap.put("result", "success");
 			resultMap.put("id", user.getId().toString());					
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
-			resultMap.put("result", "error");		
+			resultMap.put("result", "error");
+			resultMap.put("errorMsg", e.getMessage());
 		}
 		return new Gson().toJson(resultMap);
 	}
 	
 	@RequestMapping(value = "/user/api/updateUser", method = RequestMethod.POST)
-	public @ResponseBody String updateMenu(@RequestBody String data) {
+	public @ResponseBody String updateUser(@RequestBody String data) {
 		HashMap<String,String> resultMap = new HashMap<String, String>();
 		try {
 			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);			
@@ -79,28 +84,31 @@ public class UserAction extends GenericAction<User>{
 			user.setPhone(MapUtils.getString(map, "phone"));
 			user.setEmail(MapUtils.getString(map, "email"));
 			user.setBirthday(MapUtils.getString(map, "birthday"));
+			user.setIsLeave(MapUtils.getInteger(map, "isLeave"));
 			userService.update(user);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
-			resultMap.put("result", "error");	
+			resultMap.put("result", "error");
+			resultMap.put("errorMsg", e.getMessage());
 		}
 
 		return new Gson().toJson(resultMap);
 	}
 	
 	@RequestMapping(value = "/user/api/deleteUser", method = RequestMethod.POST)
-	public @ResponseBody String deleteConfig(@RequestBody String data) {
+	public @ResponseBody String deleteUser(@RequestBody String data) {
 		HashMap<String,String> resultMap = new HashMap<String, String>();
 		try {
 			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);	
 			userService.deleteById(MapUtils.getLong(map, "ID"));
 			resultMap.put("result", "success");
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
-			resultMap.put("result", "error");	
+			resultMap.put("result", "error");
+			resultMap.put("errorMsg", e.getMessage());
 		}
 
 		return new Gson().toJson(resultMap);

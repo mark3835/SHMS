@@ -24,4 +24,5 @@ public interface Service<T extends Entity> {
 	
 	@SuppressWarnings("rawtypes")
 	public List<Map> getListBySQLQuery(String sql) throws Exception;
+	
 }

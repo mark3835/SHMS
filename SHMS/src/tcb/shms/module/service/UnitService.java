@@ -3,6 +3,7 @@ package tcb.shms.module.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import tcb.shms.core.service.GenericService;
 import tcb.shms.module.dao.UnitDao;
@@ -25,5 +26,9 @@ public class UnitService extends GenericService<Unit>{
 		return unitDao;
 	}
 
-	
+	public Unit getByUnitId(String unitId) throws Exception {
+		Assert.notNull(unitId, "unitId不能為null");		
+		Unit entity = getDao().findByUnitId(unitId);		
+		return entity;
+	}
 }

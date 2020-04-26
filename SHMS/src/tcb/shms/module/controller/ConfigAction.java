@@ -38,7 +38,7 @@ public class ConfigAction extends GenericAction<Config> {
 			List<Config> configList = configService.getList(config);
 			jsonInString = new Gson().toJson(configList);
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
 		}
 
@@ -64,9 +64,10 @@ public class ConfigAction extends GenericAction<Config> {
 			resultMap.put("result", "success");
 			resultMap.put("id", config.getId().toString());					
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
 			resultMap.put("result", "error");		
+			resultMap.put("errorMsg", e.getMessage());
 		}
 		return new Gson().toJson(resultMap);
 	}
@@ -89,9 +90,10 @@ public class ConfigAction extends GenericAction<Config> {
 			configService.update(config);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
-			resultMap.put("result", "error");	
+			resultMap.put("result", "error");
+			resultMap.put("errorMsg", e.getMessage());
 		}
 
 		return new Gson().toJson(resultMap);
@@ -105,9 +107,10 @@ public class ConfigAction extends GenericAction<Config> {
 			configService.deleteById(MapUtils.getLong(map, "ID"));
 			resultMap.put("result", "success");
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
 			resultMap.put("result", "error");	
+			resultMap.put("errorMsg", e.getMessage());
 		}
 
 		return new Gson().toJson(resultMap);

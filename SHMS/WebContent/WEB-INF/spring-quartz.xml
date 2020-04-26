@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+        <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN""http://www.springframework.org/dtd/spring-beans.dtd">  
+<beans>  
+    <bean id="scheduleInfoService"class="com.erry.tntops.web.task.ScheduleInfoService">  
+         <property name="scheduler" ref="schedulerFactory"/>  
+     </bean>  
+     <bean id="jobDetail"class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+         <property name="targetObject" ref="scheduleInfoService"/>  
+         <property name="targetMethod" value="test"/>  
+         <property name="concurrent" value="false"/>  
+     </bean>  
+     <bean id="cronTrigger"class="org.springframework.scheduling.quartz.CronTriggerBean" >  
+          <property name="jobDetail" ref="jobDetail"/>  
+          <property name="cronExpression">  
+              <value>0/10 * * * * ?</value>  
+          </property>  
+      </bean>  
+     <bean id="schedulerFactory"class="org.springframework.scheduling.quartz.SchedulerFactoryBean">  
+         <property name="triggers">  
+             <list>  
+                 <ref local="cronTrigger"/>  
+             </list>  
+         </property>  
+    </bean>  
+</beans>  

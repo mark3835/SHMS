@@ -59,11 +59,25 @@ public interface Dao<T extends Entity> {
 	
 	
 	/**
-	 * query list
+	 * query list by entity equal
 	 * @param id
 	 * @throws Exception
 	 */
 	public List<T> findList(T entity) throws Exception;
-	
 
+	/**
+	 * saveOrUpdate
+	 * @param entity
+	 * @return
+	 * @throws Exception
+	 */
+	public void saveOrUpdate(T entity) throws Exception;
+
+	/**
+	 * executeSql
+	 * @param sql
+	 * @throws Exception
+	 */
+	void executeSql(String sql) throws Exception;
+	
 }

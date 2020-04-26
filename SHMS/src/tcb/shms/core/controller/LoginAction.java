@@ -63,7 +63,7 @@ public class LoginAction extends GenericAction{
 			}
 			
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
 		}
 
@@ -78,7 +78,7 @@ public class LoginAction extends GenericAction{
         	request.getSession().removeAttribute(SystemConfig.SESSION_KEY.LOGIN);			
 		} catch (Exception e) {
 			result = "error";
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
 		}
         return result;
@@ -90,12 +90,12 @@ public class LoginAction extends GenericAction{
 		String jsonInString = "error";
         try {
         	
-        	ldapService.getADUserAndUnitToDb("mark3835", "5tgb^YHN");
+        	ldapService.getADUserAndUnitToDb("mark3835", "3edc$RFV");
         	
         	jsonInString = "success";
 			
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
 		}
 

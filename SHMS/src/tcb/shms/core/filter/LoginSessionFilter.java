@@ -23,7 +23,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
 import tcb.shms.module.config.SystemConfig;
-import tcb.shms.module.entity.Authorizastion;
 import tcb.shms.module.entity.Config;
 import tcb.shms.module.entity.User;
 import tcb.shms.module.service.AuthorizastionService;
@@ -97,7 +96,7 @@ public class LoginSessionFilter implements Filter{
 			try {
 				defaultAuthList = configService.getList(config);
 			} catch (Exception e) {
-				log.error(e);
+				log.error("",e);
 				errorLogService.addErrorLog(this.getClass().getName(), e);
 			}
         } 
@@ -169,15 +168,11 @@ public class LoginSessionFilter implements Filter{
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private boolean checkUrlHaveAuth(User user, String subUrl){
 		try {
-			//@TODO 撈取使用者權限
-			//get user auth
-			int accountAuthLv = 0;
-			Authorizastion authorizastion = new Authorizastion();
-			authorizastion.setAuthLv(accountAuthLv);
-			List<Authorizastion> authorizastionList = authorizastionService.getList(authorizastion);
+			//撈取使用者權限
+			List<String> authMenuList =  authorizastionService.getByAuth(authorizastionService.getAuthByUser(user));
 			String sql = "SELECT MENU_API_URL FROM MENU WHERE MENU_API_URL IS NOT NULL AND ( 1=1 ";
-			for(Authorizastion auth:authorizastionList) {
-				sql += " OR id = " + auth.getMenuId() ;
+			for(String authMenu:authMenuList) {
+				sql += " OR id = " + authMenu ;
 			}
 			sql += ")";
 			List<Map> authList = menuService.getListBySQLQuery(sql);
@@ -188,7 +183,7 @@ public class LoginSessionFilter implements Filter{
 				}
 			}
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
 		}
 		return false;

@@ -79,8 +79,8 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    					    		 if(data.result == "success"){
 			    					    			 insertingItem.id = data.id;
 			    					    			 alert("新增成功");
-			    					    		 }else{
-			    					    			 alert("新增失敗");
+			    					    		 }else if(data.errorMsg){
+			    					    			 alert(data.errorMsg);
 			    					    		 }
 			    					    	 }
 			    		 			    },
@@ -102,8 +102,8 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    					    	 }else{
 			    					    		 if(data.result == "success"){
 			    					    			 alert("更新成功");
-			    					    		 }else{
-			    					    			 alert("更新失敗");
+			    					    		 }else if(data.errorMsg){
+			    					    			 alert(data.errorMsg);
 			    					    		 }
 			    					    	 }
 			    		 			    },
@@ -125,8 +125,8 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    					    	 }else{
 			    					    		 if(data.result == "success"){
 			    					    			 alert("刪除成功");
-			    					    		 }else{
-			    					    			 alert("刪除失敗");
+			    					    		 }else if(data.errorMsg){
+			    					    			 alert(data.errorMsg);
 			    					    		 }
 			    					    	 }
 			    		 			    },

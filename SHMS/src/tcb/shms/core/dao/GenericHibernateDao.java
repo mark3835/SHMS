@@ -5,7 +5,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -71,6 +73,12 @@ public abstract class GenericHibernateDao<T extends GenericEntity> extends Gener
 		}
 		return entity;
 	}
+	
+	@Override
+	public void saveOrUpdate(T entity) throws Exception {
+		Assert.notNull(entity, "不得為null");
+		getSession().saveOrUpdate(entity);
+	}
 
 	@Override
 	public void update(T entity) throws Exception {
@@ -97,14 +105,20 @@ public abstract class GenericHibernateDao<T extends GenericEntity> extends Gener
 		List<Map> queryList = getSession().createNativeQuery(sql).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
 		return queryList;
 	}
+	
+	@Override
+	public void executeSql(String sql) throws Exception {
+		getSession().createNativeQuery(sql).executeUpdate();
+	}
 
 	/**
 	 * query list
-	 * 目前只支援 ENTITY 裡面 STRING INT LONG型態where條件幫找
+	 * 目前只支援 ENTITY 裡面 STRING INT LONG DATE TIME型態where 的等於條件幫找
 	 * 
 	 * @param id
 	 * @throws Exception
 	 */
+	@Override
 	public List<T> findList(T entity) throws Exception {
 		CriteriaBuilder builder = getSession().getCriteriaBuilder();
 		CriteriaQuery<T> query = builder.createQuery(entityClass);
@@ -113,7 +127,7 @@ public abstract class GenericHibernateDao<T extends GenericEntity> extends Gener
 		//用反射取entity值塞WHERE條件
 		Class<?> c = entityClass;
 		Field[] fields = c.getDeclaredFields();
-		List<Predicate> predicateList = new ArrayList();
+		List<Predicate> predicateList = new ArrayList<Predicate>();
 		for (Field field : fields) {
 			try {
 				field.setAccessible(true);
@@ -127,6 +141,10 @@ public abstract class GenericHibernateDao<T extends GenericEntity> extends Gener
 						predicateList.add(builder.equal(root.get(field.getName().toString()), field.get(entity)));
 					} else if (field.getType().getCanonicalName().equals("java.lang.Long") || field.getType().getCanonicalName().equals("long")) {
 						predicateList.add(builder.equal(root.get(field.getName().toString()), field.get(entity)));
+					}else if (field.getType().getCanonicalName().equals("java.util.Date")) {
+						predicateList.add(builder.equal(root.<Date>get(field.getName().toString()), (Date)field.get(entity)));
+					}else if (field.getType().getCanonicalName().equals("java.sql.Time")) {
+						predicateList.add(builder.equal(root.<Time>get(field.getName().toString()), (Time)field.get(entity)));
 					}
 				}
 				
@@ -141,5 +159,5 @@ public abstract class GenericHibernateDao<T extends GenericEntity> extends Gener
 		List<T> list = q.getResultList();
 		return list;
 	}
-
+	
 }

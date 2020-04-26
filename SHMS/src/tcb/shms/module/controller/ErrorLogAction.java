@@ -26,7 +26,7 @@ public class ErrorLogAction extends GenericAction<ErrorLog> {
 			List<ErrorLog> errorLogList = errorLogService.getList(new ErrorLog());
 			jsonInString = new GsonBuilder().setDateFormat("yyyy/MM/dd HH:mm:ss").create().toJson(errorLogList);
 		} catch (Exception e) {
-			log.error(e);
+			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
 		}
 
