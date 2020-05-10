@@ -35,6 +35,10 @@
             <input  id="affairs" name="affairs"  type="text"/>
         </div>
         <div class="details-form-field">
+            <label for="tel">單位電話</label>
+            <input  id="tel" name="tel"  type="text"/>
+        </div>
+        <div class="details-form-field">
             <button type="submit" id="dialogFormSubmit">送出</button>
         </div>
     </form>
@@ -47,7 +51,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 	$(document).ready(function(){
 			
 		 $.ajax({
-			    url: "/"+CONFIG.SYSTEM_NAME + '/unit/api/getUnit',
+			    url: "/"+CONFIG.SYSTEM_NAME + '/unitSetting/api/getUnit',
 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    async: false,
 			    type: "GET",
@@ -75,7 +79,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		        },
 			    		        insertItem: function(insertingItem) {
 			    		        	$.ajax({
-			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/unit/api/addUnit',
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/unitSetting/api/addUnit',
 			    		 			    data: JSON.stringify(insertingItem),
 			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    		 			    async: false,
@@ -99,7 +103,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		        },
 			    		        updateItem: function(updatingItem) { 
 			    		        	$.ajax({
-			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/unit/api/updateUnit',
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/unitSetting/api/updateUnit',
 			    		 			    data: JSON.stringify(updatingItem),
 			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    		 			    async: false,
@@ -122,7 +126,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		        },
 			    		        deleteItem: function(deletingItem) {
 			    		        	 $.ajax({
-			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/unit/api/deleteUnit',
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/unitSetting/api/deleteUnit',
 			    		 			    data: '{"ID":' + deletingItem.id + '}',
 			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    		 			    async: false,
@@ -150,9 +154,10 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    	            { title:"單位名稱", name: "unitName", type: "text	", width: 200 },
 			    	            { title:"主管", name: "manager", type: "text	", width: 80 },
 			    	            { title:"職業安全衛生業務組主管", name: "saveManager", type: "text	", width: 80 },
-			    	            { title:"防火管理人", name: "fireHelper", type: "text	", width: 150 },
-			    	            { title:"急救人員", name: "helper", type: "text	", width: 150 },
-			    	            { title:"總務", name: "affairs", type: "text	", width: 150 },
+			    	            { title:"防火管理人", name: "fireHelper", type: "text	", width: 120 },
+			    	            { title:"急救人員", name: "helper", type: "text	", width: 120 },
+			    	            { title:"總務", name: "affairs", type: "text	", width: 120 },
+			    	            { title:"單位電話", name: "tel", type: "text	", width: 100 },
 			    	            { type: "control",
 			                        editButton: false,
 			                        modeSwitchButton: false,
@@ -198,6 +203,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
              $("#fireHelper").val(item.fireHelper);
              $("#helper").val(item.helper);
              $("#affairs").val(item.affairs);
+             $("#tel").val(item.tel);
              formSubmitHandler = function() {
             	 saveItem(item, dialogType === "Add");
              };
@@ -235,7 +241,8 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
             	 saveManager: $("#saveManager").val(),
             	 fireHelper: $("#fireHelper").val(),
             	 helper: $("#helper").val(),
-            	 affairs: $("#affairs").val()
+            	 affairs: $("#affairs").val(),
+            	 tel: $("#tel").val()
              });
              
              $("#jsGrid").jsGrid(isNew ? "insertItem" : "updateItem", item);

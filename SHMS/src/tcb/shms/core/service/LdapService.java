@@ -151,8 +151,8 @@ public class LdapService {
 			NamingEnumeration answer = context.search(searchBase, searchFilter, ctrl);
 
 			int count = 0;
-			List<User> userList = new ArrayList<User>();
 			Map<String, Unit> unitMap = new HashedMap<String, Unit>();
+			List<String> rocIdList = new ArrayList<String>();
 			while (answer.hasMore()) {
 				SearchResult result = (SearchResult) answer.next();
 				Attributes  attrs= result.getAttributes();
@@ -223,15 +223,19 @@ public class LdapService {
 				}else {
 					userService.save(user);
 				}
-				
-				
+				rocIdList.add(user.getRocId());
+								
 				String unitId = String.valueOf(attrs.get("ou").get());
+				//建立單位
 				if(!unitMap.containsKey(unitId)) {
 					Unit unit = new Unit();
 					unit.setUnitId(unitId);
 					List<Unit> unitList = unitService.getList(unit);
 					if(unitList.size() == 0) {
 						unit.setUnitName(String.valueOf(attrs.get("department").get()));
+						if(attrs.get("telephoneNumber") != null && attrs.get("telephoneNumber").get() != null) {
+							unit.setTel(String.valueOf(attrs.get("telephoneNumber").get()));
+						}
 						unitService.save(unit);
 					}	
 					unitMap.put(unitId, unit);
@@ -241,9 +245,17 @@ public class LdapService {
 				count++;
 			}
 			answer.close();
-	        log.info("login successfully.");
-	        
+			
+			//設定單位最高主管
+			setUnitManager();
+			
+			//判斷是否離職
+			checkLeave(rocIdList);
+			
+	        log.info("login successfully.");	        
 	        log.info("查詢筆數:" + count);
+	        
+	        
 	    } catch (Exception ex) {
 	    	ex.printStackTrace();
 	    	log.error(ex);
@@ -262,7 +274,82 @@ public class LdapService {
 	  
 	}
 	
+	/**
+	 * 判斷是否為最高主管 並且回存更新單位
+	 * @throws Exception
+	 */
+	private void setUnitManager() throws Exception {
+		List<Unit> unitList = unitService.getList(new Unit());
+		for(Unit unit:unitList) {
+			User user = new User();
+			user.setUnitId(unit.getUnitId());
+			List<User> userList = userService.getList(user);
+			int jobLevel = 0;
+			String rocId = null;
+			String high1RocId = null;
+			String high2RocId = null;
+			String high3RocId = null;
+			String high4RocId = null;
+			List<User> highUserList = new ArrayList();
+			for(User unitUser:userList) {
+				if(unitUser.getJobLevel() >= jobLevel) {					
+					jobLevel = unitUser.getJobLevel();
+				}
+			}
+			for(User unitUser:userList) {
+				if(unitUser.getJobLevel() == jobLevel) {
+					highUserList.add(unitUser);
+				}
+			}
+			if(highUserList.size() == 1) {
+				rocId = highUserList.get(0).getRocId();
+				unit.setManager(rocId);
+				unitService.update(unit);
+			}else if(highUserList.size() > 1) {
+				for(User highUser:highUserList) {
+					if(highUser.getJobName().contains("協理")) {
+						high1RocId = highUser.getRocId();
+					}else if(highUser.getJobName().contains("經理")) {
+						high2RocId = highUser.getRocId();
+					}else if(highUser.getJobName().contains("副理")) {
+						high3RocId = highUser.getRocId();
+					}else if(highUser.getJobName().contains("科長")) {
+						high4RocId = highUser.getRocId();
+					}
+				}
+				if(high1RocId != null) {
+					unit.setManager(high1RocId);
+				}else if(high2RocId != null) {
+					unit.setManager(high2RocId);
+				}else if(high3RocId != null) {
+					unit.setManager(high3RocId);
+				}else if(high4RocId != null) {
+					unit.setManager(high4RocId);
+				}			
+				unitService.update(unit);
+			}
+			
+		}
+	}
 	
+	/**
+	 * 判斷是否離職
+	 * @param rocIdList
+	 * @throws Exception
+	 */
+	private void checkLeave(List<String> rocIdList) throws Exception {
+		List<User> userList = userService.getList(new User());
+		for(User user:userList) {
+			if(!rocIdList.contains(user.getRocId())) {
+				user.setIsLeave(1);
+				userService.update(user);
+			}
+		}
+	}
+	
+	public static void main(String args[]) {
+		System.out.println("dfasfsdafds協理afdsfsdf".contains("協理"));
+	}
 	
 	/**
 	   *   撈取 AD user資料跟單位 新增或更新

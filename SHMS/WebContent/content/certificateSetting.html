@@ -1,5 +1,5 @@
 <div>
-	<h4>人員設定</h4>
+	<h4>證照設定</h4>
 	
 	    <div id="jsGrid"></div>
 </div>
@@ -11,40 +11,40 @@
             <input id="rocId" name="rocId" type="text" />
         </div>
         <div class="details-form-field">
-            <label for="name">姓名</label>
-            <input id="name" name="name" type="text" />
+            <label for="certificateType">證書種類</label>
+            <input id="certificateType" name="certificateType" type="text" />
         </div>
         <div class="details-form-field">
-            <label for="account">帳號</label>
-            <input id="account" name="account" type="text" />
+            <label for="certificateName">證書字號</label>
+            <input  id="certificateName" name="certificateName"  type="text"/>
         </div>
         <div class="details-form-field">
-            <label for="unitId">單位代號</label>
-            <input id="unitId" name="unitId" type="text" />
+            <label for="certificateUnit">核發單位</label>
+            <input  id="certificateUnit" name="certificateUnit"  type="text"/>
         </div>
         <div class="details-form-field">
-            <label for="jobName">職稱</label>
-            <input  id="jobName" name="jobName"  type="text"/>
+            <label for="gotDate">取得日期</label>
+            <input  id="gotDate" name="gotDate"  type="text"/>
         </div>
         <div class="details-form-field">
-            <label for="jobLevel">職等</label>
-            <input  id="jobLevel" name="jobLevel"  type="text"/>
+            <label for="gotFee">考照費</label>
+            <input  id="gotFee" name="gotFee"  type="text"/>
         </div>
         <div class="details-form-field">
-            <label for="phone">phone</label>
-            <input  id="phone" name="phone"  type="text"/>
+            <label for="gotTrainUnit">取得時單位(單位代號)</label>
+            <input  id="gotTrainUnit" name="gotTrainUnit"  type="text"/>
         </div>
         <div class="details-form-field">
-            <label for="email">"email"</label>
-            <input  id="email" name="email"  type="text"/>
+            <label for="reviewId">審核人(身分證字號)</label>
+            <input  id="reviewId" name="reviewId"  type="text"/>
         </div>
         <div class="details-form-field">
-            <label for="birthday">birthday</label>
-            <input  id="birthday" name="birthday"  type="text"/>
+            <label for="reviewTime">審核時間</label>
+            <input  id="reviewTime" name="reviewTime"  type="text"/>
         </div>
         <div class="details-form-field">
-            <label for="isLeave">是否離職</label>
-            <input  id="isLeave" name="isLeave"  type="text"/>
+            <label for="isResponsible">是否為單位負責人(0or1)</label>
+            <input  id="isResponsible" name="isResponsible"  type="text"/>
         </div>
         <div class="details-form-field">
             <button type="submit" id="dialogFormSubmit">送出</button>
@@ -59,11 +59,11 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 	$(document).ready(function(){
 			
 		 $.ajax({
-			    url: "/"+CONFIG.SYSTEM_NAME + '/user/api/getUser',
+			    url: "/"+CONFIG.SYSTEM_NAME + '/certificateSetting/api/getCertificate',
 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    async: false,
 			    type: "GET",
-			    success: function(data, textStatus){    
+			    success: function(data, textStatus){   
 			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
 			    		 alert("沒有權限");
 			    	 }else{
@@ -87,7 +87,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		        },
 			    		        insertItem: function(insertingItem) {
 			    		        	$.ajax({
-			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/user/api/addUser',
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/certificateSetting/api/addCertificate',
 			    		 			    data: JSON.stringify(insertingItem),
 			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    		 			    async: false,
@@ -111,7 +111,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		        },
 			    		        updateItem: function(updatingItem) { 
 			    		        	$.ajax({
-			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/user/api/updateUser',
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/certificateSetting/api/updateCertificate',
 			    		 			    data: JSON.stringify(updatingItem),
 			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    		 			    async: false,
@@ -134,7 +134,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		        },
 			    		        deleteItem: function(deletingItem) {
 			    		        	 $.ajax({
-			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/user/api/deleteUser',
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/certificateSetting/api/deleteCertificate',
 			    		 			    data: '{"ID":' + deletingItem.id + '}',
 			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    		 			    async: false,
@@ -158,16 +158,18 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		    },
 			    	 
 			    	        fields: [
-			    	            { title:"身分證字號", name: "rocId", type: "text", width: 110},
-			    	            { title:"姓名", name: "name", type: "text	", width: 180 },
-			    	            { title:"帳號", name: "account", type: "text	", width: 150 },
-			    	            { title:"單位代號", name: "unitId", type: "text	", width: 100 },
-			    	            { title:"職稱", name: "jobName", type: "text	", width: 150 },
-			    	            { title:"職等", name: "jobLevel", type: "text	", width: 80 },
-			    	            { title:"phone", name: "phone", type: "text	", width: 150 },
-			    	            { title:"email", name: "email", type: "text	", width: 150 },
-			    	            { title:"birthday", name: "birthday", type: "text	", width: 150 },
-			    	            { title:"是否離職", name: "isLeave", type: "text	", width: 100 },
+			    	            { title:"身分證字號", name: "ROC_ID", type: "text", width: 110},
+			    	            { title:"姓名", name: "NAME", type: "text", width: 70},
+			    	            { title:"單位", name: "UNIT_NAME", type: "text", width: 110},
+			    	            { title:"證書種類", name: "CERTIFICATE_TYPE", type: "text	", width: 150 },
+			    	            { title:"證書字號", name: "CERTIFICATE_NAME", type: "text	", width: 150 },
+			    	            { title:"核發單位", name: "CERTIFICATE_UNIT", type: "text	", width: 150 },
+			    	            { title:"取得日期", name: "GET_DATE", type: "text	", width: 100 },
+			    	            { title:"考照費", name: "GET_FEE", type: "text	", width: 80 },
+			    	            { title:"取得時單位", name: "TRAINUNITNAME", type: "text	", width: 80 },
+			    	            { title:"審核人", name: "REVIEW_ID", type: "text	", width: 80 },
+			    	            { title:"審核時間", name: "review_Time", type: "text	", width: 100 },
+			    	            { title:"是否為單位負責人", name: "IS_RESPONSIBLE", type: "text	", width: 80 },
 			    	            { type: "control",
 			                        editButton: false,
 			                        modeSwitchButton: false,
@@ -207,20 +209,20 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 		 
 		 var showDetailsDialog = function(dialogType, item) {
              $("#rocId").val(item.rocId);
-             $("#name").val(item.name);
-             $("#account").val(item.account);
-             $("#unitId").val(item.unitId);
-             $("#jobName").val(item.jobName);
-             $("#jobLevel").val(item.jobLevel);
-             $("#phone").val(item.phone);
-             $("#email").val(item.email);
-             $("#birthday").val(item.birthday);
-             $("#isLeave").val(item.isLeave);
+             $("#certificateType").val(item.certificateType);
+             $("#certificateName").val(item.certificateName);
+             $("#certificateUnit").val(item.certificateUnit);
+             $("#gotDate").val(item.gotDate);
+             $("#gotFee").val(item.gotFee);
+             $("#gotTrainUnit").val(item.gotTrainUnit);
+             $("#reviewId").val(item.REVIEW_ID);
+             $("#reviewTime").val(item.reviewTime);
+             $("#isResponsible").val(item.isResponsible);
              formSubmitHandler = function() {
             	 saveItem(item, dialogType === "Add");
              };
 
-             $("#tableDialog").dialog("option", "title", dialogType + " user").dialog("open");
+             $("#tableDialog").dialog("option", "title", dialogType + " 證照").dialog("open");
          };
 	
 	     $("#dialogForm").validate({
@@ -228,40 +230,53 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			 errorElement: "p",
 	         rules: {
 	        	 rocId: { required: true, rangelength: [2, 30] },
-	        	 name: { required: true, rangelength: [2, 30] },
-	        	 account: { required: true, rangelength: [2, 30] },
-	        	 unitId: { required: true, rangelength: [2, 30] },
-	        	 jobName: { required: true, rangelength: [2, 30] },
-	        	 jobLevel: { required: true, range: [1, 99] },
-	        	 isLeave: { required: true, range: [0, 1] }
+	        	 certificateType: { required: true, rangelength: [2, 30] },
+	        	 certificateName: { required: true, rangelength: [2, 30] },
+	        	 certificateUnit: { required: true, rangelength: [2, 30] },
+	        	 gotDate: { required: true },
+	        	 gotFee: { required: true, range: [0, 9999999] },
+	        	 gotTrainUnit: { required: true, rangelength: [2, 30] },
+	        	 reviewId: { required: true, rangelength: [2, 30] },
+	        	 reviewTime: { required: true},
+	        	 isResponsible: { required: true, range: [0, 1] }
 	         },
 	         messages: {
 	        	 	rocId:{
 			          required: "請輸入身分證字號",
 			          rangelength: "長度不得小於2個字母大於30個字母"
 			        },
-			        name:{
-			          required: "請輸入姓名",
+			        certificateType:{
+			          required: "請輸入證書種類",
 			          rangelength: "長度不得小於2個字母大於30個字母"
 			        },
-			        account:{
-			          required: "請輸入帳號",
+			        certificateName:{
+			          required: "請輸入證書字號",
 			          rangelength: "長度不得小於2個字母大於30個字母"
 			        },
-			        unitId:{
-			          required: "請輸入單位代號",
+			        certificateUnit:{
+			          required: "請輸入核發單位",
 			          rangelength: "長度不得小於2個字母大於20個字母"
 			        },
-			        jobName:{
-			          required: "請輸入職稱",
+			        gotDate:{
+			          required: "請輸入取得日期"
+			        },
+			        gotFee:{
+			          required: "請輸入取得費用",
+			          range: "0~9999999"
+			        },
+			        gotTrainUnit:{
+			          required: "請輸入取得時單位",
 			          rangelength: "長度不得小於2個字母大於30個字母"
 			        },
-			        jobLevel:{
-			          required: "請輸入職等",
-			          range: "不得小於1大於99"
+			        reviewId:{
+			          required: "請輸入審核人",
+			          rangelength: "長度不得小於2個字母大於30個字母"
 			        },
-			        isLeave:{
-			          required: "請輸入是否離職",
+			        reviewTime:{
+			          required: "請輸入審核時間"
+			        },
+			        isResponsible:{
+			          required: "請輸入是否為單位負責人",
 			          range: "0或1"
 			        }
 	         },
@@ -273,15 +288,15 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 	     var saveItem = function(item, isNew) {
              $.extend(item, {
             	 rocId: $("#rocId").val(),
-            	 name: $("#name").val(),
-            	 account: $("#account").val(),
-            	 unitId: $("#unitId").val(),
-            	 jobName: $("#jobName").val(),
-            	 jobLevel: $("#jobLevel").val(),
-            	 phone: $("#phone").val(),
-            	 email: $("#email").val(),
-            	 birthday: $("#birthday").val(),
-            	 isLeave: $("#isLeave").val()
+            	 certificateType: $("#certificateType").val(),
+            	 certificateName: $("#certificateName").val(),
+            	 certificateUnit: $("#certificateUnit").val(),
+            	 gotDate: $("#gotDate").val(),
+            	 gotFee: $("#gotFee").val(),
+            	 gotTrainUnit: $("#gotTrainUnit").val(),
+            	 reviewId: $("#reviewId").val(),
+            	 reviewTime: $("#reviewTime").val(),
+            	 isResponsible: $("#isResponsible").val()
              });
              
              $("#jsGrid").jsGrid(isNew ? "insertItem" : "updateItem", item);

@@ -1,6 +1,7 @@
 package tcb.shms.module.service;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,13 +32,13 @@ public class ErrorLogService extends GenericService<ErrorLog>{
 		try {
 			ErrorLog errorLog = new ErrorLog();
 			errorLog.setErrorClass(className);
-			errorLog.setErrorMsg(e.getLocalizedMessage());
+			errorLog.setErrorMsg(Arrays.toString(e.getStackTrace()));
 			errorLog.setErrorTime(new Timestamp(System.currentTimeMillis()));
 			errorLogDao.save(errorLog);
 		} catch (Exception e1) {
 			log.error(e1);
 		}
 	}
-
+	
 	
 }

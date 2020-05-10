@@ -159,10 +159,6 @@ public class User extends GenericEntity{
 		this.account = account;
 	}
 
-	public void setIsLeave(Integer isLeave) {
-		this.isLeave = isLeave;
-	}
-
 	public String getEmail() {
 		return email;
 	}

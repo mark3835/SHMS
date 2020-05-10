@@ -95,21 +95,24 @@ public class AuthorizastionService extends GenericService<Authorizastion>{
 		}
 		if(StringUtils.isNotBlank(user.getUnitId())) {
 			Unit unit = unitService.getByUnitId(user.getUnitId());
-			if(unit.getSaveManager().equals(user.getRocId())) {
-				resultList.add(SystemConfig.AUTH_LV.SAFE_MANAGER);
+			if(unit != null) {
+				if(user.getRocId().equals(unit.getSaveManager())) {
+					resultList.add(SystemConfig.AUTH_LV.SAFE_MANAGER);
+				}
+				if(user.getRocId().equals(unit.getFireHelper())) {
+					resultList.add(SystemConfig.AUTH_LV.FIRE_HELPER);
+				}
+				if(user.getRocId().equals(unit.getHelper())) {
+					resultList.add(SystemConfig.AUTH_LV.HELPER);
+				}
+				if(user.getRocId().equals(unit.getAffairs())) {
+					resultList.add(SystemConfig.AUTH_LV.AFFAIRS);
+				}
+				if(user.getRocId().equals(unit.getManager())) {
+					resultList.add(SystemConfig.AUTH_LV.MANAGER);
+				}
 			}
-			if(unit.getFireHelper().equals(user.getRocId())) {
-				resultList.add(SystemConfig.AUTH_LV.FIRE_HELPER);
-			}
-			if(unit.getHelper().equals(user.getRocId())) {
-				resultList.add(SystemConfig.AUTH_LV.HELPER);
-			}
-			if(unit.getAffairs().equals(user.getRocId())) {
-				resultList.add(SystemConfig.AUTH_LV.AFFAIRS);
-			}
-			if(unit.getManager().equals(user.getRocId())) {
-				resultList.add(SystemConfig.AUTH_LV.MANAGER);
-			}	
+				
 		}
 			
 		return resultList;

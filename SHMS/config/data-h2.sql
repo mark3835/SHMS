@@ -1,11 +1,18 @@
 --USER
 insert into USER(ID, ROC_ID, ACCOUNT, NAME, UNIT_ID, JOB_NAME, JOB_LEVEL, PHONE, EMAIL, IS_LEAVE) values(1, 'sa', 'sa', 'MARK', '', 'CCC', '5', '0911', 'XXX@XX', 0);
-insert into USER(ID, ROC_ID, ACCOUNT, NAME, UNIT_ID, JOB_NAME, JOB_LEVEL, PHONE, EMAIL, IS_LEAVE) values(2, '456', '456', 'EQWE', '', 'CCC', '7', '0911', 'YYY@XX', 0);
+insert into USER(ID, ROC_ID, ACCOUNT, NAME, UNIT_ID, JOB_NAME, JOB_LEVEL, PHONE, EMAIL, IS_LEAVE) values(2, 'H123', 'MARK3835', '黃信康', 'A01419', '打雜', '7', '0911', 'YYY@XX', 0);
+insert into USER(ID, ROC_ID, ACCOUNT, NAME, UNIT_ID, JOB_NAME, JOB_LEVEL, PHONE, EMAIL, IS_LEAVE) values(3, 'A1', 'RRRRR', '主管1', 'A01419', '打雜', '13', '0911', 'YYY@XX', 0);
+insert into USER(ID, ROC_ID, ACCOUNT, NAME, UNIT_ID, JOB_NAME, JOB_LEVEL, PHONE, EMAIL, IS_LEAVE) values(4, 'A2', 'YYYYY', '主管2', 'A01419', '打雜', '12', '0911', 'YYY@XX', 0);
+insert into USER(ID, ROC_ID, ACCOUNT, NAME, UNIT_ID, JOB_NAME, JOB_LEVEL, PHONE, EMAIL, IS_LEAVE) values(5, 'A3', 'UUUUU', '主管3', 'A01419', '打雜', '12', '0911', 'YYY@XX', 0);
 
+--UNIT
+insert into UNIT(UNIT_ID ,UNIT_NAME ,MANAGER ,SAVE_MANAGER ,FIRE_HELPER ,HELPER ,AFFAIRS , TEL) values('A01419', '資訊OA科', 'A1', 'A2', 'A3', 'H123', 'H123', '02-123456789');
 
 --CONFIG
 insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE, CREATE_ID, CREATE_TIME, EDIT_ID, EDIT_TIME) 
 values( 'SYSTEM_ADMIN_SUPER_USER', 'SYSTEM_ADMIN', 'sa', 'sa', 'mark', 1, 'MARK', sysdate(), 'MARK', sysdate());
+insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE, CREATE_ID, CREATE_TIME, EDIT_ID, EDIT_TIME) 
+values( 'SYSTEM_ADMIN_SUPER_USER2', 'SYSTEM_ADMIN', 'MARK3835', 'MARK3835', 'MARK3835', 1, 'MARK3835', sysdate(), 'MARK3835', sysdate());
 insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE, CREATE_ID, CREATE_TIME, EDIT_ID, EDIT_TIME) 
 values( 'DEFAULT_AUTH_URL_MENU', 'DEFAULT_AUTH_URL', '預設權限_MENU', 'menu/getMenu', '給LoginSessionFilter判定放行', 1, 'MARK', sysdate(), 'MARK', sysdate());
 insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE, CREATE_ID, CREATE_TIME, EDIT_ID, EDIT_TIME) 
@@ -28,8 +35,9 @@ insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) v
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '錯誤LOG', '/content/errorLog.html', '4', 26, 'errorLog/api/'); 
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '批次設定', '/content/batchSetting.html', '4', 26, 'errorLog/api/'); 
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '使用者資料', '/content/userSetting.html', '4', 26, 'user/api/'); 
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '單位資料', '/content/unitSetting.html', '4', 26, 'unit/api/'); 
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '單位職安業務基本資料維護', '/content/unitData.html', null, 100);
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '單位資料', '/content/unitSetting.html', '4', 26, 'unitSetting/api/');
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '證照資料', '/content/certificateSetting.html', '4', 26, 'certificateSetting/api/');
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '單位職安業務基本資料維護', '/content/unitData.html', null, 100 , 'unitData/api/');
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '職業安全衛生訓練證照登陸', '/content/certificate.html', null, 200, 'certificate/api/');
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '安全狀況反應通報表作業', '7', null, 340);
 
@@ -50,6 +58,7 @@ insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 13, 7);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 14, 7);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 15, 7);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 16, 7);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 17, 7);
 
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 1,  1);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 2,  1);
@@ -67,6 +76,7 @@ insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 13, 2);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 14, 2);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 15, 2);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 16, 2);
+
 
 --ANNOUNCEMENT
 insert into ANNOUNCEMENT(ANNOUNCEMENT_NAME, ANNOUNCEMENT_DATE, FILE_PATH, FILE_NAME, CREATE_ID, CREATE_TIME) values( '本行為強化春節安全維護工作，請於農曆春節前辦理完成本（109）年度之第一次自衛編組安全防護演練及相關事項如說明，請查照。合金總行政字第1099200030號', '2020-03-20', '', '', '123', NOW());

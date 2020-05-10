@@ -36,6 +36,12 @@ public class Unit extends GenericEntity{
 	private String unitName;
 	
 	/**
+	 *  單位電話
+	 */
+	@Column(name="TEL")
+	private String tel;
+	
+	/**
 	 *  主管
 	 */
 	@Column(name="MANAGER")
@@ -120,5 +126,14 @@ public class Unit extends GenericEntity{
 	public void setAffairs(String affairs) {
 		this.affairs = affairs;
 	}
+
+	public String getTel() {
+		return tel;
+	}
+
+	public void setTel(String tel) {
+		this.tel = tel;
+	}
+	
 	
 }

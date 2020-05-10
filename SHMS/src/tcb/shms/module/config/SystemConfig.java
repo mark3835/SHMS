@@ -1,5 +1,7 @@
 package tcb.shms.module.config;
 
+import java.text.SimpleDateFormat;
+
 public class SystemConfig {
 	
 	public static final String SYSTEM_NAME = "SHMS";
@@ -30,5 +32,10 @@ public class SystemConfig {
 		public static final int MANAGER = 5;
 		public static final int JUNIOR_MANAGER = 6;
 		public static final int SYSTEM_ADMIN = 7;
+	}
+	
+	public static class DATE_FORMAT{
+		public static final SimpleDateFormat BASIC_DATE_FORMATE = new SimpleDateFormat("yyyy/MM/dd");
+		public static final SimpleDateFormat BASIC_DATETIME_FORMATE = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	}
 }

@@ -90,7 +90,7 @@ public class LoginAction extends GenericAction{
 		String jsonInString = "error";
         try {
         	
-        	ldapService.getADUserAndUnitToDb("mark3835", "3edc$RFV");
+        	ldapService.getADUserAndUnitToDb("mark3835", "4rfv%TGB");
         	
         	jsonInString = "success";
 			

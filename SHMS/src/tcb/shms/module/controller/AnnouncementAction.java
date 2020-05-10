@@ -46,7 +46,6 @@ public class AnnouncementAction extends GenericAction<Menu> {
 	@Autowired
 	AnnouncementService announcementService;
 
-	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 	SimpleDateFormat timeFormat = new SimpleDateFormat("MMddhhmmssSSS");
 
 	@RequestMapping(value = "/announcement/getAnnouncement", method = RequestMethod.GET)
@@ -116,7 +115,7 @@ public class AnnouncementAction extends GenericAction<Menu> {
 					}
 				}
 			}
-			announcement.setAnnouncementDate(dateFormat.parse(request.getParameter("announcementDate")));
+			announcement.setAnnouncementDate(SystemConfig.DATE_FORMAT.BASIC_DATE_FORMATE.parse(request.getParameter("announcementDate")));
 			announcement.setAnnouncementName(request.getParameter("announcementName"));
 			User user = getSessionUser();
 			announcement.setCreateId(user.getRocId());
@@ -139,7 +138,7 @@ public class AnnouncementAction extends GenericAction<Menu> {
 		HashMap<String, String> resultMap = new HashMap<String, String>();
 		try {
 			Announcement announcement = announcementService.getById(Long.parseLong(request.getParameter("id")));
-			announcement.setAnnouncementDate(dateFormat.parse(request.getParameter("announcementDate")));
+			announcement.setAnnouncementDate(SystemConfig.DATE_FORMAT.BASIC_DATE_FORMATE.parse(request.getParameter("announcementDate")));
 			announcement.setAnnouncementName(request.getParameter("announcementName"));
 			
 			if (multipartFiles != null && multipartFiles.length > 0) {

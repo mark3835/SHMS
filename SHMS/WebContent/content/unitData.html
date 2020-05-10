@@ -1,9 +1,195 @@
 <div>
-	<h2>職業安全衛生訓練證照登錄</h2>
-	
-	<table>
-		<tr>
-			<td></td>
-		</tr>
+	<h2>單位職安業務基本資料維護</h2>
+
+	<table style="border-collapse: collapse; width: 100%; height: 108px;"
+		border="1">
+		<tbody>
+			<tr style="height: 18px;">
+				<td style="width: 16.3622%; height: 18px;" colspan="2">單位代號</td>
+				<td style="width: 18.3638%; height: 18px;"><div id="unitId"></div></td>
+				<td style="width: 11.3142%; height: 18px;">單位名稱</td>
+				<td style="width: 21.5187%; height: 18px;"><div id="unitName"></div></td>
+				<td style="width: 10.6832%; height: 18px;">單位電話</td>
+				<td style="width: 21.7581%; height: 18px;"><div id="unitTel"></div></td>
+			</tr>
+			<tr style="height: 18px;">
+				<td style="width: 5.09229%; height: 90px;" rowspan="5">單位</td>
+				<td style="width: 11.2699%; height: 18px;">總務</td>
+				<td style="width: 18.3638%; height: 18px;"><select id="cars"></select><input type="text" id="affairs" name="affairs"/></td>
+				<td style="width: 11.3142%; height: 18px;">手機</td>
+				<td style="width: 21.5187%; height: 18px;"><input type="text" id="affairsPhone" name="affairsPhone"/></td>
+				<td style="width: 10.6832%; height: 18px;">email</td>
+				<td style="width: 21.7581%; height: 18px;"><input type="text" id="affairsEmail" name="affairsEmail"/></td>
+			</tr>
+			<tr style="height: 18px;">
+				<td style="width: 11.2699%; height: 18px;">主管</td>
+				<td style="width: 18.3638%; height: 18px;"><input type="text" id="manager" name="manager"/></td>
+				<td style="width: 11.3142%; height: 18px;">手機</td>
+				<td style="width: 21.5187%; height: 18px;"><input type="text" id="managerPhone" name="managerPhone"/></td>
+				<td style="width: 10.6832%; height: 18px;">email</td>
+				<td style="width: 21.7581%; height: 18px;"><input type="text" id="managerEmail" name="managerEmail"/></td>
+			</tr>
+			<tr style="height: 18px;">
+				<td style="width: 11.2699%; height: 18px;">職業安全衛生業務主管</td>
+				<td style="width: 18.3638%; height: 18px;"><input type="text" id="saveManager" name="saveManager"/></td>
+				<td style="width: 11.3142%; height: 18px;">手機</td>
+				<td style="width: 21.5187%; height: 18px;"><input type="text" id="saveManagerPhone" name="saveManagerPhone"/></td>
+				<td style="width: 10.6832%; height: 18px;">email</td>
+				<td style="width: 21.7581%; height: 18px;"><input type="text" id="saveManagerEmail" name="saveManagerEmail"/></td>
+			</tr>
+			<tr style="height: 18px;">
+				<td style="width: 11.2699%; height: 18px;">防火管理人</td>
+				<td style="width: 18.3638%; height: 18px;"><input type="text" id="fireHelper" name="fireHelper"/></td>
+				<td style="width: 11.3142%; height: 18px;">手機</td>
+				<td style="width: 21.5187%; height: 18px;"><input type="text" id="fireHelperPhone" name="fireHelperPhone"/></td>
+				<td style="width: 10.6832%; height: 18px;">email</td>
+				<td style="width: 21.7581%; height: 18px;"><input type="text" id="fireHelperEmail" name="fireHelperEmail"/></td>
+			</tr>
+			<tr style="height: 18px;">
+				<td style="width: 11.2699%; height: 18px;">急救人員</td>
+				<td style="width: 18.3638%; height: 18px;"><input type="text" id="helper" name="helper"/></td>
+				<td style="width: 11.3142%; height: 18px;">手機</td>
+				<td style="width: 21.5187%; height: 18px;"><input type="text" id="helperPhone" name="helperPhone"/></td>
+				<td style="width: 10.6832%; height: 18px;">email</td>
+				<td style="width: 21.7581%; height: 18px;"><input type="text" id="helperEmail" name="helperEmail"/></td>
+			</tr>
+		</tbody>
 	</table>
+		<div>
+			<button type="submit" id="saveBtn">儲存</button>
+		</div>
+	<table style="border-collapse: collapse; width: 100%; height: 108px;" border="1">
+	  <thead>
+	    <tr style="height: 18px;">
+	      <td style="width: 28.1332%; height: 18px;">業務負責人職稱</td>
+	      <td style="width: 14.295%; height: 18px;">姓名</td>
+	      <td style="width: 22.389%; height: 18px;">手機</td>
+	      <td style="width: 35.1828%; height: 18px;">EMAIL</td>
+	    </tr>
+	  </thead>
+	  <tbody id="tbody">
+	  	<tr>
+	  		<td>單位主管</td>
+	  		<td></td>
+	  		<td></td>
+	  		<td></td>
+	  	</tr>
+	  	<tr>
+	  		<td>職業安全衛生主管</td>
+	  		<td></td>
+	  		<td></td>
+	  		<td></td>
+	  	</tr>
+	  	<tr>
+	  		<td>總務</td>
+	  		<td></td>
+	  		<td></td>
+	  		<td></td>
+	  	</tr>
+	  	<tr>
+	  		<td>防火管理員</td>
+	  		<td></td>
+	  		<td></td>
+	  		<td></td>
+	  	</tr>
+	  	<tr>
+	  		<td>急救人員</td>
+	  		<td></td>
+	  		<td></td>
+	  		<td></td>
+	  	</tr>
+	  </tbody>
+	</table>
+
 </div>
+
+
+<script>
+	//需要用的JS
+	require([ "jquery", "jquery_validate", "jsgrid", "jquery_ui" ], function(
+			jquery, jquery_validate, jsgrid, jquery_ui) {
+		//頁面讀取後執行
+		$(document).ready(function() {
+			$.ajax({
+ 			    url: "/"+CONFIG.SYSTEM_NAME + '/unitData/api/getUnitByUser',
+ 			   	contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+ 			    async: false,
+ 			    type: "GET",
+ 			    success: function(data, textStatus){   
+ 			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+			    		 alert("沒有權限");
+			    	 }else{
+			    		 console.log(data);
+			    		 setData(data);
+			    	 }
+ 			    },
+ 			    error: function (data, textStatus, errorThrown) {
+ 			        console.log(data);
+ 			    },
+ 			});
+			
+			$.ajax({
+ 			    url: "/"+CONFIG.SYSTEM_NAME + '/unitData/api/getUnitUserList',
+ 			   	contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+ 			    async: false,
+ 			    type: "GET",
+ 			    success: function(data, textStatus){   
+ 			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+			    		 alert("沒有權限");
+			    	 }else{
+			    		 console.log(data);
+			    	 }
+ 			    },
+ 			    error: function (data, textStatus, errorThrown) {
+ 			        console.log(data);
+ 			    },
+ 			});
+		});
+	});
+	
+	function setData(data){
+		$("#unitId").text(data.unit.unitId);
+		$("#unitName").text(data.unit.unitName);
+		$("#unitTel").text(data.unit.tel);
+		
+		$("#tbody").find("tr").eq(0).find("td").eq(1).text(data.manager.name);
+		$("#tbody").find("tr").eq(0).find("td").eq(2).text(data.manager.phone);
+		$("#tbody").find("tr").eq(0).find("td").eq(3).text(data.manager.email);
+		
+		$("#tbody").find("tr").eq(1).find("td").eq(1).text(data.saveManager.name);
+		$("#tbody").find("tr").eq(1).find("td").eq(2).text(data.saveManager.phone);
+		$("#tbody").find("tr").eq(1).find("td").eq(3).text(data.saveManager.email);
+		
+		$("#tbody").find("tr").eq(2).find("td").eq(1).text(data.affairs.name);
+		$("#tbody").find("tr").eq(2).find("td").eq(2).text(data.affairs.phone);
+		$("#tbody").find("tr").eq(2).find("td").eq(3).text(data.affairs.email);
+		
+		$("#tbody").find("tr").eq(3).find("td").eq(1).text(data.fireHelper.name);
+		$("#tbody").find("tr").eq(3).find("td").eq(2).text(data.fireHelper.phone);
+		$("#tbody").find("tr").eq(3).find("td").eq(3).text(data.fireHelper.email);
+		
+		$("#tbody").find("tr").eq(4).find("td").eq(1).text(data.helper.name);
+		$("#tbody").find("tr").eq(4).find("td").eq(2).text(data.helper.phone);
+		$("#tbody").find("tr").eq(4).find("td").eq(3).text(data.helper.email);
+		
+		$("#affairs").val(data.affairs.name);
+		$("#affairsPhone").val(data.affairs.phone);
+		$("#affairsEmail").val(data.affairs.email);
+		
+		$("#manager").val(data.manager.name);
+		$("#managerPhone").val(data.manager.phone);
+		$("#managerEmail").val(data.manager.email);
+		
+		$("#saveManager").val(data.saveManager.name);
+		$("#saveManagerPhone").val(data.saveManager.phone);
+		$("#saveManagerEmail").val(data.saveManager.email);
+		
+		$("#fireHelper").val(data.fireHelper.name);
+		$("#fireHelperPhone").val(data.fireHelper.phone);
+		$("#fireHelperEmail").val(data.fireHelper.email);
+		
+		$("#helper").val(data.helper.name);
+		$("#helperPhone").val(data.helper.phone);
+		$("#helperEmail").val(data.helper.email);
+	}
+</script>
