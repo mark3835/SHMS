@@ -25,4 +25,7 @@ public interface Service<T extends Entity> {
 	@SuppressWarnings("rawtypes")
 	public List<Map> getListBySQLQuery(String sql) throws Exception;
 	
+	@SuppressWarnings("rawtypes")
+	public void updateWithColumn(Map dataMap, Map whereMap) throws Exception;
+	
 }

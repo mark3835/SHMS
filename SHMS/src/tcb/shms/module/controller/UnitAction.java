@@ -1,6 +1,5 @@
 package tcb.shms.module.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -124,8 +123,8 @@ public class UnitAction extends GenericAction<Unit> {
 		String jsonInString = null;
 		try {
 			Map result = new HashMap();
-			User user = this.getSessionUser();
-			Unit unit = unitService.getByUnitId(user.getUnitId());
+			User loginUser = this.getSessionUser();
+			Unit unit = unitService.getByUnitId(loginUser.getUnitId());
 			result.put("unit", unit);
 			if(StringUtils.isNotBlank(unit.getManager())) {
 				User manager = userService.getByRocid(unit.getManager());
@@ -164,13 +163,6 @@ public class UnitAction extends GenericAction<Unit> {
 			User selectUser = new User();
 			selectUser.setUnitId(loginUser.getUnitId());
 			List<User> userList= userService.getList(selectUser);		
-			
-			for(int i = 0; i < userList.size(); i++){
-				if(userList.get(i).getRocId().equals(loginUser.getRocId())) {
-					userList.remove(i);
-					break;
-				}
-			}
 			jsonInString = new Gson().toJson(userList);
 		} catch (Exception e) {
 			log.error("",e);
@@ -178,6 +170,62 @@ public class UnitAction extends GenericAction<Unit> {
 		}
 
 		return jsonInString;
+	}
+	
+	@RequestMapping(value = "/unitData/api/saveData", method = RequestMethod.POST)
+	public @ResponseBody String saveData(@RequestBody String data) {
+		HashMap<String,String> resultMap = new HashMap<String, String>();
+		try {
+			HashMap<String,Object> requestMap = new Gson().fromJson(data, HashMap.class);	
+			User loginUser = this.getSessionUser();
+			Unit unit = unitService.getByUnitId(loginUser.getUnitId());			
+			unit.setAffairs(MapUtils.getString(requestMap, "affairs"));
+			unitService.update(unit);
+			
+			Map dataMap = new HashMap();
+			Map whereMap = new HashMap();			
+			dataMap.put("phone", MapUtils.getString(requestMap, "affairsPhone"));
+			dataMap.put("email", MapUtils.getString(requestMap, "affairsEmail"));
+			whereMap.put("rocId", MapUtils.getString(requestMap, "affairs"));			
+			userService.updateWithColumn(dataMap, whereMap);
+			
+			dataMap.clear();
+			whereMap.clear();	
+			dataMap.put("phone", MapUtils.getString(requestMap, "managerPhone"));
+			dataMap.put("email", MapUtils.getString(requestMap, "managerEmail"));
+			whereMap.put("rocId", unit.getManager());			
+			userService.updateWithColumn(dataMap, whereMap);
+			
+			dataMap.clear();
+			whereMap.clear();		
+			dataMap.put("phone", MapUtils.getString(requestMap, "saveManagerPhone"));
+			dataMap.put("email", MapUtils.getString(requestMap, "saveManagerEmail"));
+			whereMap.put("rocId", unit.getSaveManager());			
+			userService.updateWithColumn(dataMap, whereMap);
+			
+			dataMap.clear();
+			whereMap.clear();	
+			dataMap.put("phone", MapUtils.getString(requestMap, "fireHelperPhone"));
+			dataMap.put("email", MapUtils.getString(requestMap, "fireHelperEmail"));
+			whereMap.put("rocId", unit.getFireHelper());			
+			userService.updateWithColumn(dataMap, whereMap);
+			
+			dataMap.clear();
+			whereMap.clear();		
+			dataMap.put("phone", MapUtils.getString(requestMap, "helperPhone"));
+			dataMap.put("email", MapUtils.getString(requestMap, "helperEmail"));
+			whereMap.put("rocId", unit.getHelper());			
+			userService.updateWithColumn(dataMap, whereMap);
+			
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			log.error("",e);
+			errorLogService.addErrorLog(this.getClass().getName(), e);
+			resultMap.put("result", "error");
+			resultMap.put("errorMsg", e.getMessage());
+		}
+
+		return new Gson().toJson(resultMap);
 	}
 
 }

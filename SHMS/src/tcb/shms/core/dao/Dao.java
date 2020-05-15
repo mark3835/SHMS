@@ -78,6 +78,15 @@ public interface Dao<T extends Entity> {
 	 * @param sql
 	 * @throws Exception
 	 */
-	void executeSql(String sql) throws Exception;
+	public void executeSql(String sql) throws Exception;
+
+	/**
+	 * 更新 entity 指定欄位 WHERE條件
+	 * @param dataMap
+	 * @param whereMap
+	 * @throws Exception
+	 */
+	@SuppressWarnings("rawtypes")
+	public void updateWithColumn(Map dataMap, Map whereMap) throws Exception;
 	
 }

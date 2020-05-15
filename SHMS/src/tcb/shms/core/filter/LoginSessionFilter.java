@@ -92,7 +92,7 @@ public class LoginSessionFilter implements Filter{
         	configService  = (ConfigService) cxt.getBean("configService");  
         	Config config = new Config();
 			config.setCfgType(SystemConfig.CFG_TYPE.DEFAULT_AUTH_URL);
-			config.setCfgInUse(1);
+			config.setCfgInUse(SystemConfig.CFG_IN_USE.CFG_IN_USE_TRUE);
 			try {
 				defaultAuthList = configService.getList(config);
 			} catch (Exception e) {

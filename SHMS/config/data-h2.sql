@@ -8,6 +8,7 @@ insert into USER(ID, ROC_ID, ACCOUNT, NAME, UNIT_ID, JOB_NAME, JOB_LEVEL, PHONE,
 --UNIT
 insert into UNIT(UNIT_ID ,UNIT_NAME ,MANAGER ,SAVE_MANAGER ,FIRE_HELPER ,HELPER ,AFFAIRS , TEL) values('A01419', '資訊OA科', 'A1', 'A2', 'A3', 'H123', 'H123', '02-123456789');
 
+
 --CONFIG
 insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE, CREATE_ID, CREATE_TIME, EDIT_ID, EDIT_TIME) 
 values( 'SYSTEM_ADMIN_SUPER_USER', 'SYSTEM_ADMIN', 'sa', 'sa', 'mark', 1, 'MARK', sysdate(), 'MARK', sysdate());
@@ -21,6 +22,22 @@ insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE,
 values( 'DEFAULT_AUTH_URL_PAGE', 'DEFAULT_AUTH_URL', '預設權限_頁面', 'page/', '給LoginSessionFilter判定放行', 1, 'MARK', sysdate(), 'MARK', sysdate());
 insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE, CREATE_ID, CREATE_TIME, EDIT_ID, EDIT_TIME) 
 values( 'DEFAULT_AUTH_URL_CONTENT', 'DEFAULT_AUTH_URL', '預設權限_頁面內容', 'content/', '給LoginSessionFilter判定放行', 1, 'MARK', sysdate(), 'MARK', sysdate());
+
+insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE, CREATE_ID, CREATE_TIME, EDIT_ID, EDIT_TIME) 
+values( 'CERTIFICATE_TYPE_1', 'CERTIFICATE_TYPE', '證書種類_甲種職業安全衛生主管', '甲種職業安全衛生主管', '證書種類選項-甲種職業安全衛生主管', 1, 'MARK', sysdate(), 'MARK', sysdate());
+insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE, CREATE_ID, CREATE_TIME, EDIT_ID, EDIT_TIME) 
+values( 'CERTIFICATE_TYPE_2', 'CERTIFICATE_TYPE', '證書種類_乙種職業安全衛生主管', '乙種職業安全衛生主管', '證書種類選項-乙種職業安全衛生主管', 1, 'MARK', sysdate(), 'MARK', sysdate());
+insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE, CREATE_ID, CREATE_TIME, EDIT_ID, EDIT_TIME) 
+values( 'CERTIFICATE_TYPE_3', 'CERTIFICATE_TYPE', '證書種類_防火管理人', '防火管理人', '證書種類選項-防火管理人', 1, 'MARK', sysdate(), 'MARK', sysdate());
+insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE, CREATE_ID, CREATE_TIME, EDIT_ID, EDIT_TIME) 
+values( 'CERTIFICATE_TYPE_4', 'CERTIFICATE_TYPE', '證書種類_急救人員', '急救人員', '證書種類選項-急救人員', 1, 'MARK', sysdate(), 'MARK', sysdate());
+
+insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE, CREATE_ID, CREATE_TIME, EDIT_ID, EDIT_TIME) 
+values( 'CERTIFICATE_UNIT_1', 'CERTIFICATE_UNIT', '核發單位1', '中華民國工業安全衛生協會', '核發單位1', 1, 'MARK', sysdate(), 'MARK', sysdate());
+insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE, CREATE_ID, CREATE_TIME, EDIT_ID, EDIT_TIME) 
+values( 'CERTIFICATE_UNIT_2', 'CERTIFICATE_UNIT', '核發單位2', '中國生產力中心', '核發單位2', 1, 'MARK', sysdate(), 'MARK', sysdate());
+insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE, CREATE_ID, CREATE_TIME, EDIT_ID, EDIT_TIME) 
+values( 'CERTIFICATE_UNIT_3', 'CERTIFICATE_UNIT', '核發單位3', '財團法人消防教育學術研究基金會', '核發單位3', 1, 'MARK', sysdate(), 'MARK', sysdate());
 
 --MENU
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '平安通報作業', null, null, 10);

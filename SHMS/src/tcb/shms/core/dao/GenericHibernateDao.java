@@ -13,6 +13,7 @@ import java.util.Map;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -160,4 +161,18 @@ public abstract class GenericHibernateDao<T extends GenericEntity> extends Gener
 		return list;
 	}
 	
+	@SuppressWarnings("rawtypes")
+	@Override
+	public void updateWithColumn(Map dataMap, Map whereMap) throws Exception {
+		CriteriaBuilder builder = getSession().getCriteriaBuilder();
+		CriteriaUpdate<T> criteria = builder.createCriteriaUpdate(entityClass);
+		Root<T> root = criteria.from(entityClass);
+		for (Object key : dataMap.keySet()) {
+		    criteria.set(root.get(key.toString()), dataMap.get(key));
+		}
+		for (Object key : whereMap.keySet()) {
+		    criteria.where(builder.equal(root.get(key.toString()), whereMap.get(key)));
+		}
+		getSession().createQuery(criteria).executeUpdate();
+	}
 }

@@ -101,6 +101,12 @@ public class AnnouncementAction extends GenericAction<Menu> {
 						}
 						String path = SystemConfig.ANNOUNCEMENT.FILE_ROOT_PATH + timeFormat.format(new Date());
 						log.info( path);
+						
+						String[] fileNameSplit = fileName.split("\\\\");
+						if(fileNameSplit.length > 1) {
+							fileName = fileNameSplit[fileNameSplit.length-1];
+						}
+						
 						File file = new File(  path + "/" + fileName);
 						file.getParentFile().mkdirs();
 						file.createNewFile();

@@ -3,6 +3,7 @@ package tcb.shms.module.controller;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,9 +27,12 @@ import tcb.shms.core.controller.GenericAction;
 import tcb.shms.core.service.CsvService;
 import tcb.shms.module.config.SystemConfig;
 import tcb.shms.module.entity.Certificate;
+import tcb.shms.module.entity.Config;
 import tcb.shms.module.entity.Unit;
 import tcb.shms.module.entity.User;
+import tcb.shms.module.service.AuthorizastionService;
 import tcb.shms.module.service.CertificateService;
+import tcb.shms.module.service.ConfigService;
 import tcb.shms.module.service.UnitService;
 import tcb.shms.module.service.UserService;
 
@@ -50,6 +54,12 @@ public class CertificateAction extends GenericAction<Certificate> {
 	
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	AuthorizastionService authorizastionService;
+	
+	@Autowired
+	ConfigService configService;
 	
 	Map<String,Unit> unitMap = null;
 	
@@ -323,6 +333,66 @@ public class CertificateAction extends GenericAction<Certificate> {
 		}
 
 		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/certificate/api/getDefaultData", method = RequestMethod.GET)
+	public @ResponseBody String getUnitByUser() {
+		String jsonInString = null;
+		try {
+			Map result = new HashMap();
+			User loginUser = this.getSessionUser();
+			result.put("loginUser", loginUser);
+			Unit unit = unitService.getByUnitId(loginUser.getUnitId());
+			result.put("unit", unit);
+			//作業人員
+			String workMan = "";
+			List<Integer> authList = authorizastionService.getAuthByUser(loginUser);
+			if(authList.contains(SystemConfig.AUTH_LV.AFFAIRS)) {
+				workMan = "總務";
+			}else if(authList.contains(SystemConfig.AUTH_LV.MANAGER)) {
+				workMan = "單位主管";
+			}else if(authList.contains(SystemConfig.AUTH_LV.JUNIOR_MANAGER)) {
+				workMan = "襄理";
+			}
+			result.put("workMan", workMan);
+			
+			//取得證書種類選項
+			Config certificateType = new Config();
+			certificateType.setCfgInUse(SystemConfig.CFG_IN_USE.CFG_IN_USE_TRUE);
+			certificateType.setCfgType(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE);
+			List<Config> certificateTypeList = configService.getList(certificateType);
+			result.put("certificateTypeList", certificateTypeList);
+			//取得核發單位選項
+			Config certificateUnit = new Config();
+			certificateUnit.setCfgInUse(SystemConfig.CFG_IN_USE.CFG_IN_USE_TRUE);
+			certificateUnit.setCfgType(SystemConfig.CFG_TYPE.CERTIFICATE_UNIT);
+			List<Config> certificateUnitList = configService.getList(certificateUnit);
+			result.put("certificateUnitList", certificateUnitList);
+			
+			//取得派訓單位列表
+			List<Unit> unitList = unitService.getList(new Unit());
+			result.put("unitList", unitList);
+			
+			//取得單位證照表單資料
+			User queryUser = new User();
+			queryUser.setIsLeave(SystemConfig.USER_IS_LEAVE.IS_LEAVE_FALSE);
+			queryUser.setUnitId(loginUser.getUnitId());
+			
+			List<User> userList = userService.getList(queryUser);
+			List<String> userIdList = new ArrayList<String>();
+			for(User user:userList) {
+				userIdList.add(user.getRocId());
+			}
+			List<Certificate> certificateList = certificateService.getByRocIds(userIdList);
+			result.put("certificateList", certificateList);
+						
+			jsonInString = new Gson().toJson(result);
+		} catch (Exception e) {
+			log.error("",e);
+			errorLogService.addErrorLog(this.getClass().getName(), e);
+		}
+
+		return jsonInString;
 	}
 
 }

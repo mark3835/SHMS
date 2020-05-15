@@ -2,6 +2,12 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+<!-- IE可能不見得有效 -->
+<META HTTP-EQUIV="EXPIRES" CONTENT="0">
+<!-- 設定成馬上就過期 -->
+<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+<!-- 與第一行是同樣的作用 -->
 <link rel="icon" href="/SHMS/resources/image/tcb.jpeg" type="image/x-icon" / >
 
 <title>職業安全衛生管理系統</title>
@@ -13,7 +19,7 @@
 		<div class="container-fluid">
 			<div class="row">
 				<div id="menuContent" src="/page/menu.html"></div>
-				<div  class="col-md-9 col-xl-10">
+				<div  class="col-md-8 col-xl-9">
 					<div id="bodyContent" src="/page/body.html"></div>	
 				</div>
 			</div>
@@ -47,15 +53,27 @@
 
 	var bodyHref;
 	//需要用的JS
-	require(["jquery", "popper", "bootstrap", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, popper, bootstrap, jquery_validate, jsgrid, jquery_ui) {
-		$("#headerContent").load("/" + CONFIG.SYSTEM_NAME + $("#headerContent").attr("src")); 
-		$("#menuContent").load("/" +CONFIG.SYSTEM_NAME	 +$("#menuContent").attr("src")); 
-		$("#bodyContent").load("/" +CONFIG.SYSTEM_NAME +$("#bodyContent").attr("src")); 	
+	require(["jquery", "popper", "bootstrap", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, popper, bootstrap, jquery_validate, jsgrid, jquery_ui) {		
+		loadNoCache($("#headerContent"), "/" +CONFIG.SYSTEM_NAME + $("#headerContent").attr("src"));
+		loadNoCache($("#menuContent"), "/" +CONFIG.SYSTEM_NAME + $("#menuContent").attr("src"));
+		loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + $("#bodyContent").attr("src"));
 		
 		bodyHref = function(page){
 			//dialong換頁前移除 不然會重複生長
 			$('.ui-dialog').empty().remove();
-			$("#bodyContent").load("/" +CONFIG.SYSTEM_NAME + page); 	
+			loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + page);
 		}
 	});
+	
+	//JQUERY 原生 LOAD ie會存CACHE 改用這個
+	function loadNoCache($body, url){
+		$.ajax({
+		    url: url,
+		    cache: false,
+		    dataType: "html",
+		    success: function(data) {
+		    	$body.html(data);
+		    }
+		});
+	}
 </script>

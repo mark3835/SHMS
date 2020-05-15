@@ -1,105 +1,126 @@
 <div>
-	<h2>單位職安業務基本資料維護</h2>
-
-	<table style="border-collapse: collapse; width: 100%; height: 108px;"
-		border="1">
-		<tbody>
-			<tr style="height: 18px;">
-				<td style="width: 16.3622%; height: 18px;" colspan="2">單位代號</td>
-				<td style="width: 18.3638%; height: 18px;"><div id="unitId"></div></td>
-				<td style="width: 11.3142%; height: 18px;">單位名稱</td>
-				<td style="width: 21.5187%; height: 18px;"><div id="unitName"></div></td>
-				<td style="width: 10.6832%; height: 18px;">單位電話</td>
-				<td style="width: 21.7581%; height: 18px;"><div id="unitTel"></div></td>
-			</tr>
-			<tr style="height: 18px;">
-				<td style="width: 5.09229%; height: 90px;" rowspan="5">單位</td>
-				<td style="width: 11.2699%; height: 18px;">總務</td>
-				<td style="width: 18.3638%; height: 18px;"><select id="cars"></select><input type="text" id="affairs" name="affairs"/></td>
-				<td style="width: 11.3142%; height: 18px;">手機</td>
-				<td style="width: 21.5187%; height: 18px;"><input type="text" id="affairsPhone" name="affairsPhone"/></td>
-				<td style="width: 10.6832%; height: 18px;">email</td>
-				<td style="width: 21.7581%; height: 18px;"><input type="text" id="affairsEmail" name="affairsEmail"/></td>
-			</tr>
-			<tr style="height: 18px;">
-				<td style="width: 11.2699%; height: 18px;">主管</td>
-				<td style="width: 18.3638%; height: 18px;"><input type="text" id="manager" name="manager"/></td>
-				<td style="width: 11.3142%; height: 18px;">手機</td>
-				<td style="width: 21.5187%; height: 18px;"><input type="text" id="managerPhone" name="managerPhone"/></td>
-				<td style="width: 10.6832%; height: 18px;">email</td>
-				<td style="width: 21.7581%; height: 18px;"><input type="text" id="managerEmail" name="managerEmail"/></td>
-			</tr>
-			<tr style="height: 18px;">
-				<td style="width: 11.2699%; height: 18px;">職業安全衛生業務主管</td>
-				<td style="width: 18.3638%; height: 18px;"><input type="text" id="saveManager" name="saveManager"/></td>
-				<td style="width: 11.3142%; height: 18px;">手機</td>
-				<td style="width: 21.5187%; height: 18px;"><input type="text" id="saveManagerPhone" name="saveManagerPhone"/></td>
-				<td style="width: 10.6832%; height: 18px;">email</td>
-				<td style="width: 21.7581%; height: 18px;"><input type="text" id="saveManagerEmail" name="saveManagerEmail"/></td>
-			</tr>
-			<tr style="height: 18px;">
-				<td style="width: 11.2699%; height: 18px;">防火管理人</td>
-				<td style="width: 18.3638%; height: 18px;"><input type="text" id="fireHelper" name="fireHelper"/></td>
-				<td style="width: 11.3142%; height: 18px;">手機</td>
-				<td style="width: 21.5187%; height: 18px;"><input type="text" id="fireHelperPhone" name="fireHelperPhone"/></td>
-				<td style="width: 10.6832%; height: 18px;">email</td>
-				<td style="width: 21.7581%; height: 18px;"><input type="text" id="fireHelperEmail" name="fireHelperEmail"/></td>
-			</tr>
-			<tr style="height: 18px;">
-				<td style="width: 11.2699%; height: 18px;">急救人員</td>
-				<td style="width: 18.3638%; height: 18px;"><input type="text" id="helper" name="helper"/></td>
-				<td style="width: 11.3142%; height: 18px;">手機</td>
-				<td style="width: 21.5187%; height: 18px;"><input type="text" id="helperPhone" name="helperPhone"/></td>
-				<td style="width: 10.6832%; height: 18px;">email</td>
-				<td style="width: 21.7581%; height: 18px;"><input type="text" id="helperEmail" name="helperEmail"/></td>
-			</tr>
-		</tbody>
-	</table>
-		<div>
-			<button type="submit" id="saveBtn">儲存</button>
-		</div>
-	<table style="border-collapse: collapse; width: 100%; height: 108px;" border="1">
-	  <thead>
-	    <tr style="height: 18px;">
-	      <td style="width: 28.1332%; height: 18px;">業務負責人職稱</td>
-	      <td style="width: 14.295%; height: 18px;">姓名</td>
-	      <td style="width: 22.389%; height: 18px;">手機</td>
-	      <td style="width: 35.1828%; height: 18px;">EMAIL</td>
-	    </tr>
-	  </thead>
-	  <tbody id="tbody">
-	  	<tr>
-	  		<td>單位主管</td>
-	  		<td></td>
-	  		<td></td>
-	  		<td></td>
-	  	</tr>
-	  	<tr>
-	  		<td>職業安全衛生主管</td>
-	  		<td></td>
-	  		<td></td>
-	  		<td></td>
-	  	</tr>
-	  	<tr>
-	  		<td>總務</td>
-	  		<td></td>
-	  		<td></td>
-	  		<td></td>
-	  	</tr>
-	  	<tr>
-	  		<td>防火管理員</td>
-	  		<td></td>
-	  		<td></td>
-	  		<td></td>
-	  	</tr>
-	  	<tr>
-	  		<td>急救人員</td>
-	  		<td></td>
-	  		<td></td>
-	  		<td></td>
-	  	</tr>
-	  </tbody>
-	</table>
+	<h4>單位職安業務基本資料維護</h4>
+	<form id="inputForm">
+		<table style="border-collapse: collapse; width: 100%; height: 108px;"
+			border="1">
+			<tbody>
+				<tr style="height: 18px;">
+					<td style="width: 16.3622%; height: 18px;" colspan="2">單位代號</td>
+					<td style="width: 18.3638%; height: 18px;"><div id="unitId"></div></td>
+					<td style="width: 11.3142%; height: 18px;">單位名稱</td>
+					<td style="width: 21.5187%; height: 18px;"><div id="unitName"></div></td>
+					<td style="width: 10.6832%; height: 18px;">單位電話</td>
+					<td style="width: 21.7581%; height: 18px;"><div id="unitTel"></div></td>
+				</tr>
+				<tr style="height: 18px;">
+					<td style="width: 5.09229%; height: 90px;" rowspan="5">單位</td>
+					<td style="width: 11.2699%; height: 18px;">總務</td>
+					<td style="width: 18.3638%; height: 18px;"><select id="affairs" name="affairs"></select></td>
+					<td style="width: 11.3142%; height: 18px;">手機</td>
+					<td style="width: 21.5187%; height: 18px;"><input type="text" id="affairsPhone" name="affairsPhone"/></td>
+					<td style="width: 10.6832%; height: 18px;">email</td>
+					<td style="width: 21.7581%; height: 18px;"><input type="text" id="affairsEmail" name="affairsEmail" style="width: 260px;"/></td>
+				</tr>
+				<tr style="height: 18px;">
+					<td style="width: 11.2699%; height: 18px;">主管</td>
+					<td style="width: 18.3638%; height: 18px;"><div id="manager"></div>
+					<td style="width: 11.3142%; height: 18px;">手機</td>
+					<td style="width: 21.5187%; height: 18px;"><input type="text" id="managerPhone" name="managerPhone"/></td>
+					<td style="width: 10.6832%; height: 18px;">email</td>
+					<td style="width: 21.7581%; height: 18px;"><input type="text" id="managerEmail" name="managerEmail" style="width: 260px;"/></td>
+				</tr>
+				<tr style="height: 18px;">
+					<td style="width: 11.2699%; height: 18px;">職業安全衛生業務主管</td>
+					<td style="width: 18.3638%; height: 18px;"><div id="saveManager"/></div>
+					<td style="width: 11.3142%; height: 18px;">手機</td>
+					<td style="width: 21.5187%; height: 18px;"><input type="text" id="saveManagerPhone" name="saveManagerPhone"/></td>
+					<td style="width: 10.6832%; height: 18px;">email</td>
+					<td style="width: 21.7581%; height: 18px;"><input type="text" id="saveManagerEmail" name="saveManagerEmail" style="width: 260px;"/></td>
+				</tr>
+				<tr style="height: 18px;">
+					<td style="width: 11.2699%; height: 18px;">防火管理人</td>
+					<td style="width: 18.3638%; height: 18px;"><div id="fireHelper"/></div>
+					<td style="width: 11.3142%; height: 18px;">手機</td>
+					<td style="width: 21.5187%; height: 18px;"><input type="text" id="fireHelperPhone" name="fireHelperPhone"/></td>
+					<td style="width: 10.6832%; height: 18px;">email</td>
+					<td style="width: 21.7581%; height: 18px;"><input type="text" id="fireHelperEmail" name="fireHelperEmail" style="width: 260px;"/></td>
+				</tr>
+				<tr style="height: 18px;">
+					<td style="width: 11.2699%; height: 18px;">急救人員</td>
+					<td style="width: 18.3638%; height: 18px;"><div id="helper"/></div>
+					<td style="width: 11.3142%; height: 18px;">手機</td>
+					<td style="width: 21.5187%; height: 18px;"><input type="text" id="helperPhone" name="helperPhone"/></td>
+					<td style="width: 10.6832%; height: 18px;">email</td>
+					<td style="width: 21.7581%; height: 18px;"><input type="text" id="helperEmail" name="helperEmail" style="width: 260px;"/></td>
+				</tr>
+			</tbody>
+		</table>
+	</form>
+	<br>
+	<div style="text-align: center;">
+		<button type="submit" id="saveBtn">儲存</button>
+	</div>
+	<br>
+	<div id="printDiv">
+		<table style="border-collapse: collapse; width: 100%; height: 108px;" border="1">
+		  <thead>
+		    <tr style="height: 18px;">
+		      <td style="width: 28.1332%; height: 18px;">業務負責人職稱</td>
+		      <td style="width: 14.295%; height: 18px;">姓名</td>
+		      <td style="width: 22.389%; height: 18px;">手機</td>
+		      <td style="width: 35.1828%; height: 18px;">EMAIL</td>
+		    </tr>
+		  </thead>
+		  <tbody id="tbody">
+		  	<tr>
+		  		<td>單位主管</td>
+		  		<td></td>
+		  		<td></td>
+		  		<td></td>
+		  	</tr>
+		  	<tr>
+		  		<td>職業安全衛生主管</td>
+		  		<td></td>
+		  		<td></td>
+		  		<td></td>
+		  	</tr>
+		  	<tr>
+		  		<td>總務</td>
+		  		<td></td>
+		  		<td></td>
+		  		<td></td>
+		  	</tr>
+		  	<tr>
+		  		<td>防火管理員</td>
+		  		<td></td>
+		  		<td></td>
+		  		<td></td>
+		  	</tr>
+		  	<tr>
+		  		<td>急救人員</td>
+		  		<td></td>
+		  		<td></td>
+		  		<td></td>
+		  	</tr>
+		  </tbody>
+		</table>
+	</div>
+	<br>
+	<div style="text-align: center;">
+		<button type="submit" id="printBtn">列印</button>
+		<button type="submit" id="backBtn">回首頁</button>
+	</div>
+	<br>
+	<div>
+	使用說明：
+	單位基本資料，由「單位總務」填報資料。
+	確認輸入資料無誤後，按[儲存]即將本表上的資料，於系統中建檔。
+	註：
+	一、 單位如未補足「職業安全衛生主管」、 「防火管理員」 、「急救人員」，
+	請單位主管速予派員受訓取證補足。
+	二、「手機」、「email」欄為必填欄位。
+	三、 如有疑問請與行政管理部勞工安全科2173-8888#3213、3215、3235、3218聯繫。
+	</div>
 
 </div>
 
@@ -110,6 +131,9 @@
 			jquery, jquery_validate, jsgrid, jquery_ui) {
 		//頁面讀取後執行
 		$(document).ready(function() {
+			
+			createSelect();
+			
 			$.ajax({
  			    url: "/"+CONFIG.SYSTEM_NAME + '/unitData/api/getUnitByUser',
  			   	contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
@@ -128,68 +152,150 @@
  			    },
  			});
 			
-			$.ajax({
- 			    url: "/"+CONFIG.SYSTEM_NAME + '/unitData/api/getUnitUserList',
- 			   	contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
- 			    async: false,
- 			    type: "GET",
- 			    success: function(data, textStatus){   
- 			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
-			    		 alert("沒有權限");
-			    	 }else{
-			    		 console.log(data);
-			    	 }
- 			    },
- 			    error: function (data, textStatus, errorThrown) {
- 			        console.log(data);
- 			    },
- 			});
+			$("#saveBtn").click(function(){
+				saveData();
+			});
+			$("#printBtn").click(function(){
+				printByDiv(document.getElementById("printDiv"));
+			});
+			$("#backBtn").click(function(){
+				window.location.reload();
+			});
 		});
 	});
 	
-	function setData(data){
-		$("#unitId").text(data.unit.unitId);
-		$("#unitName").text(data.unit.unitName);
-		$("#unitTel").text(data.unit.tel);
-		
-		$("#tbody").find("tr").eq(0).find("td").eq(1).text(data.manager.name);
-		$("#tbody").find("tr").eq(0).find("td").eq(2).text(data.manager.phone);
-		$("#tbody").find("tr").eq(0).find("td").eq(3).text(data.manager.email);
-		
-		$("#tbody").find("tr").eq(1).find("td").eq(1).text(data.saveManager.name);
-		$("#tbody").find("tr").eq(1).find("td").eq(2).text(data.saveManager.phone);
-		$("#tbody").find("tr").eq(1).find("td").eq(3).text(data.saveManager.email);
-		
-		$("#tbody").find("tr").eq(2).find("td").eq(1).text(data.affairs.name);
-		$("#tbody").find("tr").eq(2).find("td").eq(2).text(data.affairs.phone);
-		$("#tbody").find("tr").eq(2).find("td").eq(3).text(data.affairs.email);
-		
-		$("#tbody").find("tr").eq(3).find("td").eq(1).text(data.fireHelper.name);
-		$("#tbody").find("tr").eq(3).find("td").eq(2).text(data.fireHelper.phone);
-		$("#tbody").find("tr").eq(3).find("td").eq(3).text(data.fireHelper.email);
-		
-		$("#tbody").find("tr").eq(4).find("td").eq(1).text(data.helper.name);
-		$("#tbody").find("tr").eq(4).find("td").eq(2).text(data.helper.phone);
-		$("#tbody").find("tr").eq(4).find("td").eq(3).text(data.helper.email);
-		
-		$("#affairs").val(data.affairs.name);
-		$("#affairsPhone").val(data.affairs.phone);
-		$("#affairsEmail").val(data.affairs.email);
-		
-		$("#manager").val(data.manager.name);
-		$("#managerPhone").val(data.manager.phone);
-		$("#managerEmail").val(data.manager.email);
-		
-		$("#saveManager").val(data.saveManager.name);
-		$("#saveManagerPhone").val(data.saveManager.phone);
-		$("#saveManagerEmail").val(data.saveManager.email);
-		
-		$("#fireHelper").val(data.fireHelper.name);
-		$("#fireHelperPhone").val(data.fireHelper.phone);
-		$("#fireHelperEmail").val(data.fireHelper.email);
-		
-		$("#helper").val(data.helper.name);
-		$("#helperPhone").val(data.helper.phone);
-		$("#helperEmail").val(data.helper.email);
+	function createSelect(){
+		$.ajax({
+			    url: "/"+CONFIG.SYSTEM_NAME + '/unitData/api/getUnitUserList',
+			   	contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+			    async: false,
+			    type: "GET",
+			    success: function(data, textStatus){   
+			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+		    		 alert("沒有權限");
+		    	 }else{		    		 
+		    		 $.each(data, function( index, item ) {
+	    				$('#affairs').append($('<option>').val(item.rocId).text(item.name));
+	    			});
+		    	 }
+			    },
+			    error: function (data, textStatus, errorThrown) {
+			        console.log(data);
+			    },
+			});
 	}
+	
+	function setData(data){
+		if(data.unit){
+			$("#unitId").text(data.unit.unitId);
+			$("#unitName").text(data.unit.unitName);
+			$("#unitTel").text(data.unit.tel);
+		}
+		
+		if(data.manager){
+			$("#tbody").find("tr").eq(0).find("td").eq(1).text(data.manager.name);
+			$("#tbody").find("tr").eq(0).find("td").eq(2).text(data.manager.phone);
+			$("#tbody").find("tr").eq(0).find("td").eq(3).text(data.manager.email);
+		}
+		if(data.saveManager){
+			$("#tbody").find("tr").eq(1).find("td").eq(1).text(data.saveManager.name);
+			$("#tbody").find("tr").eq(1).find("td").eq(2).text(data.saveManager.phone);
+			$("#tbody").find("tr").eq(1).find("td").eq(3).text(data.saveManager.email);
+		}
+		
+		if(data.affairs){
+			$("#tbody").find("tr").eq(2).find("td").eq(1).text(data.affairs.name);
+			$("#tbody").find("tr").eq(2).find("td").eq(2).text(data.affairs.phone);
+			$("#tbody").find("tr").eq(2).find("td").eq(3).text(data.affairs.email);
+		}
+		
+		if(data.fireHelper){
+			$("#tbody").find("tr").eq(3).find("td").eq(1).text(data.fireHelper.name);
+			$("#tbody").find("tr").eq(3).find("td").eq(2).text(data.fireHelper.phone);
+			$("#tbody").find("tr").eq(3).find("td").eq(3).text(data.fireHelper.email);
+		}
+		
+		if(data.helper){
+			$("#tbody").find("tr").eq(4).find("td").eq(1).text(data.helper.name);
+			$("#tbody").find("tr").eq(4).find("td").eq(2).text(data.helper.phone);
+			$("#tbody").find("tr").eq(4).find("td").eq(3).text(data.helper.email);
+		}
+		
+		if(data.affairs){
+			$("#affairs").val(data.affairs.rocId);
+			$("#affairsPhone").val(data.affairs.phone);
+			$("#affairsEmail").val(data.affairs.email);
+		}
+		
+		if(data.manager){
+			$("#manager").text(data.manager.name);
+			$("#managerPhone").val(data.manager.phone);
+			$("#managerEmail").val(data.manager.email);
+		}
+		
+		if(data.saveManager){
+			$("#saveManager").text(data.saveManager.name);
+			$("#saveManagerPhone").val(data.saveManager.phone);
+			$("#saveManagerEmail").val(data.saveManager.email);
+		}
+		
+		if(data.fireHelper){
+			$("#fireHelper").text(data.fireHelper.name);
+			$("#fireHelperPhone").val(data.fireHelper.phone);
+			$("#fireHelperEmail").val(data.fireHelper.email);
+		}
+		
+		if(data.helper){
+			$("#helper").text(data.helper.name);
+			$("#helperPhone").val(data.helper.phone);
+			$("#helperEmail").val(data.helper.email);
+		}
+	}
+	
+	function saveData(){		
+		$.ajax({
+		    url: "/"+CONFIG.SYSTEM_NAME + '/unitData/api/saveData',
+		    data: JSON.stringify(getFormData($('#inputForm'))),
+		    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+		    async: false,
+		    type: "POST",
+		    success: function(data, textStatus){   
+			     if(data && data == "<script>alert('沒有權限')<\/script>"){
+		    		 alert("沒有權限");
+		    	 }else{
+		    		 if(data.result == "success"){
+		    			 alert("儲存成功");
+		    			 loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + "/content/unitData.html");
+		    		 }else if(data.errorMsg){
+		    			 alert(data.errorMsg);
+		    		 }
+		    	 }
+		    },
+		    error: function (data, textStatus, errorThrown) {
+		        console.log(data);
+		    },
+		});
+	}
+	
+	function getFormData($form){
+	    var unindexed_array = $form.serializeArray();
+	    var indexed_array = {};
+
+	    $.map(unindexed_array, function(n, i){
+	        indexed_array[n['name']] = n['value'];
+	    });
+
+	    return indexed_array;
+	}
+	
+	function printByDiv(printpage){ 
+		var iframe = document.createElement('IFRAME');
+		iframe.setAttribute('style', 'position:absolute;width:0px;height:0px;left:-500px;top:-500px;');
+		document.body.appendChild(iframe);
+		iframe.contentWindow.document.write(printpage.innerHTML);
+		iframe.contentWindow.document.close(); //important!
+		iframe.contentWindow.focus(); //IE fix
+		iframe.contentWindow.print();
+		iframe.parentNode.removeChild(iframe);
+	} 
 </script>

@@ -198,7 +198,7 @@ public class LdapService {
 				if(attrs.get("telephoneNumber") != null && attrs.get("telephoneNumber").get() != null) {
 					user.setTel(String.valueOf(attrs.get("telephoneNumber").get()));
 				}
-				user.setIsLeave(0);
+				user.setIsLeave(SystemConfig.USER_IS_LEAVE.IS_LEAVE_FALSE);
 				
 				//已存在 比對資料
 				if(queryList.size() > 0) {
@@ -338,17 +338,18 @@ public class LdapService {
 	 * @throws Exception
 	 */
 	private void checkLeave(List<String> rocIdList) throws Exception {
-		List<User> userList = userService.getList(new User());
+		User queryUser = new User();
+		queryUser.setIsLeave(SystemConfig.USER_IS_LEAVE.IS_LEAVE_FALSE);
+		List<User> userList = userService.getList(queryUser);
 		for(User user:userList) {
 			if(!rocIdList.contains(user.getRocId())) {
-				user.setIsLeave(1);
+				user.setIsLeave(SystemConfig.USER_IS_LEAVE.IS_LEAVE_TRUE);
 				userService.update(user);
 			}
 		}
 	}
 	
 	public static void main(String args[]) {
-		System.out.println("dfasfsdafds協理afdsfsdf".contains("協理"));
 	}
 	
 	/**
@@ -371,7 +372,7 @@ public class LdapService {
 	    	log.info("login verification begins...");
 	        trustSelfSignedSSL();
 	        context = new InitialDirContext(tbl);
-	        String searchFilter = "(&(objectClass=user)(rocid=*)(ou=*))";
+	        String searchFilter = "(&(objectClass=user)(objectCategory=person))";
 	        String searchBase = "DC=tcb,DC=com";
 			SearchControls ctrl = new SearchControls();
 			ctrl.setSearchScope(SearchControls.SUBTREE_SCOPE);

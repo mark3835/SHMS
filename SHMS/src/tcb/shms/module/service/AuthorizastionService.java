@@ -81,7 +81,7 @@ public class AuthorizastionService extends GenericService<Authorizastion>{
 		List<Integer> resultList = new ArrayList<Integer>();
 		Config config = new Config();
 		config.setCfgType(SystemConfig.CFG_TYPE.SYSTEM_ADMIN);
-		config.setCfgInUse(1);
+		config.setCfgInUse(SystemConfig.CFG_IN_USE.CFG_IN_USE_TRUE);
 		List<Config> systemAdminList = configService.getList(config);
 		for(Config systemAdmin:systemAdminList) {
 			if(systemAdmin.getCfgValue().equals(user.getAccount())) {

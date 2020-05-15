@@ -73,4 +73,12 @@ public abstract class GenericService<T extends GenericEntity> implements Service
 		return getDao().createSQLQuery(sql);
 	}
 	
+	@SuppressWarnings("rawtypes")
+	@Override
+	public void updateWithColumn(Map dataMap, Map whereMap) throws Exception {
+		Assert.notNull(dataMap, "dataMap不能為null");
+		Assert.notNull(whereMap, "whereMap不能為null");
+				
+		getDao().updateWithColumn(dataMap, whereMap);
+	}
 }
