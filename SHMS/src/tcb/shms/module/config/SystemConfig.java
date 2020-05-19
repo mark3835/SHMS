@@ -22,7 +22,9 @@ public class SystemConfig {
 	public static class CFG_TYPE{
 		public static final String DEFAULT_AUTH_URL = "DEFAULT_AUTH_URL";
 		public static final String SYSTEM_ADMIN = "SYSTEM_ADMIN";
-		public static final String CERTIFICATE_TYPE = "CERTIFICATE_TYPE";
+		public static final String CERTIFICATE_TYPE_SAVEMANAGER = "CERTIFICATE_TYPE_SAVEMANAGER";
+		public static final String CERTIFICATE_TYPE_FIREHELPER = "CERTIFICATE_TYPE_FIREHELPER";
+		public static final String CERTIFICATE_TYPE_HELPER = "CERTIFICATE_TYPE_HELPER";
 		public static final String CERTIFICATE_UNIT = "CERTIFICATE_UNIT";
 	}
 	
@@ -47,8 +49,10 @@ public class SystemConfig {
 	}
 	
 	public static class DATE_FORMAT{
-		public static final SimpleDateFormat BASIC_DATE_FORMATE = new SimpleDateFormat("yyyy/MM/dd");
-		public static final SimpleDateFormat BASIC_DATETIME_FORMATE = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		public static final String BASIC_DATE_FORMATE_STRING = "yyyy/MM/dd";
+		public static final String BASIC_DATETIME_FORMATE_STRING = "yyyy/MM/dd HH:mm:ss";
+		public static final SimpleDateFormat BASIC_DATE_FORMATE = new SimpleDateFormat(BASIC_DATE_FORMATE_STRING);
+		public static final SimpleDateFormat BASIC_DATETIME_FORMATE = new SimpleDateFormat(BASIC_DATETIME_FORMATE_STRING);
 	}
 	
 	public static class EXCEL_PATH{

@@ -55,7 +55,7 @@ public class AnnouncementAction extends GenericAction<Menu> {
 			Announcement announcement = new Announcement();
 			announcement.setAnnouncementDate(new Date());
 			List<Announcement> announcementList = announcementService.getAnnouncementListBeforeToday(announcement);
-			jsonInString = new GsonBuilder().setDateFormat("yyyy/MM/dd").create().toJson(announcementList);
+			jsonInString = new GsonBuilder().setDateFormat(SystemConfig.DATE_FORMAT.BASIC_DATE_FORMATE_STRING).create().toJson(announcementList);
 		} catch (Exception e) {
 			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
@@ -69,7 +69,7 @@ public class AnnouncementAction extends GenericAction<Menu> {
 		String jsonInString = null;
 		try {
 			List<Announcement> announcementList = announcementService.getList(new Announcement());
-			jsonInString = new GsonBuilder().setDateFormat("yyyy/MM/dd").create().toJson(announcementList);
+			jsonInString = new GsonBuilder().setDateFormat(SystemConfig.DATE_FORMAT.BASIC_DATE_FORMATE_STRING).create().toJson(announcementList);
 		} catch (Exception e) {
 			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);

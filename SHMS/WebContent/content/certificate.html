@@ -2,63 +2,70 @@
 	<h4>職業安全衛生訓練證照登錄</h4>
 </div>
 <div>
-	<table style="border-collapse: collapse; width: 100%;" border="1">
-		<tbody>
-			<tr>
-				<td style="width: 20%;">單位名稱</td>
-				<td style="width: 28.6162%;">&nbsp;</td>
-				<td style="width: 22.2193%;">作業人員</td>
-				<td style="width: 9.16449%;">總務</td>
-				<td style="width: 20%;">&nbsp;</td>
-			</tr>
-		</tbody>
-	</table>
-	<br>
-	<table style="border-collapse: collapse; width: 100%; height: 126px;"
-		border="1">
-		<tbody>
-			<tr style="height: 18px;">
-				<td style="width: 15.9922%; height: 18px;">姓名</td>
-				<td style="width: 34.0078%; height: 18px;">&nbsp;</td>
-				<td style="width: 17.5587%; height: 18px;">職稱</td>
-				<td style="width: 32.4413%; height: 18px;">&nbsp;</td>
-			</tr>
-			<tr style="height: 18px;">
-				<td style="width: 15.9922%; height: 18px;">手機(選項)</td>
-				<td style="width: 34.0078%; height: 18px;">&nbsp;</td>
-				<td style="width: 17.5587%; height: 18px;">email</td>
-				<td style="width: 32.4413%; height: 18px;">&nbsp;</td>
-			</tr>
-			<tr style="height: 18px;">
-				<td style="width: 15.9922%; height: 18px;">證書種類</td>
-				<td style="width: 34.0078%; height: 18px;">&nbsp;</td>
-				<td style="width: 17.5587%; height: 18px;">證書字號</td>
-				<td style="width: 32.4413%; height: 18px;">&nbsp;</td>
-			</tr>
-			<tr style="height: 18px;">
-				<td style="width: 15.9922%; height: 18px;">核發單位</td>
-				<td style="width: 34.0078%; height: 18px;">&nbsp;</td>
-				<td style="width: 17.5587%; height: 18px;">取得日期</td>
-				<td style="width: 32.4413%; height: 18px;">&nbsp;</td>
-			</tr>
-			<tr style="height: 18px;">
-				<td style="width: 15.9922%; height: 18px;">報名費用</td>
-				<td style="width: 34.0078%; height: 18px;">&nbsp;</td>
-				<td style="width: 17.5587%; height: 18px;">派訓單位</td>
-				<td style="width: 32.4413%; height: 18px;">&nbsp;</td>
-			</tr>
-			<tr style="height: 18px;">
-				<td style="width: 15.9922%; height: 18px;">審核人員</td>
-				<td style="width: 34.0078%; height: 18px;">&nbsp;</td>
-				<td style="width: 17.5587%; height: 18px;">備註(退休)</td>
-				<td style="width: 32.4413%; height: 18px;">&nbsp;</td>
-			</tr>
-			<tr style="height: 18px;">
-				<td style="width: 15.9922%; height: 18px;" colspan="2">該員(所持本證照)為擔任本項業務負責人</td>
-				<td style="width: 17.5587%; height: 18px;" colspan="2">單位三項業務各一人負責</td>
-			</tr>
-		</tbody>
-	</table>
+	<form id="inputForm">
+		<table style="border-collapse: collapse; width: 100%;" border="1">
+			<tbody>
+				<tr>
+					<td style="width: 20%;">單位名稱</td>
+					<td style="width: 28.6162%;"><div id="unitName"></div></td>
+					<td style="width: 22.2193%;">作業人員</td>
+					<td style="width: 9.16449%;"><div id="workMan"></div></td>
+					<td style="width: 20%;"><div id="userName"></div></td>
+				</tr>
+			</tbody>
+		</table>
+		<br>
+		<table style="border-collapse: collapse; width: 100%; height: 126px;"
+			border="1">
+			<tbody>
+				<tr style="height: 18px;">
+					<td style="width: 15.9922%; height: 18px;">姓名</td>
+					<td style="width: 34.0078%; height: 18px;"><select id="user" name="user"></select></td>
+					<td style="width: 17.5587%; height: 18px;">職稱</td>
+					<td style="width: 32.4413%; height: 18px;"><div id="jobName"></div></td>
+				</tr>
+				<tr style="height: 18px;">
+					<td style="width: 15.9922%; height: 18px;">手機(選項)</td>
+					<td style="width: 34.0078%; height: 18px;"><input type="text" id="phone" name="phone" /></td>
+					<td style="width: 17.5587%; height: 18px;">email</td>
+					<td style="width: 32.4413%; height: 18px;"><input type="text" id="email" name="email" /></td>
+				</tr>
+				<tr style="height: 18px;">
+					<td style="width: 15.9922%; height: 18px;">證書種類</td>
+					<td style="width: 34.0078%; height: 18px;"><select id="certificateType" name="certificateType"></select></td>
+					<td style="width: 17.5587%; height: 18px;">證書字號</td>
+					<td style="width: 32.4413%; height: 18px;"></td>
+				</tr>
+				<tr style="height: 18px;">
+					<td style="width: 15.9922%; height: 18px;">核發單位</td>
+					<td style="width: 34.0078%; height: 18px;"><select id="certificateUnit" name="certificateUnit"></select></td>
+					<td style="width: 17.5587%; height: 18px;">取得日期</td>
+					<td style="width: 32.4413%; height: 18px;"><input id="gotDate" name="gotDate" type="text" readonly="readonly" /></td>
+				</tr>
+				<tr style="height: 18px;">
+					<td style="width: 15.9922%; height: 18px;">報名費用</td>
+					<td style="width: 34.0078%; height: 18px;"><input type="text" id="phone" name="phone" /></td>
+					<td style="width: 17.5587%; height: 18px;">派訓單位</td>
+					<td style="width: 32.4413%; height: 18px;"><select id="gotUnit" name="gotUnit"></select></td>
+				</tr>
+				<tr style="height: 18px;">
+					<td style="width: 15.9922%; height: 18px;">審核人員</td>
+					<td style="width: 34.0078%; height: 18px;"><select id="reviewer" name="reviewer"></select></td>
+					<td style="width: 17.5587%; height: 18px;">備註(退休)</td>
+					<td style="width: 32.4413%; height: 18px;">&nbsp;</td>
+				</tr>
+				<tr style="height: 18px;">
+					<td style="width: 15.9922%; height: 18px;" colspan="2">該員(所持本證照)為擔任本項業務負責人</td>
+					<td style="width: 17.5587%; height: 18px;" colspan="2">
+						<input id="isResponsible_1" name="isResponsible" type="radio" value="1"/>是
+				        <input id="isResponsible_0" name="isResponsible" type="radio" value="0"/>否
+				        <br>
+				                  單位三項業務各一人負責
+				    </td>
+				</tr>
+			</tbody>
+		</table>
+	</form>
 	<br>
 	<div style="text-align: center;">
 		<button type="submit" id="saveBtn">儲存</button>
@@ -67,44 +74,22 @@
 	<div id="printDiv">
 		<table style="border-collapse: collapse; width: 100%; height: 108px;" border="1">
 		  <thead>
-		    <tr style="height: 18px;">
-		      <td style="width: 28.1332%; height: 18px;">業務負責人職稱</td>
-		      <td style="width: 14.295%; height: 18px;">姓名</td>
-		      <td style="width: 22.389%; height: 18px;">手機</td>
-		      <td style="width: 35.1828%; height: 18px;">EMAIL</td>
+		    <tr>
+		    	<td >姓名</td>
+		      	<td >職稱</td>
+		      	<td >證書種類</td>
+		      	<td >證書字號</td>
+		      	<td >核發單位</td>
+		      	<td >取得日期</td>
+		      	<td >報名費用</td>
+		      	<td >派訓單位</td>
+		      	<td >審核人員</td>
+		      	<td >申請狀態</td>
+		      	<td >負責單位本項業務</td>
 		    </tr>
 		  </thead>
 		  <tbody id="tbody">
-		  	<tr>
-		  		<td>單位主管</td>
-		  		<td></td>
-		  		<td></td>
-		  		<td></td>
-		  	</tr>
-		  	<tr>
-		  		<td>職業安全衛生主管</td>
-		  		<td></td>
-		  		<td></td>
-		  		<td></td>
-		  	</tr>
-		  	<tr>
-		  		<td>總務</td>
-		  		<td></td>
-		  		<td></td>
-		  		<td></td>
-		  	</tr>
-		  	<tr>
-		  		<td>防火管理員</td>
-		  		<td></td>
-		  		<td></td>
-		  		<td></td>
-		  	</tr>
-		  	<tr>
-		  		<td>急救人員</td>
-		  		<td></td>
-		  		<td></td>
-		  		<td></td>
-		  	</tr>
+		  
 		  </tbody>
 		</table>
 	</div>
@@ -114,7 +99,6 @@
 		<button type="submit" id="backBtn">回首頁</button>
 	</div>
 	<br>
-	<div>
 </div>
 
 
@@ -122,13 +106,16 @@
 	//需要用的JS
 	require([ "jquery", "jquery_validate", "jsgrid", "jquery_ui" ], function(
 			jquery, jquery_validate, jsgrid, jquery_ui) {
+		
+		var tempData;
+		
 		//頁面讀取後執行
 		$(document).ready(function() {
 			
-			createSelect();
+			//createSelect();
 			
 			$.ajax({
- 			    url: "/"+CONFIG.SYSTEM_NAME + '/unitData/api/getUnitByUser',
+ 			    url: "/"+CONFIG.SYSTEM_NAME + '/certificate/api/getDefaultData',
  			   	contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
  			    async: false,
  			    type: "GET",
@@ -157,25 +144,76 @@
 		});
 	});
 	
-	function createSelect(){
-		$.ajax({
-			    url: "/"+CONFIG.SYSTEM_NAME + '/unitData/api/getUnitUserList',
-			   	contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
-			    async: false,
-			    type: "GET",
-			    success: function(data, textStatus){   
-			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
-		    		 alert("沒有權限");
-		    	 }else{		    		 
-		    		 $.each(data, function( index, item ) {
-	    				$('#affairs').append($('<option>').val(item.rocId).text(item.name));
-	    			});
-		    	 }
-			    },
-			    error: function (data, textStatus, errorThrown) {
-			        console.log(data);
-			    },
-			});
+	function createSelect(id, data, key, val){
+		$.each(data, function( index, item ) {
+			$('#' + id).append($('<option>').val(item[key]).text(item[val]));
+		});
+	}
+	
+	function setData(data){
+		//第一行資訊
+		if(data.unit){
+			$("#unitName").text(data.unit.unitName);	
+		}
+		if(data.loginUser){		
+			$("#userName").text(data.loginUser.name);
+		}
+		$("#workMan").text(data.workMan);
+		//資料存起來
+		tempData = data;
+		
+		//長姓名
+		createSelect("user", data.userList, "rocId", "name");
+		//證書種類
+		createSelect("certificateType", data.certificateTypeList, "cfgValue", "cfgValue");
+		//核發單位
+		createSelect("certificateUnit", data.certificateUnitList, "cfgValue", "cfgValue");
+		//審核人員
+		createSelect("reviewer", data.managerList, "rocId", "name");
+		//派訓單位
+		createSelect("gotUnit", data.unitList, "unitId", "unitName");
+		
+		//長下面表格
+		createTable(data.certificateList);
+		
+	}
+	
+	function createTable(data){
+		$.each(data, function( index, item ) {
+			var tr = $('<tr/>');
+			var td = $('<td/>');			
+			tr.append(td.clone().html( getUserName(tempData.userList, item.rocId).name) );
+			tr.append(td.clone().html( getUserName(tempData.userList, item.rocId).jobName) );
+			tr.append(td.clone().html( item.certificateType) );
+			tr.append(td.clone().html( item.certificateName) );
+			tr.append(td.clone().html( item.certificateUnit) );
+			tr.append(td.clone().html( item.gotDate) );
+			tr.append(td.clone().html( item.gotFee) );
+			tr.append(td.clone().html( item.gotTrainUnit) );
+			tr.append(td.clone().html( item.reviewId) );
+			if(item.reviewTime){
+				tr.append(td.clone().html("已審核") );	
+			}else{
+				tr.append(td.clone().html("未審核") );
+			}			
+			if(item.isResponsible){
+				tr.append(td.clone().html("是") );	
+			}else{
+				tr.append(td.clone().html("否") );
+			}
+			$("#tbody").append(tr);
+		});
+	}
+	
+	function getUserName(data, userId){
+	    var	user;
+		$.each(data, function( index, item ) {
+			if(item.rocId == userId){
+				user = item;
+				return false; 
+			}
+		});
+		return user;
 	}
 	
 	

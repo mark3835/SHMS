@@ -245,7 +245,7 @@ public class CertificateAction extends GenericAction<Certificate> {
 					" FROM CERTIFICATE as c,User as user, unit as unit , unit as trainUnit " + 
 					" WHERE c.roc_id = user.roc_id and user.unit_id = unit.unit_id  and c.GET_TRAIN_UNIT = trainUnit.unit_id   ";
 			List<Map> dataResult = certificateService.getListBySQLQuery(sql);
-			jsonInString = new GsonBuilder().setDateFormat("yyyy/MM/dd").create().toJson(dataResult);
+			jsonInString = new GsonBuilder().setDateFormat(SystemConfig.DATE_FORMAT.BASIC_DATE_FORMATE_STRING).create().toJson(dataResult);
 		} catch (Exception e) {
 			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
@@ -359,8 +359,12 @@ public class CertificateAction extends GenericAction<Certificate> {
 			//取得證書種類選項
 			Config certificateType = new Config();
 			certificateType.setCfgInUse(SystemConfig.CFG_IN_USE.CFG_IN_USE_TRUE);
-			certificateType.setCfgType(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE);
+			certificateType.setCfgType(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_SAVEMANAGER);
 			List<Config> certificateTypeList = configService.getList(certificateType);
+			certificateType.setCfgType(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_FIREHELPER);
+			certificateTypeList.addAll(configService.getList(certificateType));
+			certificateType.setCfgType(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_HELPER);
+			certificateTypeList.addAll(configService.getList(certificateType));
 			result.put("certificateTypeList", certificateTypeList);
 			//取得核發單位選項
 			Config certificateUnit = new Config();
@@ -373,26 +377,50 @@ public class CertificateAction extends GenericAction<Certificate> {
 			List<Unit> unitList = unitService.getList(new Unit());
 			result.put("unitList", unitList);
 			
+			//取得單位人員選項
 			//取得單位證照表單資料
 			User queryUser = new User();
 			queryUser.setIsLeave(SystemConfig.USER_IS_LEAVE.IS_LEAVE_FALSE);
 			queryUser.setUnitId(loginUser.getUnitId());
-			
 			List<User> userList = userService.getList(queryUser);
+			result.put("userList", userList);
 			List<String> userIdList = new ArrayList<String>();
 			for(User user:userList) {
 				userIdList.add(user.getRocId());
 			}
+			//取得單位證照
 			List<Certificate> certificateList = certificateService.getByRocIds(userIdList);
 			result.put("certificateList", certificateList);
+			
+			//取得審核人
+			List<User> managerList = userService.getManagers(loginUser);
+			result.put("managerList", managerList);
 						
-			jsonInString = new Gson().toJson(result);
+			jsonInString =  new GsonBuilder().setDateFormat(SystemConfig.DATE_FORMAT.BASIC_DATE_FORMATE_STRING).create().toJson(result);
 		} catch (Exception e) {
 			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);
 		}
 
 		return jsonInString;
+	}
+	
+	@RequestMapping(value = "/certificate/api/getUserData", method = RequestMethod.POST)
+	public @ResponseBody String getUserData(@RequestBody String data) {
+		HashMap resultMap = new HashMap();
+		try {
+			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);	
+			User user = userService.getByRocid(MapUtils.getString(map, "rocId"));
+			resultMap.put("userData", user);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			log.error("",e);
+			errorLogService.addErrorLog(this.getClass().getName(), e);
+			resultMap.put("result", "error");
+			resultMap.put("errorMsg", e.getMessage());
+		}
+
+		return new Gson().toJson(resultMap);
 	}
 
 }

@@ -3,6 +3,7 @@ package tcb.shms.module.dao;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaBuilder.In;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
@@ -22,10 +23,12 @@ public class CertificateDao extends GenericHibernateDao<Certificate>{
 		CriteriaBuilder cb = getSession().getCriteriaBuilder();
 		CriteriaQuery<Certificate> cr = cb.createQuery(Certificate.class);
 		Root<Certificate> root = cr.from(Certificate.class);
-		cr.select(root);
+		cr.select(root);		
+		In<Object> in = cb.in(root.get("rocId"));
 		for(String rocId:rocIds) {
-			cr.where(cb.equal(root.get("rocId"), rocId));
+			in.value(rocId);
 		}
+		cr.where(in);
 		Query<Certificate> query = getSession().createQuery(cr);
 		List<Certificate> results = query.getResultList();
 		
