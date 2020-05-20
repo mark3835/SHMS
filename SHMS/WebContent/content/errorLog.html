@@ -1,7 +1,7 @@
 <div>
 	<h4>錯誤LOG</h4>
 	
-	<div id="jsGrid" >
+	<div id="jsGrid" style="word-wrap:break-word" >
 	</div>
 </div>
 
@@ -11,7 +11,7 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 	//頁面讀取後執行
 	$(document).ready(function(){
 	    $.ajax({
-		    url: "/"+CONFIG.SYSTEM_NAME + '/loginLog/api/getLoginLog',
+		    url: "/"+CONFIG.SYSTEM_NAME + '/errorLog/api/getErrorLog',
 		    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 		    async: false,
 		    type: "GET",
@@ -38,7 +38,7 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 		    	 
 		    	        fields: [
 		    	        	{ title:"錯誤class", name: "errorClass", type: "text", width: 50 },
-		    	            { title:"錯誤訊息", name: "errorMsg", type: "text", width: 150 },
+		    	            { title:"錯誤訊息", name: "errorMsg", type: "text", width: 250 },
 		    	            { title:"發生時間", name: "errorTime", type: "text	", width: 50 }
 		    	        ]
 		    	    });

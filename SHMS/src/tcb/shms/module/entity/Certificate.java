@@ -88,6 +88,12 @@ public class Certificate extends GenericEntity{
 	private int isResponsible;
 	
 	/**
+	 * 審核人 ID
+	 */
+	@Column(name="MEMO")
+	private String memo;
+	
+	/**
 	 *    建立人
 	 */
 	@Column(name="CREATE_ID")
@@ -222,7 +228,13 @@ public class Certificate extends GenericEntity{
 	public void setEditTime(Timestamp editTime) {
 		this.editTime = editTime;
 	}
-	
-	
+
+	public String getMemo() {
+		return memo;
+	}
+
+	public void setMemo(String memo) {
+		this.memo = memo;
+	}
 
 }

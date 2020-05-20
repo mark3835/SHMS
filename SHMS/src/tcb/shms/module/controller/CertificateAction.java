@@ -380,7 +380,7 @@ public class CertificateAction extends GenericAction<Certificate> {
 			//取得單位人員選項
 			//取得單位證照表單資料
 			User queryUser = new User();
-			queryUser.setIsLeave(SystemConfig.USER_IS_LEAVE.IS_LEAVE_FALSE);
+			queryUser.setIsLeave(SystemConfig.USER.IS_LEAVE_FALSE);
 			queryUser.setUnitId(loginUser.getUnitId());
 			List<User> userList = userService.getList(queryUser);
 			result.put("userList", userList);
@@ -404,14 +404,29 @@ public class CertificateAction extends GenericAction<Certificate> {
 
 		return jsonInString;
 	}
-	
-	@RequestMapping(value = "/certificate/api/getUserData", method = RequestMethod.POST)
-	public @ResponseBody String getUserData(@RequestBody String data) {
-		HashMap resultMap = new HashMap();
+		
+	@RequestMapping(value = "/certificate/api/saveData", method = RequestMethod.POST)
+	public @ResponseBody String saveData(@RequestBody String data) {
+		HashMap<String,String> resultMap = new HashMap<String, String>();
 		try {
-			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);	
-			User user = userService.getByRocid(MapUtils.getString(map, "rocId"));
-			resultMap.put("userData", user);
+			HashMap<String,Object> requestMap = new Gson().fromJson(data, HashMap.class);	
+			User loginUser = this.getSessionUser();
+			
+			Certificate certificate = new Certificate();
+			certificate.setRocId(MapUtils.getString(requestMap, "rocId"));
+			certificate.setCertificateName(MapUtils.getString(requestMap, "certificateName"));
+			certificate.setCertificateType(MapUtils.getString(requestMap, "certificateType"));
+			certificate.setCertificateUnit(MapUtils.getString(requestMap, "certificateUnit"));
+			certificate.setGotFee(MapUtils.getIntValue(requestMap, "gotFee"));
+			certificate.setGotDate(SystemConfig.DATE_FORMAT.BASIC_DATE_FORMATE.parse(MapUtils.getString(requestMap, "gotDate")));
+			certificate.setGotTrainUnit(MapUtils.getString(requestMap, "gotTrainUnit"));
+			certificate.setReviewId(MapUtils.getString(requestMap, "reviewer"));
+			certificate.setMemo(MapUtils.getString(requestMap, "memo"));
+			certificate.setIsResponsible(MapUtils.getIntValue(requestMap, "isResponsible"));
+			certificate.setCreateId(loginUser.getRocId());
+			certificate.setCreateTime(new Timestamp(System.currentTimeMillis()));
+			certificateService.save(certificate);
+			
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			log.error("",e);

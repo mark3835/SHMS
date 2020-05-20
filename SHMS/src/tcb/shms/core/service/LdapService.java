@@ -198,7 +198,7 @@ public class LdapService {
 				if(attrs.get("telephoneNumber") != null && attrs.get("telephoneNumber").get() != null) {
 					user.setTel(String.valueOf(attrs.get("telephoneNumber").get()));
 				}
-				user.setIsLeave(SystemConfig.USER_IS_LEAVE.IS_LEAVE_FALSE);
+				user.setIsLeave(SystemConfig.USER.IS_LEAVE_FALSE);
 				
 				//已存在 比對資料
 				if(queryList.size() > 0) {
@@ -339,11 +339,11 @@ public class LdapService {
 	 */
 	private void checkLeave(List<String> rocIdList) throws Exception {
 		User queryUser = new User();
-		queryUser.setIsLeave(SystemConfig.USER_IS_LEAVE.IS_LEAVE_FALSE);
+		queryUser.setIsLeave(SystemConfig.USER.IS_LEAVE_FALSE);
 		List<User> userList = userService.getList(queryUser);
 		for(User user:userList) {
 			if(!rocIdList.contains(user.getRocId())) {
-				user.setIsLeave(SystemConfig.USER_IS_LEAVE.IS_LEAVE_TRUE);
+				user.setIsLeave(SystemConfig.USER.IS_LEAVE_TRUE);
 				userService.update(user);
 			}
 		}

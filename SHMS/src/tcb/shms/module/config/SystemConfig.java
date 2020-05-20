@@ -59,8 +59,13 @@ public class SystemConfig {
 		public static final String DEFAULT_CREATE_PATH = "D:/excelFileCreate/";
 	}
 	
-	public static class USER_IS_LEAVE{
+	public static class USER{
 		public static final int IS_LEAVE_TRUE = 1;
 		public static final int IS_LEAVE_FALSE = 0;
+	}
+	
+	public static class CERTIFICATE{
+		public static final int IS_RESPONSIBLE_TRUE = 1;
+		public static final int IS_RESPONSIBLE_FALSE = 0;
 	}
 }

@@ -53,7 +53,7 @@ public class UserService extends GenericService<User>{
 	 */
 	public List<User> getManagers(User user) throws Exception{
 		User queryUser = new User();
-		queryUser.setIsLeave(SystemConfig.USER_IS_LEAVE.IS_LEAVE_FALSE);
+		queryUser.setIsLeave(SystemConfig.USER.IS_LEAVE_FALSE);
 		queryUser.setUnitId(user.getUnitId());
 		List<User> thisUserUnitList = getList(queryUser);
 		List<User> resultList = new ArrayList<User>();
