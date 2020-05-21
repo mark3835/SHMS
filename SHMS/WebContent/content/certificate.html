@@ -44,7 +44,7 @@
 				</tr>
 				<tr style="height: 18px;">
 					<td style="width: 15.9922%; height: 18px;">報名費用</td>
-					<td style="width: 34.0078%; height: 18px;"><input type="text" id="gotFee" name=""gotFee"" /></td>
+					<td style="width: 34.0078%; height: 18px;"><input type="text" id="gotFee" name="gotFee" /></td>
 					<td style="width: 17.5587%; height: 18px;">派訓單位</td>
 					<td style="width: 32.4413%; height: 18px;"><select id="gotTrainUnit" name="gotTrainUnit"></select></td>
 				</tr>
@@ -64,12 +64,12 @@
 				    </td>
 				</tr>
 			</tbody>
-		</table>
-	</form>
+		</table>	
 	<br>
 	<div style="text-align: center;">
 		<button type="submit" id="saveBtn">儲存</button>
 	</div>
+	</form>
 	<br>
 	<div id="printDiv">
 		<table style="border-collapse: collapse; width: 100%; height: 108px;" border="1">
@@ -194,59 +194,6 @@
 		//觸發第一次
 		$("#rocId").change();
 		
-		//檢核
-		$("#validateForm").validate({
-			//錯誤訊息元素預設為label改成p會換行
-			errorElement: "p",
-		    rules: {
-		    	certificateName: {
-		          required: true,
-		          minlength: 1
-		        },
-		        gotDate: {
-		          required: true
-		        },
-		        gotFee: {
-		          required: true
-		          , range: [0, 999999]
-		        }
-		      },
-		      messages: {
-		    	certificateName: {
-		          required: "請輸入證書字號",
-		          minlength: "至少一個字母"
-		        },
-		        gotDate: {
-		          required: "請輸入取得日期"
-		        },
-		        gotFee: {
-		          required: "請輸入取得日期",
-		          range: "不得小於0大於999"
-			    }
-			  },
-			  //檢核後送出
-			  submitHandler: function(form) 
-			   {      
-				  $.ajax({
-					    url: "/"+CONFIG.SYSTEM_NAME + "/loginCheck",
-					    data: '{"account":' + $("#account").val() + ',"pasw":' + $("#passw").val() + '}', //要用雙引號!!
-					    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
-					    async: false,
-					    type: "POST",
-					    success: function(data, textStatus){
-					        if(data == true){
-					        	location.href = "index.html";
-					        }else{
-					        	alert("登入失敗!!");
-					        }
-					    },
-					    error: function (data, textStatus, errorThrown) {
-					        console.log(data);
-					    },
-					});
-			   }  
-		});
-		
 		//清除按鈕
 		$("#clearBtn").click(function(){
 			$("#account").val("");
@@ -318,27 +265,70 @@
 	} 
 	
 	function saveData(){
-		$.ajax({
-		    url: "/"+CONFIG.SYSTEM_NAME + '/certificate/api/saveData',
-		    data: JSON.stringify(getFormData($('#inputForm'))),
-		    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
-		    async: false,
-		    type: "POST",
-		    success: function(data, textStatus){   
-			     if(data && data == "<script>alert('沒有權限')<\/script>"){
-		    		 alert("沒有權限");
-		    	 }else{
-		    		 if(data.result == "success"){
-		    			 alert("儲存成功");
-		    			 loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + "/content/certificate.html");
-		    		 }else if(data.errorMsg){
-		    			 alert(data.errorMsg);
-		    		 }
-		    	 }
-		    },
-		    error: function (data, textStatus, errorThrown) {
-		        console.log(data);
-		    },
-		});
+		
+		//檢核
+		$("#inputForm").validate({
+			//錯誤訊息元素預設為label改成p會換行
+			errorElement: "p",
+		    rules: {
+		    	certificateName: {
+		          required: true,
+		          minlength: 1
+		        },
+		        gotDate: {
+		          required: true
+		        },
+		        gotFee: {
+		          required: true
+		          , range: [0, 999999]
+		        }
+		      },
+		      messages: {
+		    	certificateName: {
+		          required: "請輸入證書字號",
+		          minlength: "至少一個字母"
+		        },
+		        gotDate: {
+		          required: "請輸入取得日期"
+		        },
+		        gotFee: {
+		          required: "請輸入報名費用",
+		          range: "不得小於0大於999999"
+			    }
+			  },
+			  //檢核後送出
+			  submitHandler: function(form) 
+			   {      
+				  
+				  if($("input[name='isResponsible']:checked").val() == "1"){
+					  if(!confirm("選擇該員(所持本證照)為擔任本項業務負責人，若有原負責人，審核後會將原有負責人取代")){
+						  return false;
+					  }
+				  }				  
+				  $.ajax({
+					    url: "/"+CONFIG.SYSTEM_NAME + '/certificate/api/saveData',
+					    data: JSON.stringify(getFormData($('#inputForm'))),
+					    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+					    async: false,
+					    type: "POST",
+					    success: function(data, textStatus){   
+						     if(data && data == "<script>alert('沒有權限')<\/script>"){
+					    		 alert("沒有權限");
+					    	 }else{
+					    		 if(data.result == "success"){
+					    			 alert("儲存成功");
+					    			 loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + "/content/certificate.html");
+					    		 }else if(data.errorMsg){
+					    			 alert(data.errorMsg);
+					    		 }
+					    	 }
+					    },
+					    error: function (data, textStatus, errorThrown) {
+					        console.log(data);
+					    },
+					});
+			   }  
+		});		
 	}
+	
 </script>

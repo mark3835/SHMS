@@ -26,6 +26,7 @@ import com.google.gson.GsonBuilder;
 import tcb.shms.core.controller.GenericAction;
 import tcb.shms.core.service.CsvService;
 import tcb.shms.module.config.SystemConfig;
+import tcb.shms.module.config.SystemConfig.CERTIFICATE;
 import tcb.shms.module.entity.Certificate;
 import tcb.shms.module.entity.Config;
 import tcb.shms.module.entity.Unit;
@@ -154,7 +155,10 @@ public class CertificateAction extends GenericAction<Certificate> {
 					}					
 					if(ceritficate.getReviewId() == null) {
 						ceritficate.setReviewId(reviewName);
-					}					
+					}		
+					//轉檔給審核時間  是以審核時間判斷審核過了沒
+					//這邊從人資來的都算審核過但是沒審核時間 給轉檔當下時間
+					ceritficate.setReviewTime(new Timestamp(System.currentTimeMillis()));
 					
 					if(StringUtils.isNotBlank(saveManager) || StringUtils.isNotBlank(helper) || StringUtils.isNotBlank(fireHelper)) {
 						Unit unit = unitService.getByUnitId(user.getUnitId());
@@ -427,6 +431,111 @@ public class CertificateAction extends GenericAction<Certificate> {
 			certificate.setCreateTime(new Timestamp(System.currentTimeMillis()));
 			certificateService.save(certificate);
 			
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			log.error("",e);
+			errorLogService.addErrorLog(this.getClass().getName(), e);
+			resultMap.put("result", "error");
+			resultMap.put("errorMsg", e.getMessage());
+		}
+
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/certificateReview/api/getReviewData", method = RequestMethod.GET)
+	public @ResponseBody String getReviewData() {
+		Map result = new HashMap();
+		try {
+			User loginUser = this.getSessionUser();
+			
+			//取得待審未核證照
+			List<Certificate> certificateReviewerList = certificateService.getNotReviewReviewerByRocId(loginUser.getRocId());
+			result.put("certificateReviewerList", certificateReviewerList);
+			
+			//取得送出待審證照
+			List<Certificate> certificateCreateIdList = certificateService.getNotReviewCreteIdByRocId(loginUser.getRocId());
+			result.put("certificateCreateIdList", certificateCreateIdList);
+			
+			//取得單位人員資料 為了顯示名字 證照資料只存rocid
+			User queryUser = new User();
+			queryUser.setIsLeave(SystemConfig.USER.IS_LEAVE_FALSE);
+			queryUser.setUnitId(loginUser.getUnitId());
+			List<User> userList = userService.getList(queryUser);
+			result.put("userList", userList);
+			
+		} catch (Exception e) {
+			log.error("",e);
+			errorLogService.addErrorLog(this.getClass().getName(), e);
+		}
+
+		return new Gson().toJson(result);
+	}
+
+	@RequestMapping(value = "/certificateReview/api/submitReview", method = RequestMethod.POST)
+	public @ResponseBody String submitReview(@RequestBody String data) {
+		HashMap<String,String> resultMap = new HashMap<String, String>();
+		try {
+			HashMap<String,Object> requestMap = new Gson().fromJson(data, HashMap.class);	
+			User loginUser = this.getSessionUser();
+			
+			//更新單位 負責人 
+			Certificate certificate = certificateService.getById(MapUtils.getLong(requestMap, "ID"));
+			//如果有勾負責單位負責人的話
+			if(certificate.getIsResponsible() == SystemConfig.CERTIFICATE.IS_RESPONSIBLE_TRUE) {
+				//取得證照人
+				User certificateUser = userService.getByRocid(certificate.getRocId());
+				//取得單位負責人
+				Unit certificateUnit = unitService.getByUnitId(certificateUser.getRocId());
+				//取得證書種類選項
+				Config certificateTypeQuery = new Config();
+				certificateTypeQuery.setCfgInUse(SystemConfig.CFG_IN_USE.CFG_IN_USE_TRUE);
+				certificateTypeQuery.setCfgType(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_SAVEMANAGER);
+				List<Config> certificateTypeList = configService.getList(certificateTypeQuery);
+				certificateTypeQuery.setCfgType(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_FIREHELPER);
+				certificateTypeList.addAll(configService.getList(certificateTypeQuery));
+				certificateTypeQuery.setCfgType(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_HELPER);
+				certificateTypeList.addAll(configService.getList(certificateTypeQuery));
+				for(Config certificateTypeConfig:certificateTypeList) {
+					if(certificateTypeConfig.getCfgName().equals(certificate.getCertificateType())) {
+						if(certificateTypeConfig.getCfgType().equals(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_SAVEMANAGER)) {
+							if(StringUtils.isNotBlank(certificateUnit.getSaveManager())) {
+								Certificate certificateQuery = new Certificate();
+								certificateQuery.setRocId(certificateUnit.getSaveManager());
+								certificateQuery.setIsResponsible(SystemConfig.CERTIFICATE.IS_RESPONSIBLE_TRUE);
+							}
+						}else if(certificateTypeConfig.getCfgType().equals(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_FIREHELPER)) {
+							certificateUnit.getFireHelper();
+						}else if(certificateTypeConfig.getCfgType().equals(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_HELPER)) {
+							certificateUnit.getHelper();
+						}
+					}
+				}
+				
+			}
+			
+			Map dataMap = new HashMap();
+			Map whereMap = new HashMap();			
+			dataMap.put("reviewTime", new Timestamp(System.currentTimeMillis()));
+			whereMap.put("id", MapUtils.getLong(requestMap, "ID"));			
+			certificateService.updateWithColumn(dataMap, whereMap);
+			
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			log.error("",e);
+			errorLogService.addErrorLog(this.getClass().getName(), e);
+			resultMap.put("result", "error");
+			resultMap.put("errorMsg", e.getMessage());
+		}
+
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/certificateReview/api/cancelReview", method = RequestMethod.POST)
+	public @ResponseBody String cancelReview(@RequestBody String data) {
+		HashMap<String,String> resultMap = new HashMap<String, String>();
+		try {
+			HashMap<String,Object> requestMap = new Gson().fromJson(data, HashMap.class);	
+			certificateService.deleteById(MapUtils.getLong(requestMap, "ID"));
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			log.error("",e);

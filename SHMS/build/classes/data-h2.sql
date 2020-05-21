@@ -58,6 +58,7 @@ insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) v
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '證照資料', '/content/certificateSetting.html', '4', 26, 'certificateSetting/api/');
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '單位職安業務基本資料維護', '/content/unitData.html', null, 100 , 'unitData/api/');
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '職業安全衛生訓練證照登陸', '/content/certificate.html', null, 200, 'certificate/api/');
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '證照審核', '/content/certificateReview.html', null, 201, 'certificateReview/api/');
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '安全狀況反應通報表作業', '7', null, 340);
 
 --AUTHORIZASTION
@@ -78,6 +79,24 @@ insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 14, 7);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 15, 7);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 16, 7);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 17, 7);
+
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 1,  6);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 2,  6);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 3,  6);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 4,  6);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 5,  6);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 6,  6);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 7,  6);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 8,  6);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 9,  6);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 10, 6);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 11, 6);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 12, 6);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 13, 6);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 14, 6);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 15, 6);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 16, 6);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 17, 6);
 
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 1,  1);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 2,  1);

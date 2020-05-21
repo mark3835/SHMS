@@ -1,0 +1,209 @@
+
+<div>
+	<div style="word-wrap:break-word;">
+		<h4>待簽核證照</h4>
+		<table style="border-collapse: collapse; width: 100%; height: 108px;" border="1">
+		  <thead>
+		    <tr>
+		    	<td >姓名</td>
+		      	<td >職稱</td>
+		      	<td >證書種類</td>
+		      	<td >證書字號</td>
+		      	<td >核發單位</td>
+		      	<td >取得日期</td>
+		      	<td >報名費用</td>
+		      	<td >派訓單位</td>
+		      	<td >審核人員</td>
+		      	<td >申請狀態</td>
+		      	<td >負責單位<br>本項業務</td>
+		      	<td >MEMO</td>
+		      	<td >執行動作</td>
+		    </tr>
+		  </thead>
+		  <tbody id="tbody">
+		  
+		  </tbody>
+		</table>
+	</div>
+</div>
+
+
+<script>
+	//需要用的JS
+	require([ "jquery", "jquery_validate", "jsgrid", "jquery_ui" ], function(
+			jquery, jquery_validate, jsgrid, jquery_ui) {
+		
+		var tempData;
+		
+		//頁面讀取後執行
+		$(document).ready(function() {
+			
+			$.ajax({
+ 			    url: "/"+CONFIG.SYSTEM_NAME + '/certificateReview/api/getReviewData',
+ 			   	contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+ 			    async: false,
+ 			    type: "GET",
+ 			    success: function(data, textStatus){   
+ 			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+			    		 alert("沒有權限");
+			    	 }else{
+			    		 console.log(data);
+			    		 createTable(data);
+			    	 }
+ 			    },
+ 			    error: function (data, textStatus, errorThrown) {
+ 			        console.log(data);
+ 			    },
+ 			});
+			
+		});
+	});
+	
+	
+	function createTable(data){
+		$.each(data.certificateCreateIdList, function( index, item ) {
+			var tr = $('<tr/>');
+			tr.value = item;
+			var td = $('<td/>');			
+			tr.append(td.clone().html( getUserName(data.userList, item.rocId).name) );
+			tr.append(td.clone().html( getUserName(data.userList, item.rocId).jobName) );
+			tr.append(td.clone().html( item.certificateType) );
+			tr.append(td.clone().html( item.certificateName) );
+			tr.append(td.clone().html( item.certificateUnit) );
+			tr.append(td.clone().html( item.gotDate) );
+			tr.append(td.clone().html( item.gotFee) );
+			tr.append(td.clone().html( item.gotTrainUnit) );
+			tr.append(td.clone().html( item.reviewId) );
+			if(item.reviewTime){
+				tr.append(td.clone().html("已審核") );	
+			}else{
+				tr.append(td.clone().html("未審核") );
+			}			
+			if(item.isResponsible){
+				tr.append(td.clone().html("是") );	
+			}else{
+				tr.append(td.clone().html("否") );
+			}
+			tr.append(td.clone().html(item.memo) );
+			var cancelBtn = $('<button/>', {
+			        text: "取消", 
+			        id: 'btn_cancel_' + item.id,
+			        click: function () { 
+			        	if(confirm("確認取消?")){
+			        		cancelBtnClick(item.id);
+			        	}			        	
+			        }
+			    });
+			tr.append(td.clone().append(cancelBtn) );
+			$("#tbody").append(tr);
+		});
+		$.each(data.certificateReviewerList, function( index, item ) {
+			var tr = $('<tr/>');
+			tr.value = item;
+			var td = $('<td/>');			
+			tr.append(td.clone().html( getUserName(data.userList, item.rocId).name) );
+			tr.append(td.clone().html( getUserName(data.userList, item.rocId).jobName) );
+			tr.append(td.clone().html( item.certificateType) );
+			tr.append(td.clone().html( item.certificateName) );
+			tr.append(td.clone().html( item.certificateUnit) );
+			tr.append(td.clone().html( item.gotDate) );
+			tr.append(td.clone().html( item.gotFee) );
+			tr.append(td.clone().html( item.gotTrainUnit) );
+			tr.append(td.clone().html( item.reviewId) );
+			if(item.reviewTime){
+				tr.append(td.clone().html("已審核") );	
+			}else{
+				tr.append(td.clone().html("未審核") );
+			}			
+			if(item.isResponsible){
+				tr.append(td.clone().html("是") );	
+			}else{
+				tr.append(td.clone().html("否") );
+			}
+			tr.append(td.clone().html(item.memo) );
+			var submitBtn = $('<button/>', {
+		        text: "核准", 
+		        id: 'btn_submit_' + item.id,
+		        click: function () { 
+		        	if(confirm("確認核准?")){
+		        		submitBtnClick(item.id);
+		        	}	
+		        	
+		        }
+		    });
+			var cancelBtn = $('<button/>', {
+		        text: "取消", //set text 1 to 10
+		        id: 'btn_cancel_' + item.id,
+		        click: function () { 
+		        	if(confirm("確認取消?")){
+		        		cancelBtnClick(item.id);
+		        	}	
+		        }
+		    });
+			tr.append(td.clone().append(submitBtn).append(cancelBtn) );
+			$("#tbody").append(tr);
+		});
+	}
+	
+	function getUserName(data, userId){
+	    var	user;
+		$.each(data, function( index, item ) {
+			if(item.rocId == userId){
+				user = item;
+				return false; 
+			}
+		});
+		return user;
+	}
+	
+	function submitBtnClick(id){
+		$.ajax({
+			    url: "/"+CONFIG.SYSTEM_NAME + '/certificateReview/api/submitReview',
+			    data: '{"ID":' + id + '}',
+			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+			    async: false,
+			    type: "POST",
+			    success: function(data, textStatus){   
+			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+		    		 alert("沒有權限");
+		    	 }else{
+		    		 if(data.result == "success"){
+		    			 alert("審核成功");
+		    			 loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + "/content/certificateReview.html");
+		    		 }else if(data.errorMsg){
+		    			 alert(data.errorMsg);
+		    		 }
+		    	 }
+			    },
+			    error: function (data, textStatus, errorThrown) {
+			        console.log(data);
+			    },
+			});
+	}
+	
+	function cancelBtnClick(id){
+		$.ajax({
+		    url: "/"+CONFIG.SYSTEM_NAME + '/certificateReview/api/cancelReview',
+		    data: '{"ID":' + id + '}',
+		    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+		    async: false,
+		    type: "POST",
+		    success: function(data, textStatus){   
+		    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+	    		 alert("沒有權限");
+	    	 }else{
+	    		 if(data.result == "success"){
+	    			 alert("刪除成功");
+	    			 loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + "/content/certificateReview.html");
+	    		 }else if(data.errorMsg){
+	    			 alert(data.errorMsg);
+	    		 }
+	    	 }
+		    },
+		    error: function (data, textStatus, errorThrown) {
+		        console.log(data);
+		    },
+		});
+	}
+	
+</script>

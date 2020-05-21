@@ -34,4 +34,33 @@ public class CertificateDao extends GenericHibernateDao<Certificate>{
 		
 		return results;
 	}
+	
+	public List<Certificate> getNotReviewReviewerByRocId(String rocId) throws Exception {
+		Assert.notNull(rocId, "rocId不得為空");
+		
+		CriteriaBuilder cb = getSession().getCriteriaBuilder();
+		CriteriaQuery<Certificate> cr = cb.createQuery(Certificate.class);
+		Root<Certificate> root = cr.from(Certificate.class);
+		cr.select(root);
+		cr.where(cb.equal(root.get("reviewId"), rocId), cb.isNull(root.get("reviewTime")));
+		Query<Certificate> query = getSession().createQuery(cr);
+		List<Certificate> results = query.getResultList();
+		
+		return results;
+	}
+	
+	public List<Certificate> getNotReviewCreteIdByRocId(String rocId) throws Exception {
+		Assert.notNull(rocId, "rocId不得為空");
+		
+		CriteriaBuilder cb = getSession().getCriteriaBuilder();
+		CriteriaQuery<Certificate> cr = cb.createQuery(Certificate.class);
+		Root<Certificate> root = cr.from(Certificate.class);
+		cr.select(root);
+		cr.where(cb.equal(root.get("createId"), rocId), cb.isNull(root.get("reviewTime")));
+		Query<Certificate> query = getSession().createQuery(cr);
+		List<Certificate> results = query.getResultList();
+		
+		return results;
+	}
+	
 }
