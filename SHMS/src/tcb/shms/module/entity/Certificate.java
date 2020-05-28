@@ -61,7 +61,7 @@ public class Certificate extends GenericEntity{
 	 * 取得金額 考照費
 	 */
 	@Column(name="GET_FEE")
-	private int gotFee;
+	private Integer gotFee;
 	
 	/**
 	 *  取得時單位

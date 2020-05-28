@@ -16,9 +16,9 @@ import tcb.shms.core.entity.GenericEntity;
  * @version 2020/3/19
  */
 @Entity
-@Table(name="EVENT_SAFE_NOTIFICATION_BACK")
+@Table(name="EVENT_SAFE_NOTIFICATION_RETURN")
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class EventSafeNotificationBack extends GenericEntity{
+public class EventSafeNotificationReturn extends GenericEntity{
 
 	/**
 	 * 
@@ -40,8 +40,8 @@ public class EventSafeNotificationBack extends GenericEntity{
 	/**
 	 *    回報時間
 	 */
-	@Column(name="BACK_TIME")
-	private Timestamp backTime;
+	@Column(name="RETURN_TIME")
+	private Timestamp returnTime;
 	
 	/**
 	 *    是否平安
@@ -113,12 +113,12 @@ public class EventSafeNotificationBack extends GenericEntity{
 		this.unitId = unitId;
 	}
 
-	public Timestamp getBackTime() {
-		return backTime;
+	public Timestamp getReturnTime() {
+		return returnTime;
 	}
 
-	public void setBackTime(Timestamp backTime) {
-		this.backTime = backTime;
+	public void setReturnTime(Timestamp returnTime) {
+		this.returnTime = returnTime;
 	}
 
 	public int getIsSafe() {

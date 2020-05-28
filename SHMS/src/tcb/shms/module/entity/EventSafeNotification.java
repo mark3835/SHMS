@@ -24,6 +24,12 @@ public class EventSafeNotification extends GenericEntity{
 	 * 
 	 */
 	private static final long serialVersionUID = 5804311089729989927L;
+	
+	/**
+	 * 通報事件編號
+	 */
+	@Column(name="EVENT_KEY")
+	private String eventKey;
 
 	/**
 	 * 通報事件名稱
@@ -94,5 +100,13 @@ public class EventSafeNotification extends GenericEntity{
 	public void setEditTime(Timestamp editTime) {
 		this.editTime = editTime;
 	}
-	
+
+	public String getEventKey() {
+		return eventKey;
+	}
+
+	public void setEventKey(String eventKey) {
+		this.eventKey = eventKey;
+	}
+		
 }

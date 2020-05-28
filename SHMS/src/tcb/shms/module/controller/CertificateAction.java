@@ -26,7 +26,6 @@ import com.google.gson.GsonBuilder;
 import tcb.shms.core.controller.GenericAction;
 import tcb.shms.core.service.CsvService;
 import tcb.shms.module.config.SystemConfig;
-import tcb.shms.module.config.SystemConfig.CERTIFICATE;
 import tcb.shms.module.entity.Certificate;
 import tcb.shms.module.entity.Config;
 import tcb.shms.module.entity.Unit;
@@ -130,9 +129,9 @@ public class CertificateAction extends GenericAction<Certificate> {
 					ceritficate.setGotDate(parseDate(gotDate));
 					ceritficate.setGotTrainUnit(getUnitIdByName(gotTrainUnit));
 					if(StringUtils.isNotBlank(saveManager) || StringUtils.isNotBlank(helper) || StringUtils.isNotBlank(fireHelper)) {
-						ceritficate.setIsResponsible(1);
+						ceritficate.setIsResponsible(SystemConfig.CERTIFICATE.IS_RESPONSIBLE_TRUE);
 					}else {
-						ceritficate.setIsResponsible(0);
+						ceritficate.setIsResponsible(SystemConfig.CERTIFICATE.IS_RESPONSIBLE_FALSE);
 					}
 					ceritficate.setCreateId("system");
 					ceritficate.setCreateTime(new Timestamp(System.currentTimeMillis()));
@@ -470,6 +469,28 @@ public class CertificateAction extends GenericAction<Certificate> {
 
 		return new Gson().toJson(result);
 	}
+	
+	@RequestMapping(value = "/certificateReview/api/getReviewDataCount", method = RequestMethod.GET)
+	public @ResponseBody String getReviewDataCount() {
+		Map result = new HashMap();
+		try {
+			User loginUser = this.getSessionUser();
+			
+			//取得待審未核證照
+			List<Certificate> certificateReviewerList = certificateService.getNotReviewReviewerByRocId(loginUser.getRocId());
+			result.put("certificateReviewerListCount", certificateReviewerList.size());
+			
+			//取得送出待審證照
+			List<Certificate> certificateCreateIdList = certificateService.getNotReviewCreteIdByRocId(loginUser.getRocId());
+			result.put("certificateCreateIdListCount", certificateCreateIdList.size());
+			
+		} catch (Exception e) {
+			log.error("",e);
+			errorLogService.addErrorLog(this.getClass().getName(), e);
+		}
+
+		return new Gson().toJson(result);
+	}
 
 	@RequestMapping(value = "/certificateReview/api/submitReview", method = RequestMethod.POST)
 	public @ResponseBody String submitReview(@RequestBody String data) {
@@ -483,41 +504,109 @@ public class CertificateAction extends GenericAction<Certificate> {
 			//如果有勾負責單位負責人的話
 			if(certificate.getIsResponsible() == SystemConfig.CERTIFICATE.IS_RESPONSIBLE_TRUE) {
 				//取得證照人
-				User certificateUser = userService.getByRocid(certificate.getRocId());
+				User certificateUser = userService.getByRocid(certificate.getRocId());				
 				//取得單位負責人
-				Unit certificateUnit = unitService.getByUnitId(certificateUser.getRocId());
-				//取得證書種類選項
-				Config certificateTypeQuery = new Config();
-				certificateTypeQuery.setCfgInUse(SystemConfig.CFG_IN_USE.CFG_IN_USE_TRUE);
-				certificateTypeQuery.setCfgType(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_SAVEMANAGER);
-				List<Config> certificateTypeList = configService.getList(certificateTypeQuery);
-				certificateTypeQuery.setCfgType(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_FIREHELPER);
-				certificateTypeList.addAll(configService.getList(certificateTypeQuery));
-				certificateTypeQuery.setCfgType(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_HELPER);
-				certificateTypeList.addAll(configService.getList(certificateTypeQuery));
-				for(Config certificateTypeConfig:certificateTypeList) {
-					if(certificateTypeConfig.getCfgName().equals(certificate.getCertificateType())) {
-						if(certificateTypeConfig.getCfgType().equals(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_SAVEMANAGER)) {
-							if(StringUtils.isNotBlank(certificateUnit.getSaveManager())) {
-								Certificate certificateQuery = new Certificate();
-								certificateQuery.setRocId(certificateUnit.getSaveManager());
-								certificateQuery.setIsResponsible(SystemConfig.CERTIFICATE.IS_RESPONSIBLE_TRUE);
+				Unit certificateUnit = unitService.getByUnitId(certificateUser.getUnitId());
+				
+				String certificateType = certificateService.checkCertificateType(certificate.getCertificateType());
+				if(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_SAVEMANAGER.equals(certificateType)) {
+					if(StringUtils.isNotBlank(certificateUnit.getSaveManager())) {
+						Certificate certificateQuery = new Certificate();
+						certificateQuery.setRocId(certificateUnit.getSaveManager());
+						certificateQuery.setIsResponsible(SystemConfig.CERTIFICATE.IS_RESPONSIBLE_TRUE);
+						List<Certificate> queryCertificateList = certificateService.getList(certificateQuery);
+						//同一個人能有很多證照 或是負責防火 又負責急救 就會撈出LIST LIST裡又是負責的 
+						//只有一筆就直接更新
+						if(queryCertificateList.size() == 1) {
+							updateCertificateIsResponsible(queryCertificateList.get(0).getId(), SystemConfig.CERTIFICATE.IS_RESPONSIBLE_FALSE);
+							//超過一筆就要比較證照類別 是安全主管 防火管理人 還是急救人員 
+						}else if(queryCertificateList.size() > 1) {
+							for(Certificate certificateItem:queryCertificateList) {
+								//正常一個類別的證照裡只有一個負責的是true 但不管有複數個也全更新吧
+								if(certificateItem.getIsResponsible() == SystemConfig.CERTIFICATE.IS_RESPONSIBLE_TRUE) {
+									String certificateItemType = certificateService.checkCertificateType(certificateItem.getCertificateType());		
+									if(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_SAVEMANAGER.equals(certificateItemType)) {
+										updateCertificateIsResponsible(certificateItem.getId(), SystemConfig.CERTIFICATE.IS_RESPONSIBLE_FALSE);
+									}
+								}
 							}
-						}else if(certificateTypeConfig.getCfgType().equals(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_FIREHELPER)) {
-							certificateUnit.getFireHelper();
-						}else if(certificateTypeConfig.getCfgType().equals(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_HELPER)) {
-							certificateUnit.getHelper();
 						}
 					}
+					//更新單位裡的負責人
+					Map dataMap = new HashMap();
+					Map whereMap = new HashMap();			
+					dataMap.put("saveManager", certificateUser.getRocId());
+					whereMap.put("id", certificateUnit.getId());		
+					unitService.updateWithColumn(dataMap, whereMap);
+				}else if(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_FIREHELPER.equals(certificateType)) {
+					if(StringUtils.isNotBlank(certificateUnit.getFireHelper())) {
+						Certificate certificateQuery = new Certificate();
+						certificateQuery.setRocId(certificateUnit.getFireHelper());
+						certificateQuery.setIsResponsible(SystemConfig.CERTIFICATE.IS_RESPONSIBLE_TRUE);
+						List<Certificate> queryCertificateList = certificateService.getList(certificateQuery);
+						//同一個人能有很多證照 或是負責防火 又負責急救 就會撈出LIST LIST裡又是負責的 
+						//只有一筆就直接更新
+						if(queryCertificateList.size() == 1) {
+							updateCertificateIsResponsible(queryCertificateList.get(0).getId(), SystemConfig.CERTIFICATE.IS_RESPONSIBLE_FALSE);
+							//超過一筆就要比較證照類別 是安全主管 防火管理人 還是急救人員 
+						}else if(queryCertificateList.size() > 1) {
+							for(Certificate certificateItem:queryCertificateList) {
+								//正常一個類別的證照裡只有一個負責的是true 但不管有複數個也全更新吧
+								if(certificateItem.getIsResponsible() == SystemConfig.CERTIFICATE.IS_RESPONSIBLE_TRUE) {
+									String certificateItemType = certificateService.checkCertificateType(certificateItem.getCertificateType());		
+									if(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_FIREHELPER.equals(certificateItemType)) {
+										updateCertificateIsResponsible(certificateItem.getId(), SystemConfig.CERTIFICATE.IS_RESPONSIBLE_FALSE);
+									}
+								}
+							}
+						}
+					}
+					//更新單位裡的負責人
+					Map dataMap = new HashMap();
+					Map whereMap = new HashMap();			
+					dataMap.put("fireHelper", certificateUser.getRocId());
+					whereMap.put("id", certificateUnit.getId());		
+					unitService.updateWithColumn(dataMap, whereMap);
+				}else if(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_HELPER.equals(certificateType)) {
+					if(StringUtils.isNotBlank(certificateUnit.getHelper())) {
+						Certificate certificateQuery = new Certificate();
+						certificateQuery.setRocId(certificateUnit.getHelper());
+						certificateQuery.setIsResponsible(SystemConfig.CERTIFICATE.IS_RESPONSIBLE_TRUE);
+						List<Certificate> queryCertificateList = certificateService.getList(certificateQuery);
+						//同一個人能有很多證照 或是負責防火 又負責急救 就會撈出LIST LIST裡又是負責的 
+						//只有一筆就直接更新
+						if(queryCertificateList.size() == 1) {
+							updateCertificateIsResponsible(queryCertificateList.get(0).getId(), SystemConfig.CERTIFICATE.IS_RESPONSIBLE_FALSE);
+							//超過一筆就要比較證照類別 是安全主管 防火管理人 還是急救人員 
+						}else if(queryCertificateList.size() > 1) {
+							for(Certificate certificateItem:queryCertificateList) {
+								//正常一個類別的證照裡只有一個負責的是true 但不管有複數個也全更新吧
+								if(certificateItem.getIsResponsible() == SystemConfig.CERTIFICATE.IS_RESPONSIBLE_TRUE) {
+									String certificateItemType = certificateService.checkCertificateType(certificateItem.getCertificateType());		
+									if(SystemConfig.CFG_TYPE.CERTIFICATE_TYPE_HELPER.equals(certificateItemType)) {
+										updateCertificateIsResponsible(certificateItem.getId(), SystemConfig.CERTIFICATE.IS_RESPONSIBLE_FALSE);
+									}
+								}
+							}
+						}
+					}
+					//更新單位裡的負責人
+					Map dataMap = new HashMap();
+					Map whereMap = new HashMap();			
+					dataMap.put("helper", certificateUser.getRocId());
+					whereMap.put("id", certificateUnit.getId());		
+					unitService.updateWithColumn(dataMap, whereMap);
 				}
 				
-			}
-			
+			}			
 			Map dataMap = new HashMap();
 			Map whereMap = new HashMap();			
 			dataMap.put("reviewTime", new Timestamp(System.currentTimeMillis()));
 			whereMap.put("id", MapUtils.getLong(requestMap, "ID"));			
 			certificateService.updateWithColumn(dataMap, whereMap);
+
+			//TODO
+			//之後有要算負責時間要加上一段
 			
 			resultMap.put("result", "success");
 		} catch (Exception e) {
@@ -528,6 +617,14 @@ public class CertificateAction extends GenericAction<Certificate> {
 		}
 
 		return new Gson().toJson(resultMap);
+	}
+	
+	private void updateCertificateIsResponsible(Long id, Integer isResponsible) throws Exception {
+		Map dataMap = new HashMap();
+		Map whereMap = new HashMap();			
+		dataMap.put("isResponsible", isResponsible);
+		whereMap.put("id", id);			
+		certificateService.updateWithColumn(dataMap, whereMap);
 	}
 	
 	@RequestMapping(value = "/certificateReview/api/cancelReview", method = RequestMethod.POST)

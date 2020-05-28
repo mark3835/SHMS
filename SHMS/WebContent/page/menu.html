@@ -37,6 +37,22 @@ require(["jquery"], function (jquery) {
 			var menu = $("#menuTemplate").clone();
 			menu.removeAttr("id");
 			menu.show();
+			//證照審核 顯示數量
+			if(name == "證照審核"){
+				$.ajax({
+				    url: "/"+CONFIG.SYSTEM_NAME + "/certificateReview/api/getReviewDataCount",
+				    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+				    async: false,
+				    type: "GET",
+				    success: function(data, textStatus){
+				    	name = name + "(送審" + data.certificateCreateIdListCount + "/待審" + data.certificateReviewerListCount + ")";
+				    },
+				    error: function (data, textStatus, errorThrown) {
+				        console.log(data);
+				    },
+				});
+			}
+			
 			menu.html(menu.html().replace('@MENU_NAME@',name));
 			$("#menuUl").append(menu);
 			menu.click(function(){

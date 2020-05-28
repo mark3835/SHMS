@@ -1,9 +1,8 @@
 --USER
-insert into USER(ID, ROC_ID, ACCOUNT, NAME, UNIT_ID, JOB_NAME, JOB_LEVEL, PHONE, EMAIL, IS_LEAVE) values(1, 'sa', 'sa', 'MARK', '', 'CCC', '5', '0911', 'XXX@XX', 0);
-insert into USER(ID, ROC_ID, ACCOUNT, NAME, UNIT_ID, JOB_NAME, JOB_LEVEL, PHONE, EMAIL, IS_LEAVE) values(2, 'H123', 'MARK3835', '黃信康', 'A01419', '打雜', '7', '0911', 'YYY@XX', 0);
-insert into USER(ID, ROC_ID, ACCOUNT, NAME, UNIT_ID, JOB_NAME, JOB_LEVEL, PHONE, EMAIL, IS_LEAVE) values(3, 'A1', 'RRRRR', '主管1', 'A01419', '打雜', '13', '0911', 'YYY@XX', 0);
-insert into USER(ID, ROC_ID, ACCOUNT, NAME, UNIT_ID, JOB_NAME, JOB_LEVEL, PHONE, EMAIL, IS_LEAVE) values(4, 'A2', 'YYYYY', '主管2', 'A01419', '打雜', '12', '0911', 'YYY@XX', 0);
-insert into USER(ID, ROC_ID, ACCOUNT, NAME, UNIT_ID, JOB_NAME, JOB_LEVEL, PHONE, EMAIL, IS_LEAVE) values(5, 'A3', 'UUUUU', '主管3', 'A01419', '打雜', '12', '0911', 'YYY@XX', 0);
+insert into USER(ID, ROC_ID, ACCOUNT, NAME, UNIT_ID, JOB_NAME, JOB_LEVEL, PHONE, EMAIL, IS_LEAVE) values(1, 'H123', 'MARK3835', '黃信康', 'A01419', '打雜', '7', '0911', 'YYY@XX', 0);
+insert into USER(ID, ROC_ID, ACCOUNT, NAME, UNIT_ID, JOB_NAME, JOB_LEVEL, PHONE, EMAIL, IS_LEAVE) values(2, 'A1', 'A1', '主管1', 'A01419', '打雜', '13', '0911', 'YYY@XX', 0);
+insert into USER(ID, ROC_ID, ACCOUNT, NAME, UNIT_ID, JOB_NAME, JOB_LEVEL, PHONE, EMAIL, IS_LEAVE) values(3, 'A2', 'A2', '主管2', 'A01419', '打雜', '12', '0911', 'YYY@XX', 0);
+insert into USER(ID, ROC_ID, ACCOUNT, NAME, UNIT_ID, JOB_NAME, JOB_LEVEL, PHONE, EMAIL, IS_LEAVE) values(4, 'A3', 'A3', '主管3', 'A01419', '打雜', '12', '0911', 'YYY@XX', 0);
 
 --UNIT
 insert into UNIT(UNIT_ID ,UNIT_NAME ,MANAGER ,SAVE_MANAGER ,FIRE_HELPER ,HELPER ,AFFAIRS , TEL) values('A01419', '資訊OA科', 'A1', 'A2', 'A3', 'H123', 'H123', '02-123456789');
@@ -41,25 +40,32 @@ values( 'CERTIFICATE_UNIT_2', 'CERTIFICATE_UNIT', '核發單位2', '中國生產
 insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE, CREATE_ID, CREATE_TIME, EDIT_ID, EDIT_TIME) 
 values( 'CERTIFICATE_UNIT_3', 'CERTIFICATE_UNIT', '核發單位3', '財團法人消防教育學術研究基金會', '核發單位3', 1, 'MARK', sysdate(), 'MARK', sysdate());
 
+insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE, CREATE_ID, CREATE_TIME, EDIT_ID, EDIT_TIME) 
+values( 'EVENT_EFFECT_TYPE_1', 'EVENT_EFFECT_TYPE', '影響類別1', '交通(電信)中斷致相關系統或營業受阻', '影響類別1', 1, 'MARK', sysdate(), 'MARK', sysdate());
+insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE, CREATE_ID, CREATE_TIME, EDIT_ID, EDIT_TIME) 
+values( 'EVENT_EFFECT_TYPE_2', 'EVENT_EFFECT_TYPE', '影響類別2', '行舍、設備受損致營業受阻', '影響類別2', 1, 'MARK', sysdate(), 'MARK', sysdate());
+insert into CONFIG(CFG_KEY, CFG_TYPE, CFG_NAME, CFG_VALUE, CFG_MEMO, CFG_IN_USE, CREATE_ID, CREATE_TIME, EDIT_ID, EDIT_TIME) 
+values( 'EVENT_EFFECT_TYPE_3', 'EVENT_EFFECT_TYPE', '影響類別3', '有人員傷(亡)', '影響類別3', 1, 'MARK', sysdate(), 'MARK', sysdate());
+
 --MENU
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '平安通報作業', null, null, 10);
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '平安通報公告', '4', '1', 11);
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '平安通報資料維護', '4', '1', 12); 
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '平安通報公告', '/content/eventSafeNotification/eventSafeNotification.html', '1', 11, 'eventSafeNotification/api/'); 
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '平安通報設定', '/content/eventSafeNotification/eventSafeNotificationSetting.html', '1', 12, 'eventSafeNotificationSetting/api/');
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '平安通報審核', '/content/eventSafeNotification/eventSafeNotificationReturnReview.html', '1', 132, 'eventSafeNotificationReturnReview/api/');
 insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '後台管理', null, null, 20, 'login/api/'); 
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '系統參數設定', '/content/configSetting.html', '4', 21, 'config/api/'); 
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '公告設定', '/content/announcementSetting.html', '4', 22, 'announcement/api/'); 
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( 'MENU設定', '/content/menuSetting.html', '4', 23, 'menu/api/');
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '權限設定', '/content/authorizastionSetting.html', '4', 24, 'auth/api/');
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '登入LOG', '/content/loginLog.html', '4', 25, 'loginLog/api/'); 
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '錯誤LOG', '/content/errorLog.html', '4', 26, 'errorLog/api/'); 
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '批次設定', '/content/batchSetting.html', '4', 26, 'errorLog/api/'); 
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '使用者資料', '/content/userSetting.html', '4', 26, 'user/api/'); 
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '單位資料', '/content/unitSetting.html', '4', 26, 'unitSetting/api/');
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '證照資料', '/content/certificateSetting.html', '4', 26, 'certificateSetting/api/');
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '單位職安業務基本資料維護', '/content/unitData.html', null, 100 , 'unitData/api/');
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '職業安全衛生訓練證照登陸', '/content/certificate.html', null, 200, 'certificate/api/');
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '證照審核', '/content/certificateReview.html', null, 201, 'certificateReview/api/');
-insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER) values( '安全狀況反應通報表作業', '7', null, 340);
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '系統參數設定', '/content/setting/configSetting.html', '5', 21, 'config/api/'); 
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '公告設定', '/content/setting/announcementSetting.html', '5', 22, 'announcement/api/'); 
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( 'MENU設定', '/content/setting/menuSetting.html', '5', 23, 'menu/api/');
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '權限設定', '/content/setting/authorizastionSetting.html', '5', 24, 'auth/api/');
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '登入LOG', '/content/setting/loginLog.html', '5', 25, 'loginLog/api/'); 
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '錯誤LOG', '/content/setting/errorLog.html', '5', 26, 'errorLog/api/'); 
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '批次設定', '/content/setting/batchSetting.html', '5', 26, 'batchSetting/api/'); 
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '使用者資料', '/content/setting/userSetting.html', '5', 26, 'user/api/'); 
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '單位資料', '/content/setting/unitSetting.html', '5', 26, 'unitSetting/api/');
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '證照資料', '/content/setting/certificateSetting.html', '5', 26, 'certificateSetting/api/');
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '單位職安業務基本資料維護', '/content/unitData/unitData.html', null, 100 , 'unitData/api/');
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '職業安全衛生訓練證照登陸', '/content/certificate/certificate.html', null, 200, 'certificate/api/');
+insert into MENU(MENU_NAME, MENU_URL, MENU_TIER_TWO, MENU_ORDER, MENU_API_URL) values( '證照審核', '/content/certificate/certificateReview.html', null, 201, 'certificateReview/api/');
 
 --AUTHORIZASTION
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 1,  7);

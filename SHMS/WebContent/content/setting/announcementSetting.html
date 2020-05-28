@@ -1,36 +1,24 @@
 <div>
-	<h4>參數設定</h4>
+	<h4>公告設定</h4>
 	
-	    <div id="jsGrid" style="word-wrap:break-word;"></div>
+	    <div id="jsGrid"></div>
 </div>
 
 <div id="tableDialog" style="display:none">
-    <form id="dialogForm">
+    <form id="dialogForm"  enctype="multipart/form-data">
         <div class="details-form-field">
-            <label for="cfgType">參數類型</label>
-            <input id="cfgType" name="cfgType" type="text" />
+            <label for="announcementDate">發佈日期</label>
+            <input id="announcementDate" name="announcementDate" type="text" readonly="readonly" />
         </div>
         <div class="details-form-field">
-            <label for="cfgKey">參數KEY</label>
-            <input id="cfgKey" name="cfgKey" type="text" />
+            <label for="announcementName">公告標題</label>
+            <textarea  id="announcementName" name="announcementName"  rows="5" cols="60"></textarea>
         </div>
         <div class="details-form-field">
-            <label for="cfgName">參數名稱</label>
-            <input id="cfgName" name="cfgName" type="text" />
+            <label for="announcementFile">上傳附件(限定pdf)</label>
+            <input id="announcementFile" name="announcementFile" type="file" accept="application/pdf"/>
         </div>
-        <div class="details-form-field">
-            <label for="cfgValue">參數值</label>
-            <input id="cfgValue" name="cfgValue" type="text" />
-        </div>
-        <div class="details-form-field">
-            <label for="cfgMemo">參數註記</label>
-            <textarea  id="cfgMemo" name="cfgMemo" ></textarea>
-        </div>
-        <div class="details-form-field">
-            <label for="cfgInUse">參數是否啟用</label>
-            <input id="cfgInUse_1" name="cfgInUse" type="radio" value="1"/>啟用
-            <input id="cfgInUse_0" name="cfgInUse" type="radio" value="0"/>停用
-        </div>
+        <input type="hidden" id="id" name="id">
         <div class="details-form-field">
             <button type="submit" id="dialogFormSubmit">送出</button>
         </div>
@@ -42,9 +30,17 @@
 require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, jquery_validate, jsgrid, jquery_ui ) {
 	//頁面讀取後執行
 	$(document).ready(function(){
+		
+		$.validator.addMethod('filesize', function(value, element, param) {
+            // param = size (en bytes) 
+            // element = element to validate (<input>)
+            // value = value of the element (file name)
+            $.validator.messages.filesize = "檔案大小超過限制";
+            return this.optional(element) || (element.files[0].size <= param) 
+        });
 			
 		 $.ajax({
-			    url: "/"+CONFIG.SYSTEM_NAME + '/config/api/getConfig',
+			    url: "/"+CONFIG.SYSTEM_NAME + '/announcement/api/getAnnouncement',
 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    async: false,
 			    type: "GET",
@@ -71,10 +67,14 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		            return data;
 			    		        },
 			    		        insertItem: function(insertingItem) {
+			    		        	
+			    		        	var formData = new FormData($('#dialogForm')[0]);
+			    		        	
 			    		        	$.ajax({
-			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/config/api/addConfig',
-			    		 			    data: JSON.stringify(insertingItem),
-			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/announcement/api/addAnnouncement',
+			    		 			    data: formData,
+			    		 			    processData: false,  // tell jQuery not to process the data
+			    		 		        contentType: false,  // tell jQuery not to set contentType
 			    		 			    async: false,
 			    		 			    type: "POST",
 			    		 			    success: function(data, textStatus){   
@@ -95,10 +95,12 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		 			});
 			    		        },
 			    		        updateItem: function(updatingItem) { 
+			    		        	var formData = new FormData($('#dialogForm')[0]);
 			    		        	$.ajax({
-			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/config/api/updateConfig',
-			    		 			    data: JSON.stringify(updatingItem),
-			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/announcement/api/updateAnnouncement',
+			    		 			    data: formData,
+			    		 			    processData: false,  // tell jQuery not to process the data
+			    		 		        contentType: false,  // tell jQuery not to set contentType
 			    		 			    async: false,
 			    		 			    type: "POST",
 			    		 			    success: function(data, textStatus){   
@@ -119,7 +121,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		        },
 			    		        deleteItem: function(deletingItem) {
 			    		        	 $.ajax({
-			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/config/api/deleteConfig',
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/announcement/api/deleteAnnouncement',
 			    		 			    data: '{"ID":' + deletingItem.id + '}',
 			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    		 			    async: false,
@@ -143,12 +145,14 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		    },
 			    	 
 			    	        fields: [
-			    	            { title:"參數類型", name: "cfgType", type: "text", width: 100, validate: "required" },
-			    	            { title:"參數KEY", name: "cfgKey", type: "text	", width: 200 },
-			    	            { title:"參數名稱", name: "cfgName", type: "text	", width: 130 },
-			    	            { title:"參數值", name: "cfgValue", type: "text	", width: 200 },
-			    	            { title:"參數註記", name: "cfgMemo", type: "text	", width: 130 },
-			    	            { title:"參數是否啟用", name: "cfgInUse", type: "text	", width: 50 },
+			    	        	{ title:"發佈時間", name: "announcementDate", type: "text", width: 60 },
+			    	            { title:"公告標題", name: "announcementName", type: "text	", width: 160 },
+			    	            { title:"檔案名稱", name: "fileName", type: "text	", width: 120 },
+			    	            { title:"檔案路徑", name: "filePath", type: "text	", width: 140 },
+			    	            { title:"建立者", name: "createId", type: "text	", width: 50 },
+			    	            { title:"建立時間", name: "createTime", type: "text	", width: 60 },
+			    	            { title:"修改者", name: "editId", type: "text	", width: 50 },
+			    	            { title:"修改時間", name: "editTime", type: "text	", width: 60 },
 			    	            { type: "control",
 			                        editButton: false,
 			                        modeSwitchButton: false,
@@ -164,7 +168,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 				    	 		 showDetailsDialog("Edit", args.item);
 				            },
 			    		    deleteConfirm: function(item) {
-			                    return "參數\"" + item.cfgName + "\"確認刪除?";
+			                    return "公告 \"" + item.announcementName + "\" 確認刪除?";
 			                },
 			    	    });
 			    	 }
@@ -177,63 +181,51 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 		 $("#tableDialog").dialog({
 			 title: "參數設定",
 	         autoOpen: false,
-	         width: 350,
+	         width: 550,
 	         close: function() {
 	             $("#dialogForm").validate().resetForm();
 	             $("#dialogForm").find(".error").removeClass("error");
+	             $('#announcementDate').datepicker('disable');
+	         },
+		 	 open: function (event, ui)
+	         {
+		 		 $('#announcementDate').datepicker('enable');
 	         }
 	     });
 		 
 		 var formSubmitHandler = $.noop;
 		 
 		 var showDetailsDialog = function(dialogType, item) {
-             $("#cfgType").val(item.cfgType);
-             $("#cfgKey").val(item.cfgKey);
-             $("#cfgName").val(item.cfgName);
-             $("#cfgValue").val(item.cfgValue);
-             $("#cfgMemo").val(item.cfgMemo);
-             $("input[name*='cfgInUse']").prop("checked", false);
-             if(dialogType === "Add"){
-            	 $("input[name*='cfgInUse'][value='1']").prop("checked", true);
-             }else{
-            	 $("input[name*='cfgInUse'][value='" + item.cfgInUse + "']").prop("checked", true);
-             }
+             $("#announcementDate").val(item.announcementDate);
+             $("#announcementName").val(item.announcementName);
+             $("#id").val(item.id);
+             
              formSubmitHandler = function() {
             	 saveItem(item, dialogType === "Add");
              };
 
-             $("#tableDialog").dialog("option", "title", dialogType + " 參數").dialog("open");
+             $("#tableDialog").dialog("option", "title", dialogType + " announcement").dialog("open");
          };
 	
 	     $("#dialogForm").validate({
 	    	 //錯誤訊息元素預設為label改成p會換行
 			 errorElement: "p",
 	         rules: {
-	        	 cfgType: { required: true, rangelength: [2, 20] },
-	        	 cfgKey: { required: true, rangelength: [4, 30] },
-	        	 cfgName: { required: true, rangelength: [2, 30] },
-	        	 cfgValue: { required: true, rangelength: [2, 30] },
-	        	 cfgInUse: { required: true }
+	        	 announcementDate: { required: true},
+	        	 announcementName: { required: true, maxlength:150, minlength:2},
+	        	 announcementFile: { required: true, filesize: 1024000 }
 	         },
 	         messages: {
-	        	 	cfgType:{
-			          required: "請輸入參數類型",
-			          rangelength: "密碼長度不得小於2個字母大於20個字母"
+	        	 	announcementDate:{
+			          required: "請輸入公告時間"
 			        },
-			     	cfgKey:{
-			          required: "請輸入參數key",
-			          rangelength: "參數key不得小於4個字母大於30個字母"
+	        	 	announcementName:{
+			          required: "請輸入公告名稱",
+			          minlength:"至少2個字元",
+					  maxlength:"最多150個字元"
 			        },
-			     	cfgName:{
-			          required: "請輸入參數名稱",
-			          rangelength: "參數名稱不得小於4個字母大於30個字母"
-			        },
-			     	cfgValue:{
-			          required: "請輸入參數值",
-			          rangelength: "參數值不得小於4個字母大於30個字母"
-			        },
-			        cfgInUse:{
-			          required: "請選擇是否啟用"
+			        announcementFile:{
+			          required: "請選擇檔案，檔案只能是PDF檔，最大不得超過10MB"
 			        }
 	         },
 	         submitHandler: function() {
@@ -242,21 +234,17 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 	     });
 	     
 	     var saveItem = function(item, isNew) {
-             $.extend(item, {
-            	 cfgType: $("#cfgType").val(),
-            	 cfgKey: $("#cfgType").val(),
-            	 cfgName: $("#cfgName").val(),
-            	 cfgValue: $("#cfgValue").val(),
-            	 cfgMemo: $("#cfgMemo").val(),
-            	 cfgInUse: $('input[name*=cfgInUse]:checked').val()
-             });
-             
              $("#jsGrid").jsGrid(isNew ? "insertItem" : "updateItem", item);
-
              $("#tableDialog").dialog("close");
+             bodyHref("/content/setting/announcementSetting.html");
          };
 	
-	    
+        $( "#announcementDate" ).datepicker({
+      	  	dateFormat: "yy/mm/dd",
+    		disabled: true ,
+    		minDate: new Date()         
+       	});
+        
 	});
 });
 </script>

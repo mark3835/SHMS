@@ -1,0 +1,111 @@
+<div>
+	<h2 style="text-align: center;">平安通報資料維護</h2>
+	<form id="inputForm">
+		<table style="border-collapse: collapse; width: 100%; height: 36px;" border="1">
+		  <tbody>
+		    <tr style="height: 18px;">
+		      <td style="width: 25.7441%; height: 18px;">單位名稱</td>
+		      <td style="width: 15.4308%; height: 18px;"><div id="unitName"></div></td>
+		      <td style="width: 14.9087%; height: 18px;">作業人員</td>
+		      <td style="width: 24.0469%; height: 18px;"><div id="workMan"></div></td>
+		      <td style="width: 19.8695%; height: 18px;"><div id="userName"></div></td>
+		    </tr>
+		    <tr>
+		      <td style="width: 25.7441%;">開始通報時間</td>
+		      <td style="height: 18px;" colspan="4"></td>
+		    </tr>
+		    <tr>
+		      <td style="width: 25.7441%;">事件編號</td>
+		      <td colspan="4"></td>
+		    </tr>
+		    <tr>
+		      <td style="width: 25.7441%;">事件名稱</td>
+		      <td colspan="4"></td>
+		    </tr>
+		    <tr>
+		      <td style="width: 25.7441%;">是否平安</td>
+		      <td colspan="4"></td>
+		    </tr>
+		    <tr>
+		      <td style="width: 25.7441%;">影響類別</td>
+		      <td colspan="4"></td>
+		    </tr>
+		    <tr>
+		      <td style="width: 25.7441%;">簡要說明重要案情<br>(200中文字以內)</td>
+		      <td colspan="4"></td>
+		    </tr>
+		  </tbody>
+		</table>
+		<div style="text-align: center;">
+			<button type="submit" id="saveBtn">儲存</button>
+			<button type="button" id="deleteBtn">刪除</button>
+			<button type="button" id="returnBtn">回平安通報公告首頁</button>
+		</div>
+	</form>
+</div>
+
+<script type="text/javascript">
+//需要用的JS
+require(["jquery", "jsgrid"], function (jquery, jsgrid) {
+	//頁面讀取後執行
+	$(document).ready(function(){
+	    $.ajax({
+		    url: "/"+CONFIG.SYSTEM_NAME + '/eventSafeNotification/api/getEventSafeNotification',
+		    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+		    async: false,
+		    type: "GET",
+		    success: function(data, textStatus){    	
+		    	
+		    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+		    		 alert("沒有權限");
+		    	 }else{
+		    		//第一行資訊
+		    			initPage(data);
+		    	 
+			    	 $("#jsGrid").jsGrid({
+		    	        width: "100%",
+		    	 
+		    	        heading: true,
+		    		    filtering: false,
+		    		    inserting: false,
+		    		    editing: false,
+		    		    selecting: true,
+		    		    sorting: true,
+		    		    paging: true,
+		    		    pageLoading: false,
+		    		    pageSize: 10,
+		    	 
+		    	        data: data.eventSafeNotificationList,
+		    	 
+		    	        fields: [
+		    	            { title:"事件編號", name: "eventKey", type: "text", width: 100 },
+		    	            { title:"事件名稱", name: "eventName", type: "text	", width: 200 }
+		    	        ],
+		    	        rowClick: function(args) {
+			    	 		window.open("/"+CONFIG.SYSTEM_NAME + '/announcement/getAnnouncementFile/' + args.item.id , '_blank');
+			            }
+		    	    });
+		    	 }
+		    	 
+		    },
+		    error: function (data, textStatus, errorThrown) {
+		        console.log(data);
+		    },
+		});
+    
+	});  
+	
+	
+	function initPage(data){
+		//第一行資訊
+		if(data.unit){
+			$("#unitName").text(data.unit.unitName);	
+		}
+		if(data.loginUser){		
+			$("#userName").text(data.loginUser.name);
+		}
+		$("#workMan").text(data.workMan);
+	}
+	
+});
+</script>

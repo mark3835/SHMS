@@ -1,35 +1,18 @@
 <div>
-	<h4>參數設定</h4>
+	<h4>平安通報設定</h4>
 	
 	    <div id="jsGrid"></div>
 </div>
 
-<div id="tableDialog" >
+<div id="tableDialog" style="display:none">
     <form id="dialogForm">
         <div class="details-form-field">
-            <label for="cfgType">參數類型</label>
-            <input id="cfgType" name="cfgType" type="text" />
+            <label for="eventKey">事件編號</label>
+            <input id="eventKey" name="eventKey" type="text" readonly="readonly"/>
         </div>
         <div class="details-form-field">
-            <label for="cfgKey">參數KEY</label>
-            <input id="cfgKey" name="cfgKey" type="text" />
-        </div>
-        <div class="details-form-field">
-            <label for="cfgName">參數名稱</label>
-            <input id="cfgName" name="cfgName" type="text" />
-        </div>
-        <div class="details-form-field">
-            <label for="cfgValue">參數值</label>
-            <input id="cfgValue" name="cfgValue" type="text" />
-        </div>
-        <div class="details-form-field">
-            <label for="cfgMemo">參數註記</label>
-            <textarea  id="cfgMemo" name="cfgMemo" ></textarea>
-        </div>
-        <div class="details-form-field">
-            <label for="cfgInUse">參數是否停用</label>
-            <input id="cfgInUse_0" name="cfgInUse" type="radio" value="0"/>啟用
-            <input id="cfgInUse_1" name="cfgInUse" type="radio" value="1"/>停用
+            <label for="eventName">事件名稱</label>
+            <input id="eventName" name="eventName" type="text" />
         </div>
         <div class="details-form-field">
             <button type="submit" id="dialogFormSubmit">送出</button>
@@ -37,27 +20,12 @@
     </form>
 </div>
 
-<link rel="stylesheet" href="../resources/css/bootstrap.min.css">
-<link rel="stylesheet" href="../resources/css/jsgrid.min.css">
-<link rel="stylesheet" href="../resources/css/jsgrid-theme.min.css">
-<link rel="stylesheet" href="../resources/css/jquery-ui.min.css">
-<link rel="stylesheet" href="../resources/css/jquery-ui.theme.min.css">
 <style>
-	//讓TD裡面文字會換行
-	.jsgrid-table td{
+/* 讓表格內容換行 */
+.jsgrid-table{
 		word-wrap:break-word;
 	}
-	
-	//錯誤訊息style
-	input.error { border: 1px solid red; }
-	p.error {
-	  padding-left: 16px;
-	  font-weight: bold;
-	  color: #EA5200;
-	}
 </style>
-<script src="../resources/js/require.js"></script>
-<script src="../resources/js/requireConfig.js"/></script>
 
 <script>
 //需要用的JS
@@ -66,7 +34,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 	$(document).ready(function(){
 			
 		 $.ajax({
-			    url: "/"+CONFIG.SYSTEM_NAME + '/config/api/getConfig',
+			    url: "/"+CONFIG.SYSTEM_NAME + '/eventSafeNotification/api/getEventSafeNotification',
 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    async: false,
 			    type: "GET",
@@ -86,15 +54,16 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		    paging: true, //启动分页 
 			    		    pageLoading: false, //是否支持分页加载数据（相比较paging，这个属性是向服务器请求数据时要求分页，而paging是本地进行分页，无关服务器）
 			    		    autoload: true,
+			    		    pageSize: 10,
 			    		    
 			    		    controller: {
 			    		        loadData: function(filter) {
-			    		            return data;
+			    		            return data.eventSafeNotificationList;
 			    		        },
-			    		        insertItem: function(insertingClient) {
+			    		        insertItem: function(insertingItem) {
 			    		        	$.ajax({
-			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/config/api/addConfig',
-			    		 			    data: JSON.stringify(insertingClient),
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/eventSafeNotificationSetting/api/addEventSafeNotification',
+			    		 			    data: JSON.stringify(insertingItem),
 			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    		 			    async: false,
 			    		 			    type: "POST",
@@ -103,10 +72,10 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    					    		 alert("沒有權限");
 			    					    	 }else{
 			    					    		 if(data.result == "success"){
-			    					    			 insertingClient.id = data.id;
+			    					    			 insertingItem.id = data.id;
 			    					    			 alert("新增成功");
-			    					    		 }else{
-			    					    			 alert("新增失敗");
+			    					    		 }else if(data.errorMsg){
+			    					    			 alert(data.errorMsg);
 			    					    		 }
 			    					    	 }
 			    		 			    },
@@ -115,10 +84,10 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		 			    },
 			    		 			});
 			    		        },
-			    		        updateItem: function(updatingClient) { 
+			    		        updateItem: function(updatingItem) { 
 			    		        	$.ajax({
-			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/config/api/updateConfig',
-			    		 			    data: JSON.stringify(updatingClient),
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/eventSafeNotificationSetting/api/updateEventSafeNotification',
+			    		 			    data: JSON.stringify(updatingItem),
 			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    		 			    async: false,
 			    		 			    type: "POST",
@@ -128,8 +97,8 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    					    	 }else{
 			    					    		 if(data.result == "success"){
 			    					    			 alert("更新成功");
-			    					    		 }else{
-			    					    			 alert("更新失敗");
+			    					    		 }else if(data.errorMsg){
+			    					    			 alert(data.errorMsg);
 			    					    		 }
 			    					    	 }
 			    		 			    },
@@ -138,10 +107,10 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		 			    },
 			    		 			});
 			    		        },
-			    		        deleteItem: function(deletingClient) {
+			    		        deleteItem: function(deletingItem) {
 			    		        	 $.ajax({
-			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/config/api/deleteConfig',
-			    		 			    data: '{"ID":' + deletingClient.id + '}',
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/eventSafeNotificationSetting/api/deleteEventSafeNotification',
+			    		 			    data: '{"ID":' + deletingItem.id + '}',
 			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    		 			    async: false,
 			    		 			    type: "POST",
@@ -151,8 +120,8 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    					    	 }else{
 			    					    		 if(data.result == "success"){
 			    					    			 alert("刪除成功");
-			    					    		 }else{
-			    					    			 alert("刪除失敗");
+			    					    		 }else if(data.errorMsg){
+			    					    			 alert(data.errorMsg);
 			    					    		 }
 			    					    	 }
 			    		 			    },
@@ -164,12 +133,8 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		    },
 			    	 
 			    	        fields: [
-			    	            { title:"參數類型", name: "cfgType", type: "text", width: 100, validate: "required" },
-			    	            { title:"參數KEY", name: "cfgKey", type: "text	", width: 200 },
-			    	            { title:"參數名稱", name: "cfgName", type: "text	", width: 130 },
-			    	            { title:"參數值", name: "cfgValue", type: "text	", width: 200 },
-			    	            { title:"參數註記", name: "cfgMemo", type: "text	", width: 130 },
-			    	            { title:"參數是否停用", name: "cfgInUse", type: "text	", width: 50 },
+			    	            { title:"事件編號", name: "eventKey", type: "text", width: 100 },
+			    	            { title:"事件名稱", name: "eventName", type: "text	", width: 200 },
 			    	            { type: "control",
 			                        editButton: false,
 			                        modeSwitchButton: false,
@@ -185,7 +150,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 				    	 		 showDetailsDialog("Edit", args.item);
 				            },
 			    		    deleteConfirm: function(item) {
-			                    return "參數\"" + item.cfgName + "\"確認刪除?";
+			                    return "事件編號 \"" + item.eventKey + "\" 確認刪除?";
 			                },
 			    	    });
 			    	 }
@@ -195,8 +160,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    },
 			});
 	
-		 
-		 var tableDialog = $("#tableDialog").dialog({
+		 $("#tableDialog").dialog({
 			 title: "參數設定",
 	         autoOpen: false,
 	         width: 350,
@@ -206,51 +170,53 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 	         }
 	     });
 		 
+		 var formSubmitHandler = $.noop;
+		 
 		 var showDetailsDialog = function(dialogType, item) {
-             $("#cfgType").val(item.cfgType);
-             $("#cfgKey").val(item.cfgKey);
-             $("#cfgName").val(item.cfgName);
-             $("#cfgValue").val(item.cfgValue);
-             $("#cfgMemo").val(item.cfgMemo);             
-             $("input[name*='cfgInUse'][value='" + item.cfgInUse + "']").prop("checked", true);
-			 alert("showDetailsDialog:" + dialogType);
+             $("#eventKey").val(item.eventKey);
+             $("#eventName").val(item.eventName);
              formSubmitHandler = function() {
             	 saveItem(item, dialogType === "Add");
              };
+            
+             //自動長事件編號
+             if(dialogType === "Add"){
+            	 $.ajax({
+		 			    url: "/"+CONFIG.SYSTEM_NAME + '/eventSafeNotificationSetting/api/getEventKey',
+		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+		 			    async: false,
+		 			    type: "GET",
+		 			    success: function(data, textStatus){   
+		 			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+					    		 alert("沒有權限");
+					    	 }else{
+					    		$("#eventKey").val(data);
+					    	 }
+		 			    },
+		 			    error: function (data, textStatus, errorThrown) {
+		 			        console.log(data);
+		 			    },
+		 			});
+             }
 
-             $("#tableDialog").dialog("option", "title", dialogType + " Client")
-                 .dialog("open");
+             $("#tableDialog").dialog("option", "title", dialogType + " 參數").dialog("open");
          };
 	
 	     $("#dialogForm").validate({
 	    	 //錯誤訊息元素預設為label改成p會換行
 			 errorElement: "p",
 	         rules: {
-	        	 cfgType: { required: true, rangelength: [2, 20] },
-	        	 cfgKey: { required: true, rangelength: [4, 30] },
-	        	 cfgName: { required: true, rangelength: [2, 30] },
-	        	 cfgValue: { required: true, rangelength: [2, 30] },
-	        	 cfgInUse: { required: true }
+	        	 eventKey: { required: true, rangelength: [9, 10] },
+	        	 eventName: { required: true, rangelength: [2, 50] }
 	         },
 	         messages: {
-	        	 	cfgType:{
-			          required: "請輸入參數類型",
-			          rangelength: "密碼長度不得小於2個字母大於20個字母"
+	        	 	eventKey:{
+			          required: "請輸入事件編號",
+			          rangelength: "密碼長度不得小於9個字母大於10個字母"
 			        },
-			     	cfgKey:{
-			          required: "請輸入參數key",
-			          rangelength: "參數key不得小於4個字母大於30個字母"
-			        },
-			     	cfgName:{
-			          required: "請輸入參數名稱",
-			          rangelength: "參數名稱不得小於4個字母大於30個字母"
-			        },
-			     	cfgValue:{
-			          required: "請輸入參數值",
-			          rangelength: "參數值不得小於4個字母大於30個字母"
-			        },
-			        cfgInUse:{
-			          required: "請選擇是否啟用"
+			        eventName:{
+			          required: "請輸入事件名稱",
+			          rangelength: "參數key不得小於2個字母大於50個字母"
 			        }
 	         },
 	         submitHandler: function() {
@@ -260,20 +226,14 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 	     
 	     var saveItem = function(item, isNew) {
              $.extend(item, {
-            	 cfgType: $("#cfgType").val(),
-            	 cfgKey: $("#cfgType").val(),
-            	 cfgName: $("#cfgName").val(),
-            	 cfgValue: $("#cfgValue").val(),
-            	 cfgMemo: $("#cfgMemo").val(),
-            	 cfgInUse: $('input[name*=cfgInUse]:checked').val()
+            	 eventKey: $("#eventKey").val(),
+            	 eventName: $("#eventName").val()
              });
-             alert("saveItem:" + isNew);
+             
              $("#jsGrid").jsGrid(isNew ? "insertItem" : "updateItem", item);
 
              $("#tableDialog").dialog("close");
          };
-	
-         var formSubmitHandler = $.noop;
 	
 	    
 	});
