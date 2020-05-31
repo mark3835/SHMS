@@ -85,6 +85,7 @@ insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 14, 7);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 15, 7);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 16, 7);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 17, 7);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 18, 7);
 
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 1,  6);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 2,  6);
@@ -103,6 +104,7 @@ insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 14, 6);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 15, 6);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 16, 6);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 17, 6);
+insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 18, 6);
 
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 1,  1);
 insert into AUTHORIZASTION(MENU_ID, AUTH_LV) values( 2,  1);

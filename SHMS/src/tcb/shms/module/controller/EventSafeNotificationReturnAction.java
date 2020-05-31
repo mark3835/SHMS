@@ -3,8 +3,10 @@ package tcb.shms.module.controller;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,9 +17,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.gson.Gson;
 
 import tcb.shms.core.controller.GenericAction;
+import tcb.shms.module.config.SystemConfig;
+import tcb.shms.module.entity.EventSafeNotification;
 import tcb.shms.module.entity.EventSafeNotificationReturn;
+import tcb.shms.module.entity.Unit;
 import tcb.shms.module.entity.User;
+import tcb.shms.module.service.AuthorizastionService;
 import tcb.shms.module.service.EventSafeNotificationReturnService;
+import tcb.shms.module.service.EventSafeNotificationService;
+import tcb.shms.module.service.UnitService;
+import tcb.shms.module.service.UserService;
 
 /**
  * @author MARK3835
@@ -28,14 +37,70 @@ public class EventSafeNotificationReturnAction extends GenericAction<EventSafeNo
 
 	@Autowired
 	EventSafeNotificationReturnService eventSafeNotificationReturnService;
+	
+	@Autowired
+	EventSafeNotificationService eventSafeNotificationService;
+	
+	@Autowired
+	UnitService unitService;
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	AuthorizastionService authorizastionService;	
 
-	@RequestMapping(value = "/eventSafeNotificationReturn/api/getEventSafeNotificationReturn", method = RequestMethod.GET)
-	public @ResponseBody String getEventSafeNotificationReturn() {
+	@RequestMapping(value = "/eventSafeNotification/api/getEventSafeNotificationReturn", method = RequestMethod.POST)
+	public @ResponseBody String getEventSafeNotificationReturn(@RequestBody String data) {
 		String jsonInString = null;
 		try {
-			EventSafeNotificationReturn eventSafeNotificationReturn = new EventSafeNotificationReturn();
-			List<EventSafeNotificationReturn> eventSafeNotificationReturnList = eventSafeNotificationReturnService.getList(eventSafeNotificationReturn);
-			jsonInString = new Gson().toJson(eventSafeNotificationReturnList);
+			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);			
+			Map result = new HashMap();
+			Long eventId = MapUtils.getLong(map, "eventId");
+			EventSafeNotification eventSafeNotification= eventSafeNotificationService.getById(eventId);
+			result.put("eventSafeNotification", eventSafeNotification);
+			User loginUser = this.getSessionUser();
+			result.put("loginUser", loginUser);
+			Unit unit = unitService.getByUnitId(loginUser.getUnitId());
+			result.put("unit", unit);
+			//作業人員
+			String workMan = "";
+			List<Integer> authList = authorizastionService.getAuthByUser(loginUser);
+			if(authList.contains(SystemConfig.AUTH_LV.AFFAIRS)) {
+				workMan = "總務";
+			}else if(authList.contains(SystemConfig.AUTH_LV.FIRE_HELPER)) {
+				workMan = "防火管理人";
+			}else if(authList.contains(SystemConfig.AUTH_LV.HELPER)) {
+				workMan = "急救人員";
+			}else if(authList.contains(SystemConfig.AUTH_LV.MANAGER)) {
+				workMan = "單位主管";
+			}else if(authList.contains(SystemConfig.AUTH_LV.JUNIOR_MANAGER)) {
+				workMan = "襄理";
+			}
+			result.put("workMan", workMan);
+			if(StringUtils.isNotBlank(unit.getManager())) {
+				User manager = userService.getByRocid(unit.getManager());
+				result.put("manager", manager);
+			}
+			if(StringUtils.isNotBlank(unit.getSaveManager())) {
+				User saveManager = userService.getByRocid(unit.getSaveManager());
+				result.put("saveManager", saveManager);
+			}
+			if(StringUtils.isNotBlank(unit.getHelper())) {
+				User helper = userService.getByRocid(unit.getHelper());
+				result.put("helper", helper);
+			}
+			if(StringUtils.isNotBlank(unit.getFireHelper())) {
+				User fireHelper = userService.getByRocid(unit.getFireHelper());
+				result.put("fireHelper", fireHelper);
+			}
+			if(StringUtils.isNotBlank(unit.getAffairs())) {
+				User affairs = userService.getByRocid(unit.getAffairs());
+				result.put("affairs", affairs);
+			}
+			result.put("nowTime", SystemConfig.DATE_FORMAT.BASIC_DATETIME_FORMATE.format(new Timestamp(System.currentTimeMillis())));
+			
+			jsonInString = new Gson().toJson(result);
 		} catch (Exception e) {
 			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);

@@ -1,30 +1,35 @@
 <div>
-	<h4>menu設定</h4>
+	<h4>參數設定</h4>
 	
 	    <div id="jsGrid"></div>
 </div>
 
-<div id="tableDialog" style="display:none">
+<div id="tableDialog" >
     <form id="dialogForm">
         <div class="details-form-field">
-            <label for="menuName">menu名稱</label>
-            <input id="menuName" name="menuName" type="text" />
+            <label for="cfgType">參數類型</label>
+            <input id="cfgType" name="cfgType" type="text" />
         </div>
         <div class="details-form-field">
-            <label for="menuUrl">menu連結</label>
-            <input id="menuUrl" name="menuUrl" type="text" />
+            <label for="cfgKey">參數KEY</label>
+            <input id="cfgKey" name="cfgKey" type="text" />
         </div>
         <div class="details-form-field">
-            <label for="menuTierTwo">menu第二層(放第一層MENU的ID)</label>
-            <input id="menuTierTwo" name="menuTierTwo" type="text" />
+            <label for="cfgName">參數名稱</label>
+            <input id="cfgName" name="cfgName" type="text" />
         </div>
         <div class="details-form-field">
-            <label for="menuOrder">menu排序</label>
-            <input id="menuOrder" name="menuOrder" type="text" />
+            <label for="cfgValue">參數值</label>
+            <input id="cfgValue" name="cfgValue" type="text" />
         </div>
         <div class="details-form-field">
-            <label for="menuApiUrl">menuApiUrl權限用的連結</label>
-            <input  id="menuApiUrl" name="menuApiUrl"  type="text"/>
+            <label for="cfgMemo">參數註記</label>
+            <textarea  id="cfgMemo" name="cfgMemo" ></textarea>
+        </div>
+        <div class="details-form-field">
+            <label for="cfgInUse">參數是否停用</label>
+            <input id="cfgInUse_0" name="cfgInUse" type="radio" value="0"/>啟用
+            <input id="cfgInUse_1" name="cfgInUse" type="radio" value="1"/>停用
         </div>
         <div class="details-form-field">
             <button type="submit" id="dialogFormSubmit">送出</button>
@@ -32,12 +37,27 @@
     </form>
 </div>
 
+<link rel="stylesheet" href="../resources/css/bootstrap.min.css">
+<link rel="stylesheet" href="../resources/css/jsgrid.min.css">
+<link rel="stylesheet" href="../resources/css/jsgrid-theme.min.css">
+<link rel="stylesheet" href="../resources/css/jquery-ui.min.css">
+<link rel="stylesheet" href="../resources/css/jquery-ui.theme.min.css">
 <style>
-/* 讓表格內容換行 */
-.jsgrid-table{
+	/* 讓表格內容換行 */
+	.jsgrid-table{
 		word-wrap:break-word;
 	}
+	
+	/* 	錯誤訊息style */
+	input.error { border: 1px solid red; }
+	p.error {
+	  padding-left: 16px;
+	  font-weight: bold;
+	  color: #EA5200;
+	}
 </style>
+<script src="../resources/js/require.js"></script>
+<script src="../resources/js/requireConfig.js"/></script>
 
 <script>
 //需要用的JS
@@ -46,7 +66,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 	$(document).ready(function(){
 			
 		 $.ajax({
-			    url: "/"+CONFIG.SYSTEM_NAME + '/menu/api/getMenu',
+			    url: "/"+CONFIG.SYSTEM_NAME + '/config/api/getConfig',
 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    async: false,
 			    type: "GET",
@@ -58,7 +78,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    	        width: "100%",
 			    	 
 			    	        heading: true, //是否显示表头
-			    		    filtering: true, //启动查找
+			    		    filtering: false, //启动查找
 			    		    inserting: false, //启动新增  關掉使用自定義的
 			    		    editing: true,  //启动编辑 
 			    		    selecting: true,
@@ -66,38 +86,15 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		    paging: true, //启动分页 
 			    		    pageLoading: false, //是否支持分页加载数据（相比较paging，这个属性是向服务器请求数据时要求分页，而paging是本地进行分页，无关服务器）
 			    		    autoload: true,
-			    		    pageSize: 10,
 			    		    
 			    		    controller: {
 			    		        loadData: function(filter) {
-			    		        		//查詢
-			    		        	 	var result = $.grep(data, function(item, idx) {
-			    		                    for (var key in filter) {
-			    		                        var value = filter[key];
-			    		                        if (value.length > 0) {
-			    		                        	if (!item[key]){
-			    		                                return false;
-			    		                        	}
-			    		                        	if(typeof item[key] === 'number'){
-			    		                        		if (item[key].toString().indexOf(value) == -1){
-				    		                                return false;
-			    		                        		}
-			    		                        	}else if(typeof item[key] === 'string'){
-			    		                        		if (item[key].indexOf(value) == -1){
-				    		                                return false;
-			    		                        		}
-			    		                        	}
-			    		                        	
-			    		                        }
-			    		                    }
-			    		                    return true;
-			    		                });
-			    		            return result;
+			    		            return data;
 			    		        },
-			    		        insertItem: function(insertingItem) {
+			    		        insertItem: function(insertingClient) {
 			    		        	$.ajax({
-			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/menu/api/addMenu',
-			    		 			    data: JSON.stringify(insertingItem),
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/config/api/addConfig',
+			    		 			    data: JSON.stringify(insertingClient),
 			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    		 			    async: false,
 			    		 			    type: "POST",
@@ -106,10 +103,10 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    					    		 alert("沒有權限");
 			    					    	 }else{
 			    					    		 if(data.result == "success"){
-			    					    			 insertingItem.id = data.id;
+			    					    			 insertingClient.id = data.id;
 			    					    			 alert("新增成功");
-			    					    		 }else if(data.errorMsg){
-			    					    			 alert(data.errorMsg);
+			    					    		 }else{
+			    					    			 alert("新增失敗");
 			    					    		 }
 			    					    	 }
 			    		 			    },
@@ -118,10 +115,10 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		 			    },
 			    		 			});
 			    		        },
-			    		        updateItem: function(updatingItem) { 
+			    		        updateItem: function(updatingClient) { 
 			    		        	$.ajax({
-			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/menu/api/updateMenu',
-			    		 			    data: JSON.stringify(updatingItem),
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/config/api/updateConfig',
+			    		 			    data: JSON.stringify(updatingClient),
 			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    		 			    async: false,
 			    		 			    type: "POST",
@@ -131,8 +128,8 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    					    	 }else{
 			    					    		 if(data.result == "success"){
 			    					    			 alert("更新成功");
-			    					    		 }else if(data.errorMsg){
-			    					    			 alert(data.errorMsg);
+			    					    		 }else{
+			    					    			 alert("更新失敗");
 			    					    		 }
 			    					    	 }
 			    		 			    },
@@ -141,10 +138,10 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		 			    },
 			    		 			});
 			    		        },
-			    		        deleteItem: function(deletingItem) {
+			    		        deleteItem: function(deletingClient) {
 			    		        	 $.ajax({
-			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/menu/api/deleteMenu',
-			    		 			    data: '{"ID":' + deletingItem.id + '}',
+			    		 			    url: "/"+CONFIG.SYSTEM_NAME + '/config/api/deleteConfig',
+			    		 			    data: '{"ID":' + deletingClient.id + '}',
 			    		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    		 			    async: false,
 			    		 			    type: "POST",
@@ -154,8 +151,8 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    					    	 }else{
 			    					    		 if(data.result == "success"){
 			    					    			 alert("刪除成功");
-			    					    		 }else if(data.errorMsg){
-			    					    			 alert(data.errorMsg);
+			    					    		 }else{
+			    					    			 alert("刪除失敗");
 			    					    		 }
 			    					    	 }
 			    		 			    },
@@ -167,11 +164,12 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		    },
 			    	 
 			    	        fields: [
-			    	            { title:"menu名稱", name: "menuName", type: "text", width: 150},
-			    	            { title:"menu連結", name: "menuUrl", type: "text", width: 200 },
-			    	            { title:"menu第二層", name: "menuTierTwo", type: "text", width: 80 },
-			    	            { title:"menu排序", name: "menuOrder", type: "text", width: 80 },
-			    	            { title:"menuApiUrl權限用的連結", name: "menuApiUrl", type: "text", width: 150 },
+			    	            { title:"參數類型", name: "cfgType", type: "text", width: 100, validate: "required" },
+			    	            { title:"參數KEY", name: "cfgKey", type: "text	", width: 200 },
+			    	            { title:"參數名稱", name: "cfgName", type: "text	", width: 130 },
+			    	            { title:"參數值", name: "cfgValue", type: "text	", width: 200 },
+			    	            { title:"參數註記", name: "cfgMemo", type: "text	", width: 130 },
+			    	            { title:"參數是否停用", name: "cfgInUse", type: "text	", width: 50 },
 			    	            { type: "control",
 			                        editButton: false,
 			                        modeSwitchButton: false,
@@ -187,7 +185,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 				    	 		 showDetailsDialog("Edit", args.item);
 				            },
 			    		    deleteConfirm: function(item) {
-			                    return "參數\"" + item.menuName + "\"確認刪除?";
+			                    return "參數\"" + item.cfgName + "\"確認刪除?";
 			                },
 			    	    });
 			    	 }
@@ -197,7 +195,8 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    },
 			});
 	
-		 $("#tableDialog").dialog({
+		 
+		 var tableDialog = $("#tableDialog").dialog({
 			 title: "參數設定",
 	         autoOpen: false,
 	         width: 350,
@@ -207,36 +206,51 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 	         }
 	     });
 		 
-		 var formSubmitHandler = $.noop;
-		 
 		 var showDetailsDialog = function(dialogType, item) {
-             $("#menuName").val(item.menuName);
-             $("#menuUrl").val(item.menuUrl);
-             $("#menuTierTwo").val(item.menuTierTwo);
-             $("#menuOrder").val(item.menuOrder);
-             $("#menuApiUrl").val(item.menuApiUrl);
+             $("#cfgType").val(item.cfgType);
+             $("#cfgKey").val(item.cfgKey);
+             $("#cfgName").val(item.cfgName);
+             $("#cfgValue").val(item.cfgValue);
+             $("#cfgMemo").val(item.cfgMemo);             
+             $("input[name*='cfgInUse'][value='" + item.cfgInUse + "']").prop("checked", true);
+			 alert("showDetailsDialog:" + dialogType);
              formSubmitHandler = function() {
             	 saveItem(item, dialogType === "Add");
              };
 
-             $("#tableDialog").dialog("option", "title", dialogType + " menu").dialog("open");
+             $("#tableDialog").dialog("option", "title", dialogType + " Client")
+                 .dialog("open");
          };
 	
 	     $("#dialogForm").validate({
 	    	 //錯誤訊息元素預設為label改成p會換行
 			 errorElement: "p",
 	         rules: {
-	        	 menuName: { required: true, rangelength: [2, 30] },
-	        	 menuOrder: { required: true, range: [0, 999] }
+	        	 cfgType: { required: true, rangelength: [2, 20] },
+	        	 cfgKey: { required: true, rangelength: [4, 30] },
+	        	 cfgName: { required: true, rangelength: [2, 30] },
+	        	 cfgValue: { required: true, rangelength: [2, 30] },
+	        	 cfgInUse: { required: true }
 	         },
 	         messages: {
-	        	 	menuName:{
-			          required: "請輸入menu名稱",
-			          rangelength: "長度不得小於2個字母大於20個字母"
+	        	 	cfgType:{
+			          required: "請輸入參數類型",
+			          rangelength: "密碼長度不得小於2個字母大於20個字母"
 			        },
-			        menuOrder:{
-			          required: "請輸入menu排序",
-			          range: "不得小於0大於999"
+			     	cfgKey:{
+			          required: "請輸入參數key",
+			          rangelength: "參數key不得小於4個字母大於30個字母"
+			        },
+			     	cfgName:{
+			          required: "請輸入參數名稱",
+			          rangelength: "參數名稱不得小於4個字母大於30個字母"
+			        },
+			     	cfgValue:{
+			          required: "請輸入參數值",
+			          rangelength: "參數值不得小於4個字母大於30個字母"
+			        },
+			        cfgInUse:{
+			          required: "請選擇是否啟用"
 			        }
 	         },
 	         submitHandler: function() {
@@ -246,17 +260,20 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 	     
 	     var saveItem = function(item, isNew) {
              $.extend(item, {
-            	 menuName: $("#menuName").val(),
-            	 menuUrl: $("#menuUrl").val(),
-            	 menuTierTwo: $("#menuTierTwo").val(),
-            	 menuOrder: $("#menuOrder").val(),
-            	 menuApiUrl: $("#menuApiUrl").val()
+            	 cfgType: $("#cfgType").val(),
+            	 cfgKey: $("#cfgType").val(),
+            	 cfgName: $("#cfgName").val(),
+            	 cfgValue: $("#cfgValue").val(),
+            	 cfgMemo: $("#cfgMemo").val(),
+            	 cfgInUse: $('input[name*=cfgInUse]:checked').val()
              });
-             
+             alert("saveItem:" + isNew);
              $("#jsGrid").jsGrid(isNew ? "insertItem" : "updateItem", item);
 
              $("#tableDialog").dialog("close");
          };
+	
+         var formSubmitHandler = $.noop;
 	
 	    
 	});

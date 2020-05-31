@@ -5,9 +5,9 @@
 	  <tbody>
 	    <tr>
 	      <td style="width: 15%;">單位名稱</td>
-	      <td style="width: 15%;"><div id="unitName"></div></td>
+	      <td style="width: 18%;"><div id="unitName"></div></td>
 	      <td style="width: 20%;">作業人員</td>
-	      <td style="width: 30%;"><div id="workMan"></div></td>
+	      <td style="width: 28%;"><div id="workMan"></div></td>
 	      <td style="width: 20%;"><div id="userName"></div></td>
 	    </tr>
 	  </tbody>
@@ -55,8 +55,20 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 		    	            { title:"事件名稱", name: "eventName", type: "text	", width: 200 }
 		    	        ],
 		    	        rowClick: function(args) {
+		    	        	if(!$("#eventId").val()){
+		    	        		var iframe = document.createElement('input');
+			    	    		iframe.setAttribute('type', 'hidden');
+			    	    		iframe.setAttribute('id', 'eventId');
+			    	    		iframe.setAttribute('value', args.item.id);
+			    	    		$("#bodyContent").after(iframe);
+		    	        	}else{
+		    	        		$("#eventId").val(args.item.id);
+		    	        	}
+		    	        	
+		    	        	
+		    	        	$("#bodyContent")
 		    	        	$.ajax({
-			    			    url: "/" +CONFIG.SYSTEM_NAME + "/content/eventSafeNotification/eventSafeNotificationReturn.html?ID=" + args.item.id,
+			    			    url: "/" +CONFIG.SYSTEM_NAME + "/content/eventSafeNotification/eventSafeNotificationReturn.html",
 			    			    cache: false,
 			    			    dataType: "html",
 			    			    success: function(data) {

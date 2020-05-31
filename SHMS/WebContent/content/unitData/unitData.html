@@ -146,7 +146,7 @@
  			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
 			    		 alert("沒有權限");
 			    	 }else{
-			    		 setData(data);
+			    		 setTableData(data);
 			    	 }
  			    },
  			    error: function (data, textStatus, errorThrown) {
@@ -187,7 +187,7 @@
 			});
 	}
 	
-	function setData(data){
+	function setTableData(data){
 		if(data.unit){
 			$("#unitId").text(data.unit.unitId);
 			$("#unitName").text(data.unit.unitName);

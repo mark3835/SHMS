@@ -12,15 +12,15 @@
 		    </tr>
 		    <tr>
 		      <td style="width: 25.7441%;">開始通報時間</td>
-		      <td style="height: 18px;" colspan="4"></td>
+		      <td style="height: 18px;" colspan="4"><div id="now"></div></td>
 		    </tr>
 		    <tr>
 		      <td style="width: 25.7441%;">事件編號</td>
-		      <td colspan="4"></td>
+		      <td colspan="4"><div id="eventKey"></div></td>
 		    </tr>
 		    <tr>
 		      <td style="width: 25.7441%;">事件名稱</td>
-		      <td colspan="4"></td>
+		      <td colspan="4"><div id="eventName"></div></td>
 		    </tr>
 		    <tr>
 		      <td style="width: 25.7441%;">是否平安</td>
@@ -40,8 +40,64 @@
 			<button type="submit" id="saveBtn">儲存</button>
 			<button type="button" id="deleteBtn">刪除</button>
 			<button type="button" id="returnBtn">回平安通報公告首頁</button>
-		</div>
+		</div>		
 	</form>
+	<br>
+	<div>
+	使用說明<br>
+	達開始通報時間，由單位主管指派「職業安全衛生業務主管」、「總務」、「襄理」、「防火管理員」、「急救人員」填報。<br>
+	確認輸入資料無誤後，按「送主管」，經「主管或副理」「審定」後，即將本表資料，於系統中建檔<br>
+	註：
+	<br>
+	一、「天然災害平安通報機制」之災害程度界定:<br> 
+	&nbsp;&nbsp;&nbsp;&nbsp;(一)地震:台灣本島發生芮氏規模6級以上強震。<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;(二)水災、風災:國內任一縣市政府宣布停班且停課<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(即使金融機構於宣布停班停課縣市未設分支機構，仍請一併辦理平安通報)。<br>
+	二、如「是否平安」欄，勾選「否」者，通報後，請另填製「安全狀況反映通報表」報送行政管理部勞工安全科<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FAX:2731-5855、2731-5669，並速與2173-8888#3213、3215、3235、3218聯繫。	
+	</div>
+	<table style="border-collapse: collapse; width: 100%; height: 108px;" border="1">
+	  <thead>
+	    <tr style="height: 18px;">
+	      <td style="width: 28.1332%; height: 18px;">業務負責人職稱</td>
+	      <td style="width: 14.295%; height: 18px;">姓名</td>
+	      <td style="width: 22.389%; height: 18px;">手機</td>
+	      <td style="width: 35.1828%; height: 18px;">EMAIL</td>
+	    </tr>
+	  </thead>
+	  <tbody id="tbody">
+	  	<tr>
+	  		<td>單位主管</td>
+	  		<td></td>
+	  		<td></td>
+	  		<td></td>
+	  	</tr>
+	  	<tr>
+	  		<td>職業安全衛生主管</td>
+	  		<td></td>
+	  		<td></td>
+	  		<td></td>
+	  	</tr>
+	  	<tr>
+	  		<td>總務</td>
+	  		<td></td>
+	  		<td></td>
+	  		<td></td>
+	  	</tr>
+	  	<tr>
+	  		<td>防火管理員</td>
+	  		<td></td>
+	  		<td></td>
+	  		<td></td>
+	  	</tr>
+	  	<tr>
+	  		<td>急救人員</td>
+	  		<td></td>
+	  		<td></td>
+	  		<td></td>
+	  	</tr>
+	  </tbody>
+	</table>
 </div>
 
 <script type="text/javascript">
@@ -49,18 +105,22 @@
 require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 	//頁面讀取後執行
 	$(document).ready(function(){
+		
+		var eventId = $("#eventId").val();
 	    $.ajax({
-		    url: "/"+CONFIG.SYSTEM_NAME + '/eventSafeNotification/api/getEventSafeNotification',
+		    url: "/"+CONFIG.SYSTEM_NAME + '/eventSafeNotification/api/getEventSafeNotificationReturn',
 		    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 		    async: false,
-		    type: "GET",
+		    data: "{'eventId': " + eventId + "}",
+		    type: "POST",
 		    success: function(data, textStatus){    	
 		    	
 		    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
 		    		 alert("沒有權限");
 		    	 }else{
-		    		//第一行資訊
-		    			initPage(data);
+		    		 console.log(data);
+		    		 //第一行資訊
+		    		 initPage(data);
 		    	 
 			    	 $("#jsGrid").jsGrid({
 		    	        width: "100%",
@@ -104,7 +164,79 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 		if(data.loginUser){		
 			$("#userName").text(data.loginUser.name);
 		}
-		$("#workMan").text(data.workMan);
+		$("#workMan").text(data.workMan);		
+		$("#now").html(data.nowTime);
+		$("#eventKey").html(data.eventSafeNotification.eventKey);
+		$("#eventName").html(data.eventSafeNotification.eventName);
+		//下面表格資料
+		setTableData(data);
+	}
+	
+	function setTableData(data){
+		if(data.unit){
+			$("#unitId").text(data.unit.unitId);
+			$("#unitName").text(data.unit.unitName);
+			$("#unitTel").text(data.unit.tel);
+		}
+		
+		if(data.manager){
+			$("#tbody").find("tr").eq(0).find("td").eq(1).text(data.manager.name);
+			$("#tbody").find("tr").eq(0).find("td").eq(2).text(data.manager.phone);
+			$("#tbody").find("tr").eq(0).find("td").eq(3).text(data.manager.email);
+		}
+		if(data.saveManager){
+			$("#tbody").find("tr").eq(1).find("td").eq(1).text(data.saveManager.name);
+			$("#tbody").find("tr").eq(1).find("td").eq(2).text(data.saveManager.phone);
+			$("#tbody").find("tr").eq(1).find("td").eq(3).text(data.saveManager.email);
+		}
+		
+		if(data.affairs){
+			$("#tbody").find("tr").eq(2).find("td").eq(1).text(data.affairs.name);
+			$("#tbody").find("tr").eq(2).find("td").eq(2).text(data.affairs.phone);
+			$("#tbody").find("tr").eq(2).find("td").eq(3).text(data.affairs.email);
+		}
+		
+		if(data.fireHelper){
+			$("#tbody").find("tr").eq(3).find("td").eq(1).text(data.fireHelper.name);
+			$("#tbody").find("tr").eq(3).find("td").eq(2).text(data.fireHelper.phone);
+			$("#tbody").find("tr").eq(3).find("td").eq(3).text(data.fireHelper.email);
+		}
+		
+		if(data.helper){
+			$("#tbody").find("tr").eq(4).find("td").eq(1).text(data.helper.name);
+			$("#tbody").find("tr").eq(4).find("td").eq(2).text(data.helper.phone);
+			$("#tbody").find("tr").eq(4).find("td").eq(3).text(data.helper.email);
+		}
+		
+		if(data.affairs){
+			$("#affairs").val(data.affairs.rocId);
+			$("#affairsPhone").val(data.affairs.phone);
+			$("#affairsEmail").val(data.affairs.email);
+		}
+		
+		if(data.manager){
+			$("#manager").text(data.manager.name);
+			$("#managerPhone").val(data.manager.phone);
+			$("#managerEmail").val(data.manager.email);
+		}
+		
+		if(data.saveManager){
+			$("#saveManager").text(data.saveManager.name);
+			$("#saveManagerPhone").val(data.saveManager.phone);
+			$("#saveManagerEmail").val(data.saveManager.email);
+		}
+		
+		if(data.fireHelper){
+			$("#fireHelper").text(data.fireHelper.name);
+			$("#fireHelperPhone").val(data.fireHelper.phone);
+			$("#fireHelperEmail").val(data.fireHelper.email);
+		}
+		
+		if(data.helper){
+			$("#helper").text(data.helper.name);
+			$("#helperPhone").val(data.helper.phone);
+			$("#helperEmail").val(data.helper.email);
+		}
 	}
 	
 });

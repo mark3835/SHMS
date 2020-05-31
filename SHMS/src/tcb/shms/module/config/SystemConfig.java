@@ -26,6 +26,7 @@ public class SystemConfig {
 		public static final String CERTIFICATE_TYPE_FIREHELPER = "CERTIFICATE_TYPE_FIREHELPER";
 		public static final String CERTIFICATE_TYPE_HELPER = "CERTIFICATE_TYPE_HELPER";
 		public static final String CERTIFICATE_UNIT = "CERTIFICATE_UNIT";
+		public static final String EVENT_EFFECT_TYPE = "EVENT_EFFECT_TYPE";
 	}
 	
 	public static class CFG_IN_USE{
