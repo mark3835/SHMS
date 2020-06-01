@@ -23,16 +23,21 @@
 		      <td colspan="4"><div id="eventName"></div></td>
 		    </tr>
 		    <tr>
-		      <td style="width: 25.7441%;">是否平安</td>
-		      <td colspan="4"></td>
+		      	<td style="width: 25.7441%;">是否平安</td>
+		      	<td colspan="4">
+		      		<input id="isSafe_1" name="isSafe" type="radio" value="1"/>是
+				    <input id="isSafe_0" name="isSafe" type="radio" value="0" checked/>否
+				</td>
 		    </tr>
 		    <tr>
 		      <td style="width: 25.7441%;">影響類別</td>
-		      <td colspan="4"></td>
+		      <td colspan="4" id="eventTypeTd"></td>
 		    </tr>
 		    <tr>
 		      <td style="width: 25.7441%;">簡要說明重要案情<br>(200中文字以內)</td>
-		      <td colspan="4"></td>
+		      <td colspan="4">
+		      	<textarea id="memo" cols="50" rows="5"></textarea>
+		      </td>
 		    </tr>
 		  </tbody>
 		</table>
@@ -123,8 +128,7 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 		    		 initPage(data);
 		    	 
 			    	 $("#jsGrid").jsGrid({
-		    	        width: "100%",
-		    	 
+		    	        width: "100%",		    	 
 		    	        heading: true,
 		    		    filtering: false,
 		    		    inserting: false,
@@ -133,10 +137,8 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 		    		    sorting: true,
 		    		    paging: true,
 		    		    pageLoading: false,
-		    		    pageSize: 10,
-		    	 
-		    	        data: data.eventSafeNotificationList,
-		    	 
+		    		    pageSize: 10,		    	 
+		    	        data: data.eventSafeNotificationList,		    	 
 		    	        fields: [
 		    	            { title:"事件編號", name: "eventKey", type: "text", width: 100 },
 		    	            { title:"事件名稱", name: "eventName", type: "text	", width: 200 }
@@ -152,6 +154,16 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 		        console.log(data);
 		    },
 		});
+	    
+	    $("#saveBtn").click(function(){
+			saveData();
+		});
+		$("#printBtn").click(function(){
+			printByDiv(document.getElementById("printDiv"));
+		});
+		$("#backBtn").click(function(){
+			loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + "/content/certificate/certificate.html");
+		});
     
 	});  
 	
@@ -166,8 +178,13 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 		}
 		$("#workMan").text(data.workMan);		
 		$("#now").html(data.nowTime);
-		$("#eventKey").html(data.eventSafeNotification.eventKey);
-		$("#eventName").html(data.eventSafeNotification.eventName);
+		if(data.eventSafeNotification){
+			$("#eventKey").html(data.eventSafeNotification.eventKey);
+			$("#eventName").html(data.eventSafeNotification.eventName);
+		}		
+		
+		createCheckBox("eventTypeTd", "eventType", data.eventEffectList, "cfgKey", "cfgValue");
+		
 		//下面表格資料
 		setTableData(data);
 	}
@@ -237,6 +254,91 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 			$("#helperPhone").val(data.helper.phone);
 			$("#helperEmail").val(data.helper.email);
 		}
+	}
+	
+	function createCheckBox(appenId, id, data, key, val){
+		$.each(data, function( index, item ) {
+			$('#' + appenId).append( 
+				$(document.createElement('input')).attr({
+			           id:    item[key],
+			           name:  id,
+			           value: item[val],
+			           type:  'checkbox'
+			       })				
+			).append(
+					$(document.createElement('label')).html(item[val])		
+			
+			).append(
+					"<br>"	
+			
+			);
+		});
+	}
+	
+	function saveData(){		
+		//檢核
+		$("#inputForm").validate({
+			//錯誤訊息元素預設為label改成p會換行
+			errorElement: "p",
+		    rules: {
+		    	certificateName: {
+		          required: true,
+		          minlength: 1
+		        },
+		        gotDate: {
+		          required: true
+		        },
+		        gotFee: {
+		          required: true
+		          , range: [0, 999999]
+		        }
+		      },
+		      messages: {
+		    	certificateName: {
+		          required: "請輸入證書字號",
+		          minlength: "至少一個字母"
+		        },
+		        gotDate: {
+		          required: "請輸入取得日期"
+		        },
+		        gotFee: {
+		          required: "請輸入報名費用",
+		          range: "不得小於0大於999999"
+			    }
+			  },
+			  //檢核後送出
+			  submitHandler: function(form) 
+			   {      
+				  
+				  if($("input[name='isResponsible']:checked").val() == "1"){
+					  if(!confirm("選擇該員(所持本證照)為擔任本項業務負責人，若有原負責人，審核後會將原有負責人取代")){
+						  return false;
+					  }
+				  }				  
+				  $.ajax({
+					    url: "/"+CONFIG.SYSTEM_NAME + '/certificate/api/saveData',
+					    data: JSON.stringify(getFormData($('#inputForm'))),
+					    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+					    async: false,
+					    type: "POST",
+					    success: function(data, textStatus){   
+						     if(data && data == "<script>alert('沒有權限')<\/script>"){
+					    		 alert("沒有權限");
+					    	 }else{
+					    		 if(data.result == "success"){
+					    			 alert("儲存成功");
+					    			 loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + "/content/certificate/certificate.html");
+					    		 }else if(data.errorMsg){
+					    			 alert(data.errorMsg);
+					    		 }
+					    	 }
+					    },
+					    error: function (data, textStatus, errorThrown) {
+					        console.log(data);
+					    },
+					});
+			   }  
+		});		
 	}
 	
 });

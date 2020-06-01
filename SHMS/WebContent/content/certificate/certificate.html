@@ -140,195 +140,198 @@
 				window.location.reload();
 			});
 		});
-	});
-	
-	function createSelect(id, data, key, val){
-		$.each(data, function( index, item ) {
-			$('#' + id).append($('<option>').val(item[key]).text(item[val]));
-		});
-	}
-	
-	function initPage(data){
-		//第一行資訊
-		if(data.unit){
-			$("#unitName").text(data.unit.unitName);	
+		
+		
+		function createSelect(id, data, key, val){
+			$.each(data, function( index, item ) {
+				$('#' + id).append($('<option>').val(item[key]).text(item[val]));
+			});
 		}
-		if(data.loginUser){		
-			$("#userName").text(data.loginUser.name);
+		
+		function initPage(data){
+			//第一行資訊
+			if(data.unit){
+				$("#unitName").text(data.unit.unitName);	
+			}
+			if(data.loginUser){		
+				$("#userName").text(data.loginUser.name);
+			}
+			$("#workMan").text(data.workMan);
+			//資料暫存起來 目前沒用到
+			tempData = data;
+			
+			//長姓名
+			createSelect("rocId", data.userList, "rocId", "name");
+			//證書種類
+			createSelect("certificateType", data.certificateTypeList, "cfgValue", "cfgValue");
+			//核發單位
+			createSelect("certificateUnit", data.certificateUnitList, "cfgValue", "cfgValue");
+			//審核人員
+			createSelect("reviewer", data.managerList, "rocId", "name");
+			//派訓單位
+			createSelect("gotTrainUnit", data.unitList, "unitId", "unitName");		
+			//長下面表格
+			createTable(data.certificateList);
+			
+			//取得日期
+			$( "#gotDate" ).datepicker({
+	      	  	dateFormat: "yy/mm/dd",
+	    		maxDate: new Date()         
+	       	});
+			
+			//user連動 職稱 電話 email
+			$("#rocId").change(function(){
+				var selectRocId = $(this).val();
+				$.each(data.userList, function( index, item ) {
+					if(item.rocId == selectRocId){
+						$("#jobName").text(item.jobName);
+						$("#phone").text(item.phone);
+						$("#email").text(item.email);
+						return false; 
+					}
+				});
+			});
+			//觸發第一次
+			$("#rocId").change();
+			
+			//清除按鈕
+			$("#clearBtn").click(function(){
+				$("#account").val("");
+				$("#passw").val("");
+				
+				validator.resetForm();
+			});
 		}
-		$("#workMan").text(data.workMan);
-		//資料暫存起來 目前沒用到
-		tempData = data;
 		
-		//長姓名
-		createSelect("rocId", data.userList, "rocId", "name");
-		//證書種類
-		createSelect("certificateType", data.certificateTypeList, "cfgValue", "cfgValue");
-		//核發單位
-		createSelect("certificateUnit", data.certificateUnitList, "cfgValue", "cfgValue");
-		//審核人員
-		createSelect("reviewer", data.managerList, "rocId", "name");
-		//派訓單位
-		createSelect("gotTrainUnit", data.unitList, "unitId", "unitName");		
-		//長下面表格
-		createTable(data.certificateList);
+		function createTable(data){
+			$.each(data, function( index, item ) {
+				var tr = $('<tr/>');
+				var td = $('<td/>');			
+				tr.append(td.clone().html( getUserName(tempData.userList, item.rocId).name) );
+				tr.append(td.clone().html( getUserName(tempData.userList, item.rocId).jobName) );
+				tr.append(td.clone().html( item.certificateType) );
+				tr.append(td.clone().html( item.certificateName) );
+				tr.append(td.clone().html( item.certificateUnit) );
+				tr.append(td.clone().html( item.gotDate) );
+				tr.append(td.clone().html( item.gotFee) );
+				tr.append(td.clone().html( item.gotTrainUnit) );
+				tr.append(td.clone().html( item.reviewId) );
+				if(item.reviewTime){
+					tr.append(td.clone().html("已審核") );	
+				}else{
+					tr.append(td.clone().html("未審核") );
+				}			
+				if(item.isResponsible){
+					tr.append(td.clone().html("是") );	
+				}else{
+					tr.append(td.clone().html("否") );
+				}
+				$("#tbody").append(tr);
+			});
+		}
 		
-		//取得日期
-		$( "#gotDate" ).datepicker({
-      	  	dateFormat: "yy/mm/dd",
-    		maxDate: new Date()         
-       	});
-		
-		//user連動 職稱 電話 email
-		$("#rocId").change(function(){
-			var selectRocId = $(this).val();
-			$.each(data.userList, function( index, item ) {
-				if(item.rocId == selectRocId){
-					$("#jobName").text(item.jobName);
-					$("#phone").text(item.phone);
-					$("#email").text(item.email);
+		function getUserName(data, userId){
+		    var	user;
+			$.each(data, function( index, item ) {
+				if(item.rocId == userId){
+					user = item;
 					return false; 
 				}
 			});
-		});
-		//觸發第一次
-		$("#rocId").change();
+			return user;
+		}
 		
-		//清除按鈕
-		$("#clearBtn").click(function(){
-			$("#account").val("");
-			$("#passw").val("");
+		
+		function getFormData($form){
+		    var unindexed_array = $form.serializeArray();
+		    var indexed_array = {};
+
+		    $.map(unindexed_array, function(n, i){
+		        indexed_array[n['name']] = n['value'];
+		    });
+
+		    return indexed_array;
+		}
+		
+		function printByDiv(printpage){ 
+			var iframe = document.createElement('IFRAME');
+			iframe.setAttribute('style', 'position:absolute;width:0px;height:0px;left:-500px;top:-500px;');
+			document.body.appendChild(iframe);
+			iframe.contentWindow.document.write(printpage.innerHTML);
+			iframe.contentWindow.document.close(); //important!
+			iframe.contentWindow.focus(); //IE fix
+			iframe.contentWindow.print();
+			iframe.parentNode.removeChild(iframe);
+		} 
+		
+		function saveData(){
 			
-			validator.resetForm();
-		});
-	}
-	
-	function createTable(data){
-		$.each(data, function( index, item ) {
-			var tr = $('<tr/>');
-			var td = $('<td/>');			
-			tr.append(td.clone().html( getUserName(tempData.userList, item.rocId).name) );
-			tr.append(td.clone().html( getUserName(tempData.userList, item.rocId).jobName) );
-			tr.append(td.clone().html( item.certificateType) );
-			tr.append(td.clone().html( item.certificateName) );
-			tr.append(td.clone().html( item.certificateUnit) );
-			tr.append(td.clone().html( item.gotDate) );
-			tr.append(td.clone().html( item.gotFee) );
-			tr.append(td.clone().html( item.gotTrainUnit) );
-			tr.append(td.clone().html( item.reviewId) );
-			if(item.reviewTime){
-				tr.append(td.clone().html("已審核") );	
-			}else{
-				tr.append(td.clone().html("未審核") );
-			}			
-			if(item.isResponsible){
-				tr.append(td.clone().html("是") );	
-			}else{
-				tr.append(td.clone().html("否") );
-			}
-			$("#tbody").append(tr);
-		});
-	}
-	
-	function getUserName(data, userId){
-	    var	user;
-		$.each(data, function( index, item ) {
-			if(item.rocId == userId){
-				user = item;
-				return false; 
-			}
-		});
-		return user;
-	}
-	
-	
-	function getFormData($form){
-	    var unindexed_array = $form.serializeArray();
-	    var indexed_array = {};
-
-	    $.map(unindexed_array, function(n, i){
-	        indexed_array[n['name']] = n['value'];
-	    });
-
-	    return indexed_array;
-	}
-	
-	function printByDiv(printpage){ 
-		var iframe = document.createElement('IFRAME');
-		iframe.setAttribute('style', 'position:absolute;width:0px;height:0px;left:-500px;top:-500px;');
-		document.body.appendChild(iframe);
-		iframe.contentWindow.document.write(printpage.innerHTML);
-		iframe.contentWindow.document.close(); //important!
-		iframe.contentWindow.focus(); //IE fix
-		iframe.contentWindow.print();
-		iframe.parentNode.removeChild(iframe);
-	} 
-	
-	function saveData(){
+			//檢核
+			$("#inputForm").validate({
+				//錯誤訊息元素預設為label改成p會換行
+				errorElement: "p",
+			    rules: {
+			    	certificateName: {
+			          required: true,
+			          minlength: 1
+			        },
+			        gotDate: {
+			          required: true
+			        },
+			        gotFee: {
+			          required: true
+			          , range: [0, 999999]
+			        }
+			      },
+			      messages: {
+			    	certificateName: {
+			          required: "請輸入證書字號",
+			          minlength: "至少一個字母"
+			        },
+			        gotDate: {
+			          required: "請輸入取得日期"
+			        },
+			        gotFee: {
+			          required: "請輸入報名費用",
+			          range: "不得小於0大於999999"
+				    }
+				  },
+				  //檢核後送出
+				  submitHandler: function(form) 
+				   {      
+					  
+					  if($("input[name='isResponsible']:checked").val() == "1"){
+						  if(!confirm("選擇該員(所持本證照)為擔任本項業務負責人，若有原負責人，審核後會將原有負責人取代")){
+							  return false;
+						  }
+					  }				  
+					  $.ajax({
+						    url: "/"+CONFIG.SYSTEM_NAME + '/certificate/api/saveData',
+						    data: JSON.stringify(getFormData($('#inputForm'))),
+						    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+						    async: false,
+						    type: "POST",
+						    success: function(data, textStatus){   
+							     if(data && data == "<script>alert('沒有權限')<\/script>"){
+						    		 alert("沒有權限");
+						    	 }else{
+						    		 if(data.result == "success"){
+						    			 alert("儲存成功");
+						    			 loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + "/content/certificate/certificate.html");
+						    		 }else if(data.errorMsg){
+						    			 alert(data.errorMsg);
+						    		 }
+						    	 }
+						    },
+						    error: function (data, textStatus, errorThrown) {
+						        console.log(data);
+						    },
+						});
+				   }  
+			});		
+		}
 		
-		//檢核
-		$("#inputForm").validate({
-			//錯誤訊息元素預設為label改成p會換行
-			errorElement: "p",
-		    rules: {
-		    	certificateName: {
-		          required: true,
-		          minlength: 1
-		        },
-		        gotDate: {
-		          required: true
-		        },
-		        gotFee: {
-		          required: true
-		          , range: [0, 999999]
-		        }
-		      },
-		      messages: {
-		    	certificateName: {
-		          required: "請輸入證書字號",
-		          minlength: "至少一個字母"
-		        },
-		        gotDate: {
-		          required: "請輸入取得日期"
-		        },
-		        gotFee: {
-		          required: "請輸入報名費用",
-		          range: "不得小於0大於999999"
-			    }
-			  },
-			  //檢核後送出
-			  submitHandler: function(form) 
-			   {      
-				  
-				  if($("input[name='isResponsible']:checked").val() == "1"){
-					  if(!confirm("選擇該員(所持本證照)為擔任本項業務負責人，若有原負責人，審核後會將原有負責人取代")){
-						  return false;
-					  }
-				  }				  
-				  $.ajax({
-					    url: "/"+CONFIG.SYSTEM_NAME + '/certificate/api/saveData',
-					    data: JSON.stringify(getFormData($('#inputForm'))),
-					    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
-					    async: false,
-					    type: "POST",
-					    success: function(data, textStatus){   
-						     if(data && data == "<script>alert('沒有權限')<\/script>"){
-					    		 alert("沒有權限");
-					    	 }else{
-					    		 if(data.result == "success"){
-					    			 alert("儲存成功");
-					    			 loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + "/content/certificate/certificate.html");
-					    		 }else if(data.errorMsg){
-					    			 alert(data.errorMsg);
-					    		 }
-					    	 }
-					    },
-					    error: function (data, textStatus, errorThrown) {
-					        console.log(data);
-					    },
-					});
-			   }  
-		});		
-	}
+		
+	});
 	
 </script>

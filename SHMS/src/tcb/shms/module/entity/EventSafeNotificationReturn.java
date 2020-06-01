@@ -28,8 +28,8 @@ public class EventSafeNotificationReturn extends GenericEntity{
 	/**
 	 * 回報事件ID
 	 */
-	@Column(name="EVENT_IT")
-	private String eventId;
+	@Column(name="EVENT_ID")
+	private Long eventId;
 	
 	/**
 	 *    單位ID
@@ -47,7 +47,7 @@ public class EventSafeNotificationReturn extends GenericEntity{
 	 *    是否平安
 	 */
 	@Column(name="IS_SAFE")
-	private int isSafe;
+	private Integer isSafe;
 	
 	/**
 	 *    影響類別
@@ -97,11 +97,11 @@ public class EventSafeNotificationReturn extends GenericEntity{
 	@Column(name="EDIT_TIME")
 	private Timestamp editTime;
 
-	public String getEventId() {
+	public Long getEventId() {
 		return eventId;
 	}
 
-	public void setEventId(String eventId) {
+	public void setEventId(Long eventId) {
 		this.eventId = eventId;
 	}
 
@@ -125,7 +125,7 @@ public class EventSafeNotificationReturn extends GenericEntity{
 		return isSafe;
 	}
 
-	public void setIsSafe(int isSafe) {
+	public void setIsSafe(Integer isSafe) {
 		this.isSafe = isSafe;
 	}
 

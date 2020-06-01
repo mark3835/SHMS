@@ -18,11 +18,13 @@ import com.google.gson.Gson;
 
 import tcb.shms.core.controller.GenericAction;
 import tcb.shms.module.config.SystemConfig;
+import tcb.shms.module.entity.Config;
 import tcb.shms.module.entity.EventSafeNotification;
 import tcb.shms.module.entity.EventSafeNotificationReturn;
 import tcb.shms.module.entity.Unit;
 import tcb.shms.module.entity.User;
 import tcb.shms.module.service.AuthorizastionService;
+import tcb.shms.module.service.ConfigService;
 import tcb.shms.module.service.EventSafeNotificationReturnService;
 import tcb.shms.module.service.EventSafeNotificationService;
 import tcb.shms.module.service.UnitService;
@@ -49,6 +51,9 @@ public class EventSafeNotificationReturnAction extends GenericAction<EventSafeNo
 	
 	@Autowired
 	AuthorizastionService authorizastionService;	
+	
+	@Autowired
+	ConfigService configService;
 
 	@RequestMapping(value = "/eventSafeNotification/api/getEventSafeNotificationReturn", method = RequestMethod.POST)
 	public @ResponseBody String getEventSafeNotificationReturn(@RequestBody String data) {
@@ -99,6 +104,20 @@ public class EventSafeNotificationReturnAction extends GenericAction<EventSafeNo
 				result.put("affairs", affairs);
 			}
 			result.put("nowTime", SystemConfig.DATE_FORMAT.BASIC_DATETIME_FORMATE.format(new Timestamp(System.currentTimeMillis())));
+			//取得核發單位選項
+			Config eventEffect = new Config();
+			eventEffect.setCfgInUse(SystemConfig.CFG_IN_USE.CFG_IN_USE_TRUE);
+			eventEffect.setCfgType(SystemConfig.CFG_TYPE.EVENT_EFFECT_TYPE);
+			List<Config> eventEffectList = configService.getList(eventEffect);
+			result.put("eventEffectList", eventEffectList);
+			
+			EventSafeNotificationReturn eventSafeNotificationReturn = new EventSafeNotificationReturn();
+			eventSafeNotificationReturn.setUnitId(loginUser.getUnitId());
+			eventSafeNotificationReturn.setEventId(eventId);
+			List<EventSafeNotificationReturn> eventSafeNotificationReturnList = eventSafeNotificationReturnService.getList(eventSafeNotificationReturn);			
+			if(eventSafeNotificationReturnList != null && eventSafeNotificationReturnList.size() > 0) {
+				result.put("eventSafeNotificationReturn", eventSafeNotificationReturnList.get(1));
+			}
 			
 			jsonInString = new Gson().toJson(result);
 		} catch (Exception e) {
@@ -116,6 +135,11 @@ public class EventSafeNotificationReturnAction extends GenericAction<EventSafeNo
 			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);			
 			EventSafeNotificationReturn eventSafeNotificationReturn = new EventSafeNotificationReturn();
 			User user = getSessionUser();
+			eventSafeNotificationReturn.setEffectType(MapUtils.getString(map, "effectType"));
+			eventSafeNotificationReturn.setIsSafe(MapUtils.getInteger(map, "isSafe"));
+			eventSafeNotificationReturn.setMemo(MapUtils.getString(map, "memo"));
+			eventSafeNotificationReturn.setEventId(MapUtils.getLong(map, "eventId"));			
+			eventSafeNotificationReturn.setUnitId(user.getUnitId());
 			eventSafeNotificationReturn.setCreateId(user.getRocId());
 			eventSafeNotificationReturn.setCreateTime(new Timestamp(System.currentTimeMillis()));
 			eventSafeNotificationReturn = eventSafeNotificationReturnService.save(eventSafeNotificationReturn);
