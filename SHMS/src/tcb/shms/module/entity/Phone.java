@@ -16,7 +16,7 @@ import tcb.shms.core.entity.GenericEntity;
  * @version 2020/3/19
  */
 @Entity
-@Table(name="Phone")
+@Table(name="PHONE")
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Phone extends GenericEntity{
 

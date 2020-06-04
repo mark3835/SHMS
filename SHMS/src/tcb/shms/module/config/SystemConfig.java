@@ -26,7 +26,12 @@ public class SystemConfig {
 		public static final String CERTIFICATE_TYPE_FIREHELPER = "CERTIFICATE_TYPE_FIREHELPER";
 		public static final String CERTIFICATE_TYPE_HELPER = "CERTIFICATE_TYPE_HELPER";
 		public static final String CERTIFICATE_UNIT = "CERTIFICATE_UNIT";
-		public static final String EVENT_EFFECT_TYPE = "EVENT_EFFECT_TYPE";
+		public static final String EVENT_EFFECT_TYPE = "EVENT_EFFECT_TYPE";		
+	}
+	
+	public static class CFG_KEY{
+		public static final String LDAP_ACC_KEY = "LDAP_ACC_KEY";
+		public static final String LDAP_PSD_KEY = "LDAP_PSD_KEY";
 	}
 	
 	public static class CFG_IN_USE{
@@ -68,5 +73,15 @@ public class SystemConfig {
 	public static class CERTIFICATE{
 		public static final int IS_RESPONSIBLE_TRUE = 1;
 		public static final int IS_RESPONSIBLE_FALSE = 0;
+	}
+	
+	public static class EVENT_SAFE_NOTIFICATION_RETURN{
+		public static final int IS_SAFE_TRUE = 1;
+		public static final int IS_SAFE_FALSE = 0;
+	}
+	
+	public static class COLUMN{
+		public static final String NOT_NULL = "notNull";
+		public static final String NULL = "null";
 	}
 }

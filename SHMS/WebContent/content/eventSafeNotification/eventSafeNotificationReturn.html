@@ -1,4 +1,4 @@
-<div>
+<div id="printDiv">
 	<h2 style="text-align: center;">平安通報資料維護</h2>
 	<form id="inputForm">
 		<table style="border-collapse: collapse; width: 100%; height: 36px;" border="1">
@@ -25,13 +25,13 @@
 		    <tr>
 		      	<td style="width: 25.7441%;">是否平安</td>
 		      	<td colspan="4">
-		      		<input id="isSafe_1" name="isSafe" type="radio" value="1"/>是
-				    <input id="isSafe_0" name="isSafe" type="radio" value="0" checked/>否
+		      		<input id="isSafe_1" name="isSafe" type="radio" value="1" checked/>是
+				    <input id="isSafe_0" name="isSafe" type="radio" value="0"/>否
 				</td>
 		    </tr>
 		    <tr>
 		      <td style="width: 25.7441%;">影響類別</td>
-		      <td colspan="4" id="eventTypeTd"></td>
+		      <td colspan="4" id="effectTypeTd"></td>
 		    </tr>
 		    <tr>
 		      <td style="width: 25.7441%;">簡要說明重要案情<br>(200中文字以內)</td>
@@ -43,7 +43,7 @@
 		</table>
 		<div style="text-align: center;">
 			<button type="submit" id="saveBtn">儲存</button>
-			<button type="button" id="deleteBtn">刪除</button>
+			<button type="button" id="cleanBtn">清空</button>
 			<button type="button" id="returnBtn">回平安通報公告首頁</button>
 		</div>		
 	</form>
@@ -106,12 +106,13 @@
 </div>
 
 <script type="text/javascript">
+var tempData;
+var eventId = $("#eventId").val();
 //需要用的JS
-require(["jquery", "jsgrid"], function (jquery, jsgrid) {
+require(["jquery", "jsgrid"], function (jquery, jsgrid) {	
 	//頁面讀取後執行
-	$(document).ready(function(){
+	$(document).ready(function(){	
 		
-		var eventId = $("#eventId").val();
 	    $.ajax({
 		    url: "/"+CONFIG.SYSTEM_NAME + '/eventSafeNotification/api/getEventSafeNotificationReturn',
 		    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
@@ -124,6 +125,7 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 		    		 alert("沒有權限");
 		    	 }else{
 		    		 console.log(data);
+		    		 tempData = data;
 		    		 //第一行資訊
 		    		 initPage(data);
 		    	 
@@ -158,11 +160,17 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 	    $("#saveBtn").click(function(){
 			saveData();
 		});
-		$("#printBtn").click(function(){
-			printByDiv(document.getElementById("printDiv"));
+		
+		$("#cleanBtn").click(function(){
+			$("input[name='effectType']:checked").each(function(i, item){
+				$(this).prop('checked', false);
+			});
+			$("#isSafe_1").prop('checked', true);
+			$("#memo").val("");
 		});
-		$("#backBtn").click(function(){
-			loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + "/content/certificate/certificate.html");
+		
+		$("#returnBtn").click(function(){
+			loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + "/content/eventSafeNotification/eventSafeNotification.html");
 		});
     
 	});  
@@ -181,9 +189,49 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 		if(data.eventSafeNotification){
 			$("#eventKey").html(data.eventSafeNotification.eventKey);
 			$("#eventName").html(data.eventSafeNotification.eventName);
-		}		
+		}	
+		//長影響類別
+		createCheckBox("effectTypeTd", "effectType", data.eventEffectTypeList, "cfgKey", "cfgValue");
 		
-		createCheckBox("eventTypeTd", "eventType", data.eventEffectList, "cfgKey", "cfgValue");
+// 		//塞已儲存資料
+// 		if(data.eventSafeNotificationReturn){			
+// 			$("#now").html(data.eventSafeNotificationReturn.returnTime);			
+// 			if(data.eventSafeNotificationReturn.reviewTime){
+// 				$("#reviewType").html("已審核");
+// 			}else{
+// 				$("#reviewType").html("未審核");
+// 			}
+// 			if(data.eventSafeNotificationReturn.isSafe){
+// 				$("input[name='isSafe']").each(function(i, item){
+// 					  if( $(this).val() == data.eventSafeNotificationReturn.isSafe){
+// 						  $(this).attr('checked',true);
+// 					  }
+// 				});
+// 			}
+// 			if(data.eventSafeNotificationReturn.memo){
+// 				$("#memo").val(data.eventSafeNotificationReturn.memo);
+// 			}
+// 			$("#reviewTime").html(data.eventSafeNotificationReturn.reviewTime);
+// 			if(data.eventSafeNotificationReturn.effectType){
+// 				var effectTypeArray = data.eventSafeNotificationReturn.effectType.split(";");
+// 				$.each(effectTypeArray, function(index, value){
+// 					$("input[name='effectType']").each(function(i, item){
+// 						  if( $(this).val() == value){
+// 							  $(this).attr('checked',true);
+// 							  return false; // 等於 break
+// 						  }
+// 					});
+// 				});
+// 			}
+			
+// 		}	
+// 		if(data.reviewer){
+// 			$("#reviewName").html(data.reviewer.name);
+// 		}
+// 		if(data.creater){
+// 			$("#createName").html(data.creater.name);
+// 		}
+				
 		
 		//下面表格資料
 		setTableData(data);
@@ -266,58 +314,54 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 			           type:  'checkbox'
 			       })				
 			).append(
-					$(document.createElement('label')).html(item[val])		
-			
-			).append(
-					"<br>"	
-			
-			);
+					$(document.createElement('label')).html(item[val])
+			).append("<br>");
 		});
 	}
 	
-	function saveData(){		
+	function saveData(){	
+		if(!confirm("確認儲存")){
+			event.preventDefault();
+			return false;
+		}
 		//檢核
 		$("#inputForm").validate({
 			//錯誤訊息元素預設為label改成p會換行
 			errorElement: "p",
 		    rules: {
-		    	certificateName: {
+		    	isSafe: {
 		          required: true,
-		          minlength: 1
-		        },
-		        gotDate: {
-		          required: true
-		        },
-		        gotFee: {
-		          required: true
-		          , range: [0, 999999]
 		        }
 		      },
 		      messages: {
-		    	certificateName: {
-		          required: "請輸入證書字號",
-		          minlength: "至少一個字母"
-		        },
-		        gotDate: {
-		          required: "請輸入取得日期"
-		        },
-		        gotFee: {
-		          required: "請輸入報名費用",
-		          range: "不得小於0大於999999"
-			    }
+		    	  isSafe: {
+		          required: "請選擇是否平安"
+		        }
 			  },
 			  //檢核後送出
 			  submitHandler: function(form) 
 			   {      
-				  
-				  if($("input[name='isResponsible']:checked").val() == "1"){
-					  if(!confirm("選擇該員(所持本證照)為擔任本項業務負責人，若有原負責人，審核後會將原有負責人取代")){
-						  return false;
+				  var inputData = {};				 
+				  inputData.isSafe = $("input[name='isSafe']:checked").val();
+				  inputData.memo = $("#memo").val();
+				  inputData.eventId = eventId;
+				  inputData.returnTime = tempData.nowTime;
+				  if($("input[name='effectType']:checked").length > 0){
+					  var effectType;
+					  $("input[name='effectType']:checked").each(function(i, item){
+						  if(effectType){
+							  effectType = effectType + ";" + $(this).val();
+						  }else{
+							  effectType = $(this).val();
+						  }
+					  });
+					  if(effectType){
+						  inputData.effectType = effectType;
 					  }
-				  }				  
+				  }			
 				  $.ajax({
-					    url: "/"+CONFIG.SYSTEM_NAME + '/certificate/api/saveData',
-					    data: JSON.stringify(getFormData($('#inputForm'))),
+					    url: "/"+CONFIG.SYSTEM_NAME + '/eventSafeNotification/api/addEventSafeNotificationReturn',
+					    data: JSON.stringify(inputData),
 					    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 					    async: false,
 					    type: "POST",
@@ -327,7 +371,8 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 					    	 }else{
 					    		 if(data.result == "success"){
 					    			 alert("儲存成功");
-					    			 loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + "/content/certificate/certificate.html");
+					    			 printByDiv(document.getElementById("printDiv"));
+					    			 loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + "/content/eventSafeNotification/eventSafeNotificationReview.html");
 					    		 }else if(data.errorMsg){
 					    			 alert(data.errorMsg);
 					    		 }
@@ -340,6 +385,18 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 			   }  
 		});		
 	}
+	
+	
+	function printByDiv(printpage){ 
+		var iframe = document.createElement('IFRAME');
+		iframe.setAttribute('style', 'position:absolute;width:0px;height:0px;left:-500px;top:-500px;');
+		document.body.appendChild(iframe);
+		iframe.contentWindow.document.write(printpage.innerHTML);
+		iframe.contentWindow.document.close(); //important!
+		iframe.contentWindow.focus(); //IE fix
+		iframe.contentWindow.print();
+		iframe.parentNode.removeChild(iframe);
+	}	
 	
 });
 </script>

@@ -1,5 +1,5 @@
 <div>
-	<h4>平安通報設定</h4>
+	<h4>平安通報公告設定</h4>
 	
 	    <div id="jsGrid"></div>
 </div>
@@ -46,7 +46,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    	        width: "100%",
 			    	 
 			    	        heading: true, //是否显示表头
-			    		    filtering: false, //启动查找
+			    		    filtering: true, //启动查找
 			    		    inserting: false, //启动新增  關掉使用自定義的
 			    		    editing: true,  //启动编辑 
 			    		    selecting: true,
@@ -58,7 +58,29 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		    
 			    		    controller: {
 			    		        loadData: function(filter) {
-			    		            return data.eventSafeNotificationList;
+			    		        	//查詢
+			    		        	 	var result = $.grep(data.eventSafeNotificationList, function(item, idx) {
+			    		                    for (var key in filter) {
+			    		                        var value = filter[key];
+			    		                        if (value.length > 0) {
+			    		                        	if (!item[key]){
+			    		                                return false;
+			    		                        	}
+			    		                        	if(typeof item[key] === 'number'){
+			    		                        		if (item[key].toString().indexOf(value) == -1){
+				    		                                return false;
+			    		                        		}
+			    		                        	}else if(typeof item[key] === 'string'){
+			    		                        		if (item[key].indexOf(value) == -1){
+				    		                                return false;
+			    		                        		}
+			    		                        	}
+			    		                        	
+			    		                        }
+			    		                    }
+			    		                    return true;
+			    		                });
+			    		            return result;
 			    		        },
 			    		        insertItem: function(insertingItem) {
 			    		        	$.ajax({
@@ -134,7 +156,8 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    	 
 			    	        fields: [
 			    	            { title:"事件編號", name: "eventKey", type: "text", width: 100 },
-			    	            { title:"事件名稱", name: "eventName", type: "text	", width: 200 },
+			    	            { title:"事件名稱", name: "eventName", type: "text", width: 200 },
+			    	            { title:"通報數(已審核)", name: "returnCount", type: "text", width: 120 },
 			    	            { type: "control",
 			                        editButton: false,
 			                        modeSwitchButton: false,
@@ -199,7 +222,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 		 			});
              }
 
-             $("#tableDialog").dialog("option", "title", dialogType + " 參數").dialog("open");
+             $("#tableDialog").dialog("option", "title", dialogType + " 事件").dialog("open");
          };
 	
 	     $("#dialogForm").validate({

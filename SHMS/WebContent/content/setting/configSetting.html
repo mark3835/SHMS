@@ -63,7 +63,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    	        width: "100%",
 			    	 
 			    	        heading: true, //是否显示表头
-			    		    filtering: false, //启动查找
+			    	        filtering: true, //启动查找
 			    		    inserting: false, //启动新增  關掉使用自定義的
 			    		    editing: true,  //启动编辑 
 			    		    selecting: true,
@@ -75,7 +75,29 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		    
 			    		    controller: {
 			    		        loadData: function(filter) {
-			    		            return data;
+				    		        	//查詢
+			    		        	 	var result = $.grep(data, function(item, idx) {
+			    		                    for (var key in filter) {
+			    		                        var value = filter[key];
+			    		                        if (value.length > 0) {
+			    		                        	if (!item[key]){
+			    		                                return false;
+			    		                        	}
+			    		                        	if(typeof item[key] === 'number'){
+			    		                        		if (item[key].toString().indexOf(value) == -1){
+				    		                                return false;
+			    		                        		}
+			    		                        	}else if(typeof item[key] === 'string'){
+			    		                        		if (item[key].indexOf(value) == -1){
+				    		                                return false;
+			    		                        		}
+			    		                        	}
+			    		                        	
+			    		                        }
+			    		                    }
+			    		                    return true;
+			    		                });
+			    		            return result;
 			    		        },
 			    		        insertItem: function(insertingItem) {
 			    		        	$.ajax({
@@ -151,11 +173,11 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    	 
 			    	        fields: [
 			    	            { title:"參數類型", name: "cfgType", type: "text", width: 100, validate: "required" },
-			    	            { title:"參數KEY", name: "cfgKey", type: "text	", width: 200 },
-			    	            { title:"參數名稱", name: "cfgName", type: "text	", width: 130 },
-			    	            { title:"參數值", name: "cfgValue", type: "text	", width: 200 },
-			    	            { title:"參數註記", name: "cfgMemo", type: "text	", width: 130 },
-			    	            { title:"參數是否啟用", name: "cfgInUse", type: "text	", width: 50 },
+			    	            { title:"參數KEY", name: "cfgKey", type: "text", width: 200 },
+			    	            { title:"參數名稱", name: "cfgName", type: "text", width: 130 },
+			    	            { title:"參數值", name: "cfgValue", type: "text", width: 200 },
+			    	            { title:"參數註記", name: "cfgMemo", type: "text", width: 130 },
+			    	            { title:"參數是否啟用", name: "cfgInUse", type: "text", width: 50 },
 			    	            { type: "control",
 			                        editButton: false,
 			                        modeSwitchButton: false,
@@ -251,7 +273,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 	     var saveItem = function(item, isNew) {
              $.extend(item, {
             	 cfgType: $("#cfgType").val(),
-            	 cfgKey: $("#cfgType").val(),
+            	 cfgKey: $("#cfgKey").val(),
             	 cfgName: $("#cfgName").val(),
             	 cfgValue: $("#cfgValue").val(),
             	 cfgMemo: $("#cfgMemo").val(),

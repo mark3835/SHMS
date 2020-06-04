@@ -51,6 +51,20 @@ require(["jquery"], function (jquery) {
 				        console.log(data);
 				    },
 				});
+				//平安通報審核 顯示數量
+			}else if(name == "平安通報審核"){
+				$.ajax({
+				    url: "/"+CONFIG.SYSTEM_NAME + "/eventSafeNotificationReview/api/getReviewDataCount",
+				    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+				    async: false,
+				    type: "GET",
+				    success: function(data, textStatus){
+				    	name = name + "(送審" + data.eventSafeNotificationReturnReviewerListCount + "/待審" + data.eventSafeNotificationReturnCreateIdListCount + ")";
+				    },
+				    error: function (data, textStatus, errorThrown) {
+				        console.log(data);
+				    },
+				});
 			}
 			
 			menu.html(menu.html().replace('@MENU_NAME@',name));
@@ -88,7 +102,37 @@ require(["jquery"], function (jquery) {
 		    					var menu2 = $("#dropdownLiTemplate").clone();
 		    					menu2.removeAttr("id");
 		    					menu2.show();
-		    					menu2.html(menu2.html().replace('@MENU_NAME@', value2.menuName));	
+		    					var name = value2.menuName;
+		    					//證照審核 顯示數量
+		    					if(name == "證照審核"){
+		    						$.ajax({
+		    						    url: "/"+CONFIG.SYSTEM_NAME + "/certificateReview/api/getReviewDataCount",
+		    						    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+		    						    async: false,
+		    						    type: "GET",
+		    						    success: function(data, textStatus){
+		    						    	name = name + "(送審" + data.certificateCreateIdListCount + "/待審" + data.certificateReviewerListCount + ")";
+		    						    },
+		    						    error: function (data, textStatus, errorThrown) {
+		    						        console.log(data);
+		    						    },
+		    						});
+		    						//平安通報審核 顯示數量
+		    					}else if(name == "平安通報審核"){
+		    						$.ajax({
+		    						    url: "/"+CONFIG.SYSTEM_NAME + "/eventSafeNotificationReview/api/getReviewDataCount",
+		    						    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+		    						    async: false,
+		    						    type: "GET",
+		    						    success: function(data, textStatus){
+		    						    	name = name + "(送審" + data.eventSafeNotificationReturnCreateIdListCount + "/待審" + data.eventSafeNotificationReturnReviewerListCount + ")";
+		    						    },
+		    						    error: function (data, textStatus, errorThrown) {
+		    						        console.log(data);
+		    						    },
+		    						});
+		    					}
+		    					menu2.html(menu2.html().replace('@MENU_NAME@', name));	
 		    					menu2.click(function(){
 		    						bodyHref(value2.menuUrl);
 		    					});

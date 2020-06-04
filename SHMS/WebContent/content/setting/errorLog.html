@@ -33,14 +33,16 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 		    	        width: "100%",
 		    	        height: "100%",
 		    	 
-		    	        heading: true,
-		    		    filtering: false,
-		    		    inserting: false,
-		    		    editing: false,
+		    	        heading: true, //是否显示表头
+		    		    filtering: false, //启动查找
+		    		    inserting: false, //启动新增  關掉使用自定義的
+		    		    editing: true,  //启动编辑 
 		    		    selecting: true,
-		    		    sorting: true,
-		    		    paging: false,
-		    		    pageLoading: false,
+		    		    sorting: true, //启动排序
+		    		    paging: true, //启动分页 
+		    		    pageLoading: false, //是否支持分页加载数据（相比较paging，这个属性是向服务器请求数据时要求分页，而paging是本地进行分页，无关服务器）
+		    		    autoload: true,
+		    		    pageSize: 10,
 		    	 
 		    	        data: data,
 		    	 

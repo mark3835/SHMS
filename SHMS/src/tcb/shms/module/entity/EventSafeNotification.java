@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -60,6 +61,18 @@ public class EventSafeNotification extends GenericEntity{
 	 */
 	@Column(name="EDIT_TIME")
 	private Timestamp editTime;
+	
+	/**
+	 * 放單位回報
+	 */
+	@Transient
+	private EventSafeNotificationReturn eventSafeNotificationReturn;
+	
+	/**
+	 * 回報筆數
+	 */
+	@Transient
+	private Integer returnCount;
 
 	public String getEventName() {
 		return eventName;
@@ -107,6 +120,22 @@ public class EventSafeNotification extends GenericEntity{
 
 	public void setEventKey(String eventKey) {
 		this.eventKey = eventKey;
+	}
+
+	public EventSafeNotificationReturn getEventSafeNotificationReturn() {
+		return eventSafeNotificationReturn;
+	}
+
+	public void setEventSafeNotificationReturn(EventSafeNotificationReturn eventSafeNotificationReturn) {
+		this.eventSafeNotificationReturn = eventSafeNotificationReturn;
+	}
+
+	public Integer getReturnCount() {
+		return returnCount;
+	}
+
+	public void setReturnCount(Integer returnCount) {
+		this.returnCount = returnCount;
 	}
 		
 }

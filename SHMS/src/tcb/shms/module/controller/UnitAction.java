@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.gson.Gson;
 
 import tcb.shms.core.controller.GenericAction;
+import tcb.shms.module.config.SystemConfig;
 import tcb.shms.module.entity.Unit;
 import tcb.shms.module.entity.User;
 import tcb.shms.module.service.UnitService;
@@ -161,6 +162,7 @@ public class UnitAction extends GenericAction<Unit> {
 			User loginUser = this.getSessionUser();
 			User selectUser = new User();
 			selectUser.setUnitId(loginUser.getUnitId());
+			selectUser.setIsLeave(SystemConfig.USER.IS_LEAVE_FALSE);
 			List<User> userList= userService.getList(selectUser);		
 			jsonInString = new Gson().toJson(userList);
 		} catch (Exception e) {

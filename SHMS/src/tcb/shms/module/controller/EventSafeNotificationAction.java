@@ -17,13 +17,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import tcb.shms.core.controller.GenericAction;
 import tcb.shms.module.config.SystemConfig;
 import tcb.shms.module.entity.EventSafeNotification;
+import tcb.shms.module.entity.EventSafeNotificationReturn;
 import tcb.shms.module.entity.Unit;
 import tcb.shms.module.entity.User;
 import tcb.shms.module.service.AuthorizastionService;
+import tcb.shms.module.service.EventSafeNotificationReturnService;
 import tcb.shms.module.service.EventSafeNotificationService;
 import tcb.shms.module.service.UnitService;
 
@@ -36,6 +39,9 @@ public class EventSafeNotificationAction extends GenericAction<EventSafeNotifica
 
 	@Autowired
 	EventSafeNotificationService eventSafeNotificationService;
+	
+	@Autowired
+	EventSafeNotificationReturnService eventSafeNotificationReturnService;
 	
 	@Autowired
 	AuthorizastionService authorizastionService;
@@ -69,8 +75,21 @@ public class EventSafeNotificationAction extends GenericAction<EventSafeNotifica
 			result.put("workMan", workMan);
 			EventSafeNotification eventSafeNotification = new EventSafeNotification();
 			List<EventSafeNotification> eventSafeNotificationList = eventSafeNotificationService.getList(eventSafeNotification);
+//			for(EventSafeNotification event:eventSafeNotificationList) {
+//				EventSafeNotificationReturn eventSafeNotificationReturn = new EventSafeNotificationReturn();
+//				eventSafeNotificationReturn.setEventId(event.getId());
+//				eventSafeNotificationReturn.setUnitId(loginUser.getUnitId());
+//				List<EventSafeNotificationReturn> eventSafeNotificationReturnList = eventSafeNotificationReturnService.getList(eventSafeNotificationReturn);
+//				if(eventSafeNotificationReturnList != null && eventSafeNotificationReturnList.size() > 0 ) {
+//					event.setEventSafeNotificationReturn(eventSafeNotificationReturnList.get(0));
+//				}
+//			}
+			for(EventSafeNotification event:eventSafeNotificationList) {
+				List<EventSafeNotificationReturn> eventSafeNotificationReturnList = eventSafeNotificationReturnService.getReviewReturnByEventId(event.getId());
+				event.setReturnCount(eventSafeNotificationReturnList.size());
+			}
 			result.put("eventSafeNotificationList", eventSafeNotificationList);
-			jsonInString = new Gson().toJson(result);
+			jsonInString = new GsonBuilder().setDateFormat(SystemConfig.DATE_FORMAT.BASIC_DATETIME_FORMATE_STRING).create().toJson(result);
 		} catch (Exception e) {
 			log.error("",e);
 			errorLogService.addErrorLog(this.getClass().getName(), e);

@@ -78,9 +78,9 @@ public class CertificateAction extends GenericAction<Certificate> {
 					firstLine = false;
 					continue;
 				}				
-				if(csvData.size() < 14){
+				if(csvData.size() < 15){
 					int count = csvData.size();
-					for(;count<14;count++) {
+					for(;count<15;count++) {
 						csvData.add("");
 					}
 				}				
@@ -100,15 +100,9 @@ public class CertificateAction extends GenericAction<Certificate> {
 					String saveManager = null;
 					String helper = null;
 					String fireHelper = null;
-					if(csvData.size() == 14){
-						gotFee = csvData.get(8).trim();
-						gotFee = gotFee.replaceAll("\"", "");
-						gotTrainUnit = csvData.get(9).trim();
-						reviewName = csvData.get(10).trim();
-						saveManager = csvData.get(11).trim();
-						helper = csvData.get(12).trim();
-						fireHelper = csvData.get(13).trim();
-					}else if(csvData.size() >= 15){
+					
+					//csv用逗號隔開 費用欄位金額也會長逗號  要判斷合併
+					if(csvData.get(9).contains("\"")) {
 						gotFee = csvData.get(8).trim() +  csvData.get(9).trim() ;
 						gotFee = gotFee.replaceAll(",", "");
 						gotFee = gotFee.replaceAll("\"", "");
@@ -117,7 +111,16 @@ public class CertificateAction extends GenericAction<Certificate> {
 						saveManager = csvData.get(12).trim();
 						helper = csvData.get(13).trim();
 						fireHelper = csvData.get(14).trim();
-					}							
+					}else {
+						gotFee = csvData.get(8).trim();
+						gotFee = gotFee.replaceAll("\"", "");
+						gotTrainUnit = csvData.get(9).trim();
+						reviewName = csvData.get(10).trim();
+						saveManager = csvData.get(11).trim();
+						helper = csvData.get(12).trim();
+						fireHelper = csvData.get(13).trim();
+					}
+										
 					
 					Certificate ceritficate = new Certificate();					
 					User user = userService.getByAccount(getAccount(email));
@@ -209,6 +212,9 @@ public class CertificateAction extends GenericAction<Certificate> {
 				return unitName;
 			}			
 		}else {
+			if(unitMap.get(unitName) == null) {
+				return unitName;
+			}
 			return unitMap.get(unitName).getUnitId();
 		}
 	}
@@ -220,7 +226,7 @@ public class CertificateAction extends GenericAction<Certificate> {
 		
 	private static Date parseDate(String strDate) {
 		if(StringUtils.isBlank(strDate)) {
-			return null;
+			return new Date();
 		}
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		String year = null;
@@ -231,12 +237,14 @@ public class CertificateAction extends GenericAction<Certificate> {
 		}else if(strDate.length() == 6){
 			year = strDate.substring(0, 2);
 			monthDay = strDate.substring(2);
+		}else {
+			return new Date();
 		}
 		year = Integer.toString(Integer.parseInt(year) + 1911);
 		try {
 			return sdf.parse(year+monthDay);
 		} catch (ParseException e) {
-			return null;
+			return new Date();
 		}
 	}
 	
@@ -244,9 +252,9 @@ public class CertificateAction extends GenericAction<Certificate> {
 	public @ResponseBody String getCertificate() {
 		String jsonInString = null;
 		try {
-			String sql = " SELECT c.*,user.name,unit.unit_name  , trainUnit .unit_name  as trainUnitName  " + 
-					" FROM CERTIFICATE as c,User as user, unit as unit , unit as trainUnit " + 
-					" WHERE c.roc_id = user.roc_id and user.unit_id = unit.unit_id  and c.GET_TRAIN_UNIT = trainUnit.unit_id   ";
+			String sql = " SELECT c.*,users.name,unit.unit_name  , trainUnit .unit_name  as trainUnitName  " + 
+					" FROM CERTIFICATE as c,Users as users, unit as unit , unit as trainUnit " + 
+					" WHERE c.roc_id = users.roc_id and users.unit_id = unit.unit_id  and c.GET_TRAIN_UNIT = trainUnit.unit_id   ";
 			List<Map> dataResult = certificateService.getListBySQLQuery(sql);
 			jsonInString = new GsonBuilder().setDateFormat(SystemConfig.DATE_FORMAT.BASIC_DATE_FORMATE_STRING).create().toJson(dataResult);
 		} catch (Exception e) {
@@ -643,5 +651,6 @@ public class CertificateAction extends GenericAction<Certificate> {
 
 		return new Gson().toJson(resultMap);
 	}
+	
 
 }

@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import tcb.shms.core.entity.GenericEntity;
+import tcb.shms.module.config.SystemConfig;
 
 /**
  * GenericHibernateDao
@@ -137,7 +138,14 @@ public abstract class GenericHibernateDao<T extends GenericEntity> extends Gener
 				}
 				if(ObjectUtils.isNotEmpty(field.get(entity))) {
 					if (field.getType().getCanonicalName().equals("java.lang.String")) {
-						predicateList.add(builder.equal(root.get(field.getName().toString()), field.get(entity)));
+						//如果值等於 not null 
+						if( SystemConfig.COLUMN.NOT_NULL.equals(field.get(entity))) {
+							predicateList.add(builder.isNotNull(root.get(field.getName().toString())));
+						}else if( SystemConfig.COLUMN.NULL.equals(field.get(entity))) {
+							predicateList.add(builder.isNull(root.get(field.getName().toString())));
+						}else {
+							predicateList.add(builder.equal(root.get(field.getName().toString()), field.get(entity)));
+						}
 					} else if (field.getType().getCanonicalName().equals("java.lang.Integer") || field.getType().getCanonicalName().equals("int")) {
 						predicateList.add(builder.equal(root.get(field.getName().toString()), field.get(entity)));
 					} else if (field.getType().getCanonicalName().equals("java.lang.Long") || field.getType().getCanonicalName().equals("long")) {

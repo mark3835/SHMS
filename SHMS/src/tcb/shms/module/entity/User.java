@@ -14,7 +14,7 @@ import tcb.shms.core.entity.GenericEntity;
  * @version 2020/3/4
  */
 @Entity
-@Table(name="USER")
+@Table(name="USERS")
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class User extends GenericEntity{
 

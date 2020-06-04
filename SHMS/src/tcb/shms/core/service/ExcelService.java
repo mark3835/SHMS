@@ -32,7 +32,7 @@ public class ExcelService {
 	 * @return 
 	 * @throws IOException 
 	*/
-	private static File createExcel(String fileName, String sheetName, List<String> titleList, List<List<String>> dataList) throws IOException {
+	public File createExcel(String fileName, String sheetName, List<String> titleList, List<List<String>> dataList) throws IOException {
 		// 建立一個Excel檔案
 		HSSFWorkbook  workbook = new HSSFWorkbook();
 		// 建立一個工作表
@@ -65,6 +65,10 @@ public class ExcelService {
 				
 			}
 		}
+		for (int i = 0; i < titleList.size() ; i++) {
+            sheet.autoSizeColumn(i);
+            sheet.setColumnWidth(i,sheet.getColumnWidth(i)*17/10);
+        }
 		// 儲存Excel檔案
 		try {
 			String filePathName = SystemConfig.EXCEL_PATH.DEFAULT_CREATE_PATH + fileName + ".xls";
@@ -115,7 +119,7 @@ public class ExcelService {
 			add("row3data3");
 			add("row3data4");
 		}});
-		File file = createExcel("testFile", "testSheet", titleList, dataList);
+		File file = new ExcelService().createExcel("testFile", "testSheet", titleList, dataList);
 		
 		System.out.println(file.exists());
 		System.out.println(file.getName());

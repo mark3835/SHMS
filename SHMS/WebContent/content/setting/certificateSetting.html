@@ -71,7 +71,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    	        width: "100%",
 			    	 
 			    	        heading: true, //是否显示表头
-			    		    filtering: false, //启动查找
+			    	        filtering: true, //启动查找
 			    		    inserting: false, //启动新增  關掉使用自定義的
 			    		    editing: true,  //启动编辑 
 			    		    selecting: true,
@@ -83,7 +83,29 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		    
 			    		    controller: {
 			    		        loadData: function(filter) {
-			    		            return data;
+			    		        	//查詢
+		    		        	 	var result = $.grep(data, function(item, idx) {
+		    		                    for (var key in filter) {
+		    		                        var value = filter[key];
+		    		                        if (value.length > 0) {
+		    		                        	if (!item[key]){
+		    		                                return false;
+		    		                        	}
+		    		                        	if(typeof item[key] === 'number'){
+		    		                        		if (item[key].toString().indexOf(value) == -1){
+			    		                                return false;
+		    		                        		}
+		    		                        	}else if(typeof item[key] === 'string'){
+		    		                        		if (item[key].indexOf(value) == -1){
+			    		                                return false;
+		    		                        		}
+		    		                        	}
+		    		                        	
+		    		                        }
+		    		                    }
+		    		                    return true;
+		    		                });
+		    		            return result;
 			    		        },
 			    		        insertItem: function(insertingItem) {
 			    		        	$.ajax({
@@ -161,15 +183,15 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    	            { title:"身分證字號", name: "ROC_ID", type: "text", width: 110},
 			    	            { title:"姓名", name: "NAME", type: "text", width: 70},
 			    	            { title:"單位", name: "UNIT_NAME", type: "text", width: 100},
-			    	            { title:"證書種類", name: "CERTIFICATE_TYPE", type: "text	", width: 110 },
-			    	            { title:"證書字號", name: "CERTIFICATE_NAME", type: "text	", width: 110 },
-			    	            { title:"核發單位", name: "CERTIFICATE_UNIT", type: "text	", width: 110 },
-			    	            { title:"取得日期", name: "GET_DATE", type: "text	", width: 100 },
-			    	            { title:"考照費", name: "GET_FEE", type: "text	", width: 70 },
-			    	            { title:"取得時單位", name: "TRAINUNITNAME", type: "text	", width: 80 },
-			    	            { title:"審核人", name: "REVIEW_ID", type: "text	", width: 80 },
-			    	            { title:"審核時間", name: "review_Time", type: "text	", width: 90 },
-			    	            { title:"是否為單位負責人", name: "IS_RESPONSIBLE", type: "text	", width: 80 },
+			    	            { title:"證書種類", name: "CERTIFICATE_TYPE", type: "text", width: 110 },
+			    	            { title:"證書字號", name: "CERTIFICATE_NAME", type: "text", width: 110 },
+			    	            { title:"核發單位", name: "CERTIFICATE_UNIT", type: "text", width: 110 },
+			    	            { title:"取得日期", name: "GET_DATE", type: "text", width: 100 },
+			    	            { title:"考照費", name: "GET_FEE", type: "text", width: 70 },
+			    	            { title:"取得時單位", name: "TRAINUNITNAME", type: "text", width: 80 },
+			    	            { title:"審核人", name: "REVIEW_ID", type: "text", width: 80 },
+			    	            { title:"審核時間", name: "review_Time", type: "text", width: 90 },
+			    	            { title:"是否為單位負責人", name: "IS_RESPONSIBLE", type: "text", width: 80 },
 			    	            { type: "control",
 			                        editButton: false,
 			                        modeSwitchButton: false,

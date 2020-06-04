@@ -2,6 +2,7 @@ package tcb.shms.core.controller;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.LogManager;
@@ -17,8 +18,10 @@ import com.google.gson.Gson;
 
 import tcb.shms.core.service.LdapService;
 import tcb.shms.module.config.SystemConfig;
+import tcb.shms.module.entity.Config;
 import tcb.shms.module.entity.LoginLog;
 import tcb.shms.module.entity.User;
+import tcb.shms.module.service.ConfigService;
 import tcb.shms.module.service.LoginLogService;
 import tcb.shms.module.service.UserService;
 
@@ -39,6 +42,9 @@ public class LoginAction extends GenericAction{
 		
 	@Autowired
 	UserService  userService;
+	
+	@Autowired
+	ConfigService configService;
 		
 	@RequestMapping(value="/loginCheck", method=RequestMethod.POST)
     public @ResponseBody String login(@RequestBody String data) {     
@@ -89,9 +95,17 @@ public class LoginAction extends GenericAction{
     public @ResponseBody String addUserAndUnitTest() {     
 		String jsonInString = "error";
         try {
-        	
-        	ldapService.getADUserAndUnitToDb("mark3835", "4rfv%TGB");
-        	
+        	Config cfg = new Config();
+        	cfg.setCfgInUse(SystemConfig.CFG_IN_USE.CFG_IN_USE_TRUE);
+        	cfg.setCfgKey(SystemConfig.CFG_KEY.LDAP_ACC_KEY);
+			List<Config> cfgList = configService.getList(cfg);
+			String ldapAccKey = cfgList.get(0).getCfgValue();
+			cfg.setCfgInUse(SystemConfig.CFG_IN_USE.CFG_IN_USE_TRUE);
+			cfg.setCfgKey(SystemConfig.CFG_KEY.LDAP_PSD_KEY);
+			cfgList = configService.getList(cfg);
+			String ldapPsdKey = cfgList.get(0).getCfgValue();
+			
+        	ldapService.getADUserAndUnitToDb(ldapAccKey, ldapPsdKey);        	
         	jsonInString = "success";
 			
 		} catch (Exception e) {

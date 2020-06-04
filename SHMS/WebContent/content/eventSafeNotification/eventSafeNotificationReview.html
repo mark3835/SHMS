@@ -1,22 +1,18 @@
 
 <div>
 	<div>
-		<h4>待簽核證照</h4>
+		<h4>待簽核平安通報</h4>
 		<table style="border-collapse: collapse; width: 100%; height: 108px;" border="1">
 		  <thead>
 		    <tr>
-		    	<td >姓名</td>
-		      	<td >職稱</td>
-		      	<td >證書種類</td>
-		      	<td >證書字號</td>
-		      	<td >核發單位</td>
-		      	<td >取得日期</td>
-		      	<td >報名費用</td>
-		      	<td >派訓單位</td>
-		      	<td >審核人員</td>
-		      	<td >申請狀態</td>
-		      	<td >負責單位<br>本項業務</td>
-		      	<td >MEMO</td>
+		    	<td >事件編號</td>
+		      	<td >事件名稱</td>
+		      	<td >單位名稱</td>
+		      	<td >開始通報時間</td>
+		      	<td >是否平安</td>
+		      	<td >影響類別</td>
+		      	<td >簡要說明重要案情</td>
+		      	<td >建立者</td>
 		      	<td >執行動作</td>
 		    </tr>
 		  </thead>
@@ -45,7 +41,7 @@
 		$(document).ready(function() {
 			
 			$.ajax({
- 			    url: "/"+CONFIG.SYSTEM_NAME + '/certificateReview/api/getReviewData',
+ 			    url: "/"+CONFIG.SYSTEM_NAME + '/eventSafeNotificationReview/api/getReviewData',
  			   	contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
  			    async: false,
  			    type: "GET",
@@ -66,30 +62,33 @@
 	
 	
 	function createTable(data){
-		$.each(data.certificateCreateIdList, function( index, item ) {
+		$.each(data.eventSafeNotificationReturnCreateIdList, function( index, item ) {
 			var tr = $('<tr/>');
 			tr.value = item;
 			var td = $('<td/>');			
-			tr.append(td.clone().html( getUser(data.userList, item.rocId).name) );
-			tr.append(td.clone().html( getUser(data.userList, item.rocId).jobName) );
-			tr.append(td.clone().html( item.certificateType) );
-			tr.append(td.clone().html( item.certificateName) );
-			tr.append(td.clone().html( item.certificateUnit) );
-			tr.append(td.clone().html( item.gotDate) );
-			tr.append(td.clone().html( item.gotFee) );
-			tr.append(td.clone().html( item.gotTrainUnit) );
-			tr.append(td.clone().html( item.reviewId) );
-			if(item.reviewTime){
-				tr.append(td.clone().html("已審核") );	
-			}else{
-				tr.append(td.clone().html("未審核") );
-			}			
-			if(item.isResponsible){
+			tr.append(td.clone().html( getEvent(data.eventSafeNotificationList, item.eventId).eventKey ));
+			tr.append(td.clone().html( getEvent(data.eventSafeNotificationList, item.eventId).eventName ));
+			tr.append(td.clone().html( data.unit.unitName) );
+			tr.append(td.clone().html( item.returnTime) );
+			if(item.isSafe){
 				tr.append(td.clone().html("是") );	
 			}else{
 				tr.append(td.clone().html("否") );
 			}
-			tr.append(td.clone().html(item.memo) );
+			var effectType;
+			if(item.effectType){
+				var effectTypeArray = item.effectType.split(";");				
+				$.each(effectTypeArray, function(index, value){
+					if(effectType){
+						effectType = effectType + "<br>" + value;
+					}else{
+						effectType = value;
+					}
+				});
+			}			
+			tr.append(td.clone().html( effectType) );
+			tr.append(td.clone().html( item.memo) );
+			tr.append(td.clone().html( getUser(data.userList, item.createId).name) );			
 			var cancelBtn = $('<button/>', {
 			        text: "取消", 
 			        id: 'btn_cancel_' + item.id,
@@ -102,30 +101,33 @@
 			tr.append(td.clone().append(cancelBtn) );
 			$("#tbody").append(tr);
 		});
-		$.each(data.certificateReviewerList, function( index, item ) {
+		$.each(data.eventSafeNotificationReturnReviewerList, function( index, item ) {
 			var tr = $('<tr/>');
 			tr.value = item;
 			var td = $('<td/>');			
-			tr.append(td.clone().html( getUser(data.userList, item.rocId).name) );
-			tr.append(td.clone().html( getUser(data.userList, item.rocId).jobName) );
-			tr.append(td.clone().html( item.certificateType) );
-			tr.append(td.clone().html( item.certificateName) );
-			tr.append(td.clone().html( item.certificateUnit) );
-			tr.append(td.clone().html( item.gotDate) );
-			tr.append(td.clone().html( item.gotFee) );
-			tr.append(td.clone().html( item.gotTrainUnit) );
-			tr.append(td.clone().html( item.reviewId) );
-			if(item.reviewTime){
-				tr.append(td.clone().html("已審核") );	
-			}else{
-				tr.append(td.clone().html("未審核") );
-			}			
-			if(item.isResponsible){
+			tr.append(td.clone().html( getEvent(data.eventSafeNotificationList, item.eventId).eventKey ));
+			tr.append(td.clone().html( getEvent(data.eventSafeNotificationList, item.eventId).eventName ));
+			tr.append(td.clone().html( data.unit.unitName) );
+			tr.append(td.clone().html( item.returnTime) );
+			if(item.isSafe){
 				tr.append(td.clone().html("是") );	
 			}else{
 				tr.append(td.clone().html("否") );
 			}
-			tr.append(td.clone().html(item.memo) );
+			var effectType;
+			if(item.effectType){
+				var effectTypeArray = item.effectType.split(";");				
+				$.each(effectTypeArray, function(index, value){
+					if(effectType){
+						effectType = effectType + "<br>" + value;
+					}else{
+						effectType = value;
+					}
+				});
+			}			
+			tr.append(td.clone().html( effectType) );
+			tr.append(td.clone().html( item.memo) );
+			tr.append(td.clone().html( getUser(data.userList, item.createId).name) );
 			var submitBtn = $('<button/>', {
 		        text: "核准", 
 		        id: 'btn_submit_' + item.id,
@@ -161,9 +163,20 @@
 		return user;
 	}
 	
+	function getEvent(data, eventId){
+	    var	event;
+		$.each(data, function( index, item ) {
+			if(item.id == eventId){
+				event = item;
+				return false; 
+			}
+		});
+		return event;
+	}
+	
 	function submitBtnClick(id){
 		$.ajax({
-			    url: "/"+CONFIG.SYSTEM_NAME + '/certificateReview/api/submitReview',
+			    url: "/"+CONFIG.SYSTEM_NAME + '/eventSafeNotificationReview/api/submitReview',
 			    data: '{"ID":' + id + '}',
 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 			    async: false,
@@ -174,7 +187,7 @@
 		    	 }else{
 		    		 if(data.result == "success"){
 		    			 alert("審核成功");
-		    			 loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + "/content/certificate/certificateReview.html");
+		    			 loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + "/content/eventSafeNotification/eventSafeNotificationReview.html");
 		    		 }else if(data.errorMsg){
 		    			 alert(data.errorMsg);
 		    		 }
@@ -188,7 +201,7 @@
 	
 	function cancelBtnClick(id){
 		$.ajax({
-		    url: "/"+CONFIG.SYSTEM_NAME + '/certificateReview/api/cancelReview',
+		    url: "/"+CONFIG.SYSTEM_NAME + '/eventSafeNotificationReview/api/cancelReview',
 		    data: '{"ID":' + id + '}',
 		    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
 		    async: false,
@@ -199,7 +212,7 @@
 	    	 }else{
 	    		 if(data.result == "success"){
 	    			 alert("刪除成功");
-	    			 loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + "/content/certificate/certificateReview.html");
+	    			 loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + "/content/eventSafeNotification/eventSafeNotificationReview.html");
 	    		 }else if(data.errorMsg){
 	    			 alert(data.errorMsg);
 	    		 }

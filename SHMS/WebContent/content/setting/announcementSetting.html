@@ -52,7 +52,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    	        width: "100%",
 			    	 
 			    	        heading: true, //是否显示表头
-			    		    filtering: false, //启动查找
+			    		    filtering: true, //启动查找
 			    		    inserting: false, //启动新增  關掉使用自定義的
 			    		    editing: true,  //启动编辑 
 			    		    selecting: true,
@@ -64,7 +64,29 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    		    
 			    		    controller: {
 			    		        loadData: function(filter) {
-			    		            return data;
+				    		        	//查詢
+			    		        	 	var result = $.grep(data, function(item, idx) {
+			    		                    for (var key in filter) {
+			    		                        var value = filter[key];
+			    		                        if (value.length > 0) {
+			    		                        	if (!item[key]){
+			    		                                return false;
+			    		                        	}
+			    		                        	if(typeof item[key] === 'number'){
+			    		                        		if (item[key].toString().indexOf(value) == -1){
+				    		                                return false;
+			    		                        		}
+			    		                        	}else if(typeof item[key] === 'string'){
+			    		                        		if (item[key].indexOf(value) == -1){
+				    		                                return false;
+			    		                        		}
+			    		                        	}
+			    		                        	
+			    		                        }
+			    		                    }
+			    		                    return true;
+			    		                });
+			    		            return result;
 			    		        },
 			    		        insertItem: function(insertingItem) {
 			    		        	
@@ -146,13 +168,13 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			    	 
 			    	        fields: [
 			    	        	{ title:"發佈時間", name: "announcementDate", type: "text", width: 60 },
-			    	            { title:"公告標題", name: "announcementName", type: "text	", width: 160 },
-			    	            { title:"檔案名稱", name: "fileName", type: "text	", width: 120 },
-			    	            { title:"檔案路徑", name: "filePath", type: "text	", width: 140 },
-			    	            { title:"建立者", name: "createId", type: "text	", width: 50 },
-			    	            { title:"建立時間", name: "createTime", type: "text	", width: 60 },
-			    	            { title:"修改者", name: "editId", type: "text	", width: 50 },
-			    	            { title:"修改時間", name: "editTime", type: "text	", width: 60 },
+			    	            { title:"公告標題", name: "announcementName", type: "text", width: 160 },
+			    	            { title:"檔案名稱", name: "fileName", type: "text", width: 120 },
+			    	            { title:"檔案路徑", name: "filePath", type: "text", width: 140 },
+			    	            { title:"建立者", name: "createId", type: "text", width: 50 },
+			    	            { title:"建立時間", name: "createTime", type: "text", width: 60 },
+			    	            { title:"修改者", name: "editId", type: "text", width: 50 },
+			    	            { title:"修改時間", name: "editTime", type: "text", width: 60 },
 			    	            { type: "control",
 			                        editButton: false,
 			                        modeSwitchButton: false,

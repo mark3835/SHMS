@@ -1,0 +1,345 @@
+
+<div>
+	<div>
+		<h4>平安通報回報資料查詢</h4>
+		<form id="inputForm">
+			<table>
+				<tr>
+					<td>事件名稱</td>
+					<td>
+						<select id="eventName" name="eventName">
+							<option value="">全部</option >
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>是否平安</td>
+					<td>
+						<input id="isSafe_1" name="isSafe" type="radio" value="1"/>是
+						<input id="isSafe_0" name="isSafe" type="radio" value="0"/>否
+					</td>
+				</tr>
+				<tr>
+					<td>影響類別</td>
+					<td><div id="effectTypeDiv"></div></td>
+				</tr>
+				<tr>
+					<td>單位名稱</td>
+					<td>
+						<select id="unitName" name="unitName">
+							<option value="">全部</option >
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>是否審核</td>
+					<td>
+						<input id="isReview_notNull" name="isReview" type="radio" value="notNull"/>是
+						<input id="isReview_null" name="isReview" type="radio" value="null"/>否
+					</td>
+				</tr>
+				<tr>
+					<td>建立者(請輸身分證字號)</td>
+					<td><input type="input" id="createId" name="createId"></input></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td>
+						<button type="button" id="searchBtn">查詢</button>
+						<button type="button" id="printBtn">列印</button>
+						<button type="button" id="downloadExcelBtn">下載EXCEL</button>
+					
+					</td>
+				</tr>
+			</table>
+		</form>
+		
+		
+		<div id="printDiv">
+			<table style="border-collapse: collapse; width: 100%; height: 108px;" border="1">
+			  <thead>
+			    <tr>
+			    	<td >事件編號</td>
+			      	<td >事件名稱</td>
+			      	<td >單位名稱</td>
+			      	<td >開始通報時間</td>
+			      	<td >是否平安</td>
+			      	<td >影響類別</td>
+			      	<td >簡要說明重要案情</td>
+			      	<td >建立者</td>
+			      	<td >是否審核</td>
+			    </tr>
+			  </thead>
+			  <tbody id="tbody">
+			  
+			  </tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<style>
+/* 讓表格內容換行 */
+.jsgrid-table{
+		word-wrap:break-word;
+	}
+</style>
+
+<script>
+	//需要用的JS
+	require([ "jquery", "jquery_validate", "jsgrid", "jquery_ui" ], function(
+			jquery, jquery_validate, jsgrid, jquery_ui) {
+		
+		var tempData;
+		
+		//頁面讀取後執行
+		$(document).ready(function() {
+			
+			$.ajax({
+ 			    url: "/"+CONFIG.SYSTEM_NAME + '/eventSafeNotificationReturnData/api/getReturnData',
+ 			   	contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+ 			    async: false,
+ 			    type: "GET",
+ 			    success: function(data, textStatus){   
+ 			    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+			    		 alert("沒有權限");
+			    	 }else{
+			    		 initPage(data);
+			    	 }
+ 			    },
+ 			    error: function (data, textStatus, errorThrown) {
+ 			        console.log(data);
+ 			    },
+ 			});
+			
+			$("#searchBtn").click(function(){
+				searchData();
+			});
+			
+			$("#printBtn").click(function(){
+				printByDiv(document.getElementById("printDiv"));
+			});
+			
+			$("#downloadExcelBtn").click(function(){
+				downloadExcel();
+			});			
+		});
+		
+		
+		function initPage(data){
+			tempData = data;
+			//單位名稱
+			createSelect("eventName", data.eventSafeNotificationList, "id", "eventName");	
+			//單位名稱
+			createSelect("unitName", data.unitList, "unitId", "unitName");	
+			//長影響類別
+			createCheckBox("effectTypeDiv", "effectType", data.eventEffectTypeList, "cfgKey", "cfgValue");
+			createTable(data);
+		}
+		
+		
+		function createTable(data){
+			$("#tbody").empty();
+			$.each(data.eventSafeNotificationReturnList, function( index, item ) {
+				var tr = $('<tr/>');
+				tr.value = item;
+				var td = $('<td/>');			
+				tr.append(td.clone().html( getEvent(tempData.eventSafeNotificationList, item.eventId).eventKey ));
+				tr.append(td.clone().html( getEvent(tempData.eventSafeNotificationList, item.eventId).eventName ));
+				tr.append(td.clone().html( getUnit(tempData.unitList, item.unitId).unitName) );
+				tr.append(td.clone().html( item.returnTime) );
+				if(item.isSafe){
+					tr.append(td.clone().html("是") );	
+				}else{
+					tr.append(td.clone().html("否") );
+				}
+				var effectType;
+				if(item.effectType){
+					var effectTypeArray = item.effectType.split(";");				
+					$.each(effectTypeArray, function(index, value){
+						if(effectType){
+							effectType = effectType + "<br>" + value;
+						}else{
+							effectType = value;
+						}
+					});
+				}					
+				tr.append(td.clone().html( effectType) );
+				tr.append(td.clone().html( item.memo) );			
+				tr.append(td.clone().html( getUser(tempData.userList, item.createId).name) );			
+				if(item.reviewTime){
+					tr.append(td.clone().html("已審核") );	
+				}else{
+					tr.append(td.clone().html("未審核") );
+				}
+				$("#tbody").append(tr);
+			});
+		}
+		
+		function getUser(data, userId){
+		    var	user;
+			$.each(data, function( index, item ) {
+				if(item.rocId == userId){
+					user = item;
+					return false; 
+				}
+			});
+			return user;
+		}
+		
+		function getEvent(data, eventId){
+		    var	event;
+			$.each(data, function( index, item ) {
+				if(item.id == eventId){
+					event = item;
+					return false; 
+				}
+			});
+			return event;
+		}
+		
+		function getUnit(data, unitId){
+		    var	event;
+			$.each(data, function( index, item ) {
+				if(item.unitId == unitId){
+					event = item;
+					return false; 
+				}
+			});
+			return event;
+		}
+		
+		function createCheckBox(appenId, id, data, key, val){
+			$.each(data, function( index, item ) {
+				$('#' + appenId).append( 
+					$(document.createElement('input')).attr({
+				           id:    item[key],
+				           name:  id,
+				           value: item[val],
+				           type:  'checkbox'
+				       })				
+				).append(
+						$(document.createElement('label')).html(item[val])
+				).append("<br>");
+			});
+		}
+		
+		function createSelect(id, data, key, val){
+			$.each(data, function( index, item ) {
+				$('#' + id).append($('<option>').val(item[key]).text(item[val]));
+			});
+		}
+		
+		function searchData(){		
+		  	  var inputData = {};				 
+			  inputData.isSafe = $("input[name='isSafe']:checked").val();
+			  inputData.createId = $("#createId").val();
+			  inputData.eventId = $("#eventName").val();
+			  inputData.unitId = $("#unitName").val();
+			  inputData.isReview = $("input[name='isReview']:checked").val();
+			  if($("input[name='effectType']:checked").length > 0){
+				  var effectType;
+				  $("input[name='effectType']:checked").each(function(i, item){
+					  if(effectType){
+						  effectType = effectType + ";" + $(this).val();
+					  }else{
+						  effectType = $(this).val();
+					  }
+				  });
+				  if(effectType){
+					  inputData.effectType = effectType;
+				  }
+			  }			
+			  $.ajax({
+				    url: "/"+CONFIG.SYSTEM_NAME + '/eventSafeNotificationReturnData/api/searchReturnData',
+				    data: JSON.stringify(inputData),
+				    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+				    async: false,
+				    type: "POST",
+				    success: function(data, textStatus){   
+					     if(data && data == "<script>alert('沒有權限')<\/script>"){
+				    		 alert("沒有權限");
+				    	 }else{
+				    		 createTable(data);
+				    	 }
+				    },
+				    error: function (data, textStatus, errorThrown) {
+				        console.log(data);
+				    },
+				});	    
+		}
+		
+		function printByDiv(printpage){ 
+			var iframe = document.createElement('IFRAME');
+			iframe.setAttribute('style', 'position:absolute;width:0px;height:0px;left:-500px;top:-500px;');
+			document.body.appendChild(iframe);
+			iframe.contentWindow.document.write(printpage.innerHTML);
+			iframe.contentWindow.document.close(); //important!
+			iframe.contentWindow.focus(); //IE fix
+			iframe.contentWindow.print();
+			iframe.parentNode.removeChild(iframe);
+		}	
+		
+		function downloadExcel(){		
+		  	  var inputData = {};				 
+			  inputData.isSafe = $("input[name='isSafe']:checked").val();
+			  inputData.createId = $("#createId").val();
+			  inputData.eventId = $("#eventName").val();
+			  inputData.unitId = $("#unitName").val();
+			  inputData.isReview = $("input[name='isReview']:checked").val();
+			  if($("input[name='effectType']:checked").length > 0){
+				  var effectType;
+				  $("input[name='effectType']:checked").each(function(i, item){
+					  if(effectType){
+						  effectType = effectType + ";" + $(this).val();
+					  }else{
+						  effectType = $(this).val();
+					  }
+				  });
+				  if(effectType){
+					  inputData.effectType = effectType;
+				  }
+			  }			
+		
+			  var newForm = jQuery('<form>', {
+				  	'action': "/"+CONFIG.SYSTEM_NAME + '/eventSafeNotificationReturnData/api/downloadExcel',
+				  	'method': 'post',
+			        'target': '_blank'
+			    }).append(jQuery('<input>', {
+			        'name': 'isSafe',
+			        'value': inputData.isSafe,
+			        'type': 'hidden'
+			    })).append(jQuery('<input>', {
+			        'name': 'createId',
+			        'value': inputData.createId,
+			        'type': 'hidden'
+			    })).append(jQuery('<input>', {
+			        'name': 'eventId',
+			        'value': inputData.eventId,
+			        'type': 'hidden'
+			    })).append(jQuery('<input>', {
+			        'name': 'unitId',
+			        'value': inputData.unitId,
+			        'type': 'hidden'
+			    })).append(jQuery('<input>', {
+			        'name': 'isReview',
+			        'value': inputData.isReview,
+			        'type': 'hidden'
+			    })).append(jQuery('<input>', {
+			        'name': 'effectType',
+			        'value': inputData.effectType,
+			        'type': 'hidden'
+			    }));
+			  	var iframe = document.createElement('IFRAME');
+				iframe.setAttribute('style', 'position:absolute;width:0px;height:0px;left:-500px;top:-500px;');
+				$(iframe).append(newForm);
+				document.body.appendChild(iframe);
+			    newForm.submit();
+			    iframe.parentNode.removeChild(iframe);			    
+		}
+		
+	});
+	
+	
+	
+</script>
