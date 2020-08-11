@@ -20,7 +20,7 @@ public abstract class GenericAction<T extends GenericEntity> implements Action<T
 
 	protected final transient Logger log = LogManager.getLogger(getClass());
 	
-	@Autowired
+	@Autowired(required=false)
 	protected HttpServletRequest request;
 	
 	@Autowired

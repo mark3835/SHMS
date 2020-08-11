@@ -25,6 +25,13 @@
     </form>
 </div>
 
+<style>
+/* 讓表格內容換行 */
+.jsgrid-table{
+		word-wrap:break-word;
+	}
+</style>
+
 <script>
 //需要用的JS
 require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, jquery_validate, jsgrid, jquery_ui ) {
@@ -181,13 +188,13 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			                        headerTemplate: function() {
 			                            return $("<button>").attr("type", "button").text("新增")
 			                                .on("click", function () {
-			                                	showDetailsDialog("Add", {});
+			                                	showDetailsDialog("新增", {});
 			                                });
 			                        }
 			    	            }             
 			    	        ],
 				    	 	rowClick: function(args) {
-				    	 		 showDetailsDialog("Edit", args.item);
+				    	 		 showDetailsDialog("修改", args.item);
 				            },
 			    		    deleteConfirm: function(item) {
 			                    return "公告 \"" + item.announcementName + "\" 確認刪除?";
@@ -223,7 +230,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
              $("#id").val(item.id);
              
              formSubmitHandler = function() {
-            	 saveItem(item, dialogType === "Add");
+            	 saveItem(item, dialogType === "新增");
              };
 
              $("#tableDialog").dialog("option", "title", dialogType + " announcement").dialog("open");

@@ -164,16 +164,16 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			                        headerTemplate: function() {
 			                            return $("<button>").attr("type", "button").text("新增")
 			                                .on("click", function () {
-			                                	showDetailsDialog("Add", {});
+			                                	showDetailsDialog("新增", {});
 			                                });
 			                        }
 			    	            }             
 			    	        ],
 				    	 	rowClick: function(args) {
-				    	 		 showDetailsDialog("Edit", args.item);
+				    	 		 showDetailsDialog("修改", args.item);
 				            },
 			    		    deleteConfirm: function(item) {
-			                    return "事件編號 \"" + item.eventKey + "\" 確認刪除?";
+			                    return "事件編號 \"" + item.eventKey + "\" 確認刪除? 已回報事件會一併刪除";
 			                },
 			    	    });
 			    	 }
@@ -199,11 +199,11 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
              $("#eventKey").val(item.eventKey);
              $("#eventName").val(item.eventName);
              formSubmitHandler = function() {
-            	 saveItem(item, dialogType === "Add");
+            	 saveItem(item, dialogType === "新增");
              };
             
              //自動長事件編號
-             if(dialogType === "Add"){
+             if(dialogType === "新增"){
             	 $.ajax({
 		 			    url: "/"+CONFIG.SYSTEM_NAME + '/eventSafeNotificationSetting/api/getEventKey',
 		 			    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據

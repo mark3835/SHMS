@@ -371,6 +371,7 @@ require(["jquery", "jsgrid"], function (jquery, jsgrid) {
 					    	 }else{
 					    		 if(data.result == "success"){
 					    			 alert("儲存成功");
+					    			 debugger;
 					    			 printByDiv(document.getElementById("printDiv"));
 					    			 loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + "/content/eventSafeNotification/eventSafeNotificationReview.html");
 					    		 }else if(data.errorMsg){

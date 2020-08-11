@@ -1,49 +1,341 @@
 <div>
-	<h4>公告事項</h4>
-	
-	<div id="jsGrid" >
-	</div>
+        <h4>批次設定</h4>
+        
+            <div id="jsGrid"></div>
 </div>
+
+<div id="tableDialog" style="display:none">
+    <form id="dialogForm">
+        <div class="details-form-field">
+            <label for="batchName">批次名稱</label>
+            <input id="batchName" name="batchName" type="text" />
+        </div>
+        <div class="details-form-field">
+            <label for="batchClass">批次程式</label>
+            <input id="batchClass" name="batchClass" type="text" style="width:320px"/>
+        </div>
+        <div class="details-form-field">
+            <label for="batchType">批次類型</label>
+            <select id="batchType" name="batchType">
+                <option selected  value="1" >執行一次，設定執行時間</option>
+                <option value="2">每隔幾分鐘執行</option>
+                <option value="3">每隔幾小時執行</option>
+                <option value="4">每周幾號幾點執行</option>
+                <option value="5">每月幾號幾點執行</option>
+            </select>
+        </div>
+        <div class="details-form-field" style="display:none">
+            <label for="batchType1Date">第一類日期時間</label>
+            <input id="batchType1Date" name="batchType1Date" type="text" />
+        </div>
+        <div class="details-form-field" style="display:none">
+            <label for="batchType4EveryWeek">第四類每週幾1~7(不符合算1)</label>
+            <input id="batchType4EveryWeek" name="batchType4EveryWeek" type="text" />
+        </div>
+        <div class="details-form-field" style="display:none">
+            <label for="batchType5Date">第五類每月幾號1~31(當月沒有的日期跳過)</label>
+            <input id="batchType5Date" name="batchType5Date" type="text" />
+        </div>
+        <div class="details-form-field" style="display:none">
+            <label for="batchHour">1.3.4.5類填小時</label>
+            <input id="batchHour" name="batchHour" type="text" />
+        </div>
+        <div class="details-form-field" style="display:none">
+            <label for="batchMinute">1.2.4.5類填分鐘</label>
+            <input id="batchMinute" name="batchMinute" type="text" />
+        </div>
+        <div class="details-form-field">
+            <button type="submit" id="dialogFormSubmit">送出</button>
+        </div>
+    </form>
+</div>
+
+<style>
+/* 讓表格內容換行 */
+.jsgrid-table{
+                word-wrap:break-word;
+        }
+</style>
 
 <script>
 //需要用的JS
-require(["jquery", "jsgrid"], function (jquery, jsgrid) {
-	//頁面讀取後執行
-	$(document).ready(function(){
-	    $.ajax({
-		    url: "/"+CONFIG.SYSTEM_NAME + '/announcement/getAnnouncement',
-		    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
-		    async: false,
-		    type: "GET",
-		    success: function(data, textStatus){    	
-		    	 
-		    	 $("#jsGrid").jsGrid({
-	    	        width: "100%",
-	    	        height: "100%",
-	    	 
-	    	        heading: true,
-	    		    filtering: false,
-	    		    inserting: false,
-	    		    editing: false,
-	    		    selecting: true,
-	    		    sorting: true,
-	    		    paging: false,
-	    		    pageLoading: false,
-	    	 
-	    	        data: data,
-	    	 
-	    	        fields: [
-	    	            { title:"發佈時間", name: "announcementDate", type: "text", width: 50, validate: "required" },
-	    	            { title:"公告標題", name: "announcementName", type: "text	", width: 150 }
-	    	        ]
-	    	    });
-		    	 
-		    },
-		    error: function (data, textStatus, errorThrown) {
-		        console.log(data);
-		    },
-		});
-    
-	});  
+require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, jquery_validate, jsgrid, jquery_ui ) {
+        //頁面讀取後執行
+        $(document).ready(function(){
+                        
+                $.ajax({
+                            url: "/"+CONFIG.SYSTEM_NAME + '/batchSetting/api/getBatchSetting',
+                            contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+                            async: false,
+                            type: "GET",
+                            success: function(data, textStatus){    
+                                  if(data && data == "<script>alert('沒有權限')<\/script>"){
+                                          alert("沒有權限");
+                                  }else{
+                                         $("#jsGrid").jsGrid({
+                                         width: "100%",
+                                  
+                                         heading: true, //是否显示表头
+                                         filtering: true, //启动查找
+                                             inserting: false, //启动新增  關掉使用自定義的
+                                             editing: true,  //启动编辑                                        
+                                             sorting: true, //启动排序
+                                             paging: true, //启动分页 
+                                             pageLoading: false, //是否支持分页加载数据（相比较paging，这个属性是向服务器请求数据时要求分页，而paging是本地进行分页，无关服务器）
+                                             autoload: true,
+                                             pageSize: 10,
+                                             
+                                             controller: {
+                                                 loadData: function(filter) {
+                                                          //查詢
+                                                          var result = $.grep(data, function(item, idx) {
+                                                             for (var key in filter) {
+                                                                 var value = filter[key];
+                                                                 if (value.length > 0) {
+                                                                    if (!item[key]){
+                                                                         return false;
+                                                                    }
+                                                                    if(typeof item[key] === 'number'){
+                                                                            if (item[key].toString().indexOf(value) == -1){
+                                                                                 return false;
+                                                                            }
+                                                                    }else if(typeof item[key] === 'string'){
+                                                                            if (item[key].indexOf(value) == -1){
+                                                                                 return false;
+                                                                            }
+                                                                    }
+                                                                    
+                                                                 }
+                                                             }
+                                                             return true;
+                                                         });
+                                                     return result;
+                                                 },
+                                                 insertItem: function(insertingItem) {
+                                                  $.ajax({
+                                                          url: "/"+CONFIG.SYSTEM_NAME + '/batchSetting/api/addBatchSetting',
+                                                          data: JSON.stringify(insertingItem),
+                                                          contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+                                                          async: false,
+                                                          type: "POST",
+                                                          success: function(data, textStatus){   
+                                                                if(data && data == "<script>alert('沒有權限')<\/script>"){
+                                                                        alert("沒有權限");
+                                                                }else{
+                                                                        if(data.result == "success"){
+                                                                                insertingItem.id = data.id;
+                                                                                alert("新增成功");
+                                                                        }else if(data.errorMsg){
+                                                                                alert(data.errorMsg);
+                                                                        }
+                                                                }
+                                                          },
+                                                          error: function (data, textStatus, errorThrown) {
+                                                              console.log(data);
+                                                          },
+                                                      });
+                                                 },
+                                                 updateItem: function(updatingItem) { 
+                                                  $.ajax({
+                                                          url: "/"+CONFIG.SYSTEM_NAME + '/batchSetting/api/updateBatchSetting',
+                                                          data: JSON.stringify(updatingItem),
+                                                          contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+                                                          async: false,
+                                                          type: "POST",
+                                                          success: function(data, textStatus){   
+                                                                if(data && data == "<script>alert('沒有權限')<\/script>"){
+                                                                        alert("沒有權限");
+                                                                }else{
+                                                                        if(data.result == "success"){
+                                                                                alert("更新成功");
+                                                                        }else if(data.errorMsg){
+                                                                                alert(data.errorMsg);
+                                                                        }
+                                                                }
+                                                          },
+                                                          error: function (data, textStatus, errorThrown) {
+                                                              console.log(data);
+                                                          },
+                                                      });
+                                                 },
+                                                 deleteItem: function(deletingItem) {
+                                                  $.ajax({
+                                                          url: "/"+CONFIG.SYSTEM_NAME + '/batchSetting/api/deleteBatchSetting',
+                                                          data: '{"ID":' + deletingItem.id + '}',
+                                                          contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+                                                          async: false,
+                                                          type: "POST",
+                                                          success: function(data, textStatus){   
+                                                                if(data && data == "<script>alert('沒有權限')<\/script>"){
+                                                                        alert("沒有權限");
+                                                                }else{
+                                                                        if(data.result == "success"){
+                                                                                alert("刪除成功");
+                                                                        }else if(data.errorMsg){
+                                                                                alert(data.errorMsg);
+                                                                        }
+                                                                }
+                                                          },
+                                                          error: function (data, textStatus, errorThrown) {
+                                                              console.log(data);
+                                                          },
+                                                      });
+                                                 }
+                                             },
+                                  
+                                         fields: [
+                                             { title:"批次名稱", name: "batchName", type: "text", width: 100},
+                                             { title:"批次執行程式", name: "batchClass", type: "text", width: 200 },
+                                             { title:"執行類型", name: "batchType", type: "text", width: 50 },
+                                             { title:"第一類執行一次時間", name: "batchType1Date", type: "text", width: 100 },
+                                             { title:"第二類執行每隔幾分", name: "batchType2EveryMin", type: "text", width: 50 },
+                                             { title:"第三類執行每隔幾小時", name: "batchType3EveryHour", type: "text", width: 50 },
+                                             { title:"第四類執行每週幾號", name: "batchType4EveryWeek", type: "text", width: 50 },
+                                             { title:"第五類執行每月幾號", name: "batchType5EveryMonth", type: "text", width: 50 },
+                                             { title:"第四第五類執行小時", name: "batchHour", type: "text", width: 50 },
+                                             { title:"第四第五類執行分鐘", name: "batchMinute", type: "text", width: 50 },
+                                             { title:"最後一次執行時間", name: "lastStartTime", type: "text", width: 50 },
+                                             { type: "control",
+                                                editButton: false,
+                                                modeSwitchButton: false,
+                                                headerTemplate: function() {
+                                                    return $("<button>").attr("type", "button").text("新增")
+                                                        .on("click", function () {
+                                                           showDetailsDialog("新增", {});
+                                                        });
+                                                }
+                                             }             
+                                         ],
+                                        rowClick: function(args) {
+                                                showDetailsDialog("修改", args.item);
+                                        },
+                                        deleteConfirm: function(item) {
+                                            return "批次\"" + item.cfgName + "\"確認刪除?";
+                                        },
+                                     });
+                                }
+                            },
+                            error: function (data, textStatus, errorThrown) {
+                                console.log(data);
+                            },
+                 });
+        
+		         $("#tableDialog").dialog({
+		             title: "批次設定",
+	                 autoOpen: false,
+	                 width: 450,
+	                 close: function() {
+	                     $("#dialogForm").validate().resetForm();
+	                     $("#dialogForm").find(".error").removeClass("error");
+	                 }
+	             });
+                
+                 var formSubmitHandler = $.noop;
+                
+                 var showDetailsDialog = function(dialogType, item) {
+		             $("#batchName").val(item.batchName);
+		             $("#batchClass").val(item.batchClass);
+		             $("#batchType").val(item.batchType);
+		             $("#batchType1Date").val(item.batchType1Date);
+		             $("#batchType4EveryWeek").val(item.batchType4EveryWeek);
+		             $("#batchType5Date").val(item.batchType5Date);
+		             $("#batchHour").val(item.batchHour);
+		             $("#batchMinute").val(item.batchMinute);
+		             $( "#batchType" ).change();
+		             
+		             formSubmitHandler = function() {
+		                  saveItem(item, dialogType === "新增");
+		             };
+		
+		             $("#tableDialog").dialog("option", "title", dialogType + " 參數").dialog("open");
+		         };
+        
+	             $("#dialogForm").validate({
+	                  //錯誤訊息元素預設為label改成p會換行
+	                        errorElement: "p",
+	                 rules: {
+	                 batchName: { required: true, rangelength: [2, 50] },
+	                 batchClass: { required: true, rangelength: [4, 200] },
+	                 batchType: { required: true,  range: [1,5] },
+	                 batchHour: {   number: true, range: [0,23] },
+	                 batchMinute: { number: true, range: [0,60] }
+	                 },
+	                 messages: {
+                        		batchName:{
+                                  	required: "請輸入批次名稱",
+                                  	rangelength: "批次名稱不得小於2個字母大於50個字母"
+                                },
+                                batchClass:{
+                                  	required: "請輸入批次程式",
+                                  	rangelength: "批次程式不得小於4個字母大於200個字母"
+                                },
+                                batchType:{
+                                  	required: "請選擇批次類型",
+                                  	range: "只能選1到5"
+                                },
+                                batchHour:{
+                                	number: "請輸入數字",
+                                  	range: "0~23"
+                                },
+                                batchMinute:{
+                                	number: "請輸入數字",
+                                  	range: "0~60"
+                                }
+	                 },
+	                 submitHandler: function() {
+	                     formSubmitHandler();
+	                 }
+	             });
+             
+	             var saveItem = function(item, isNew) {
+		             $.extend(item, {
+		                  batchName: $("#batchName").val(),
+		                  batchClass: $("#batchClass").val(),
+		                  batchType: $("#batchType").val(),
+		                  batchType1Date: $("#batchType1Date").val(),
+		                  batchType4EveryWeek: $("#batchType4EveryWeek").val(),
+		                  batchType5Date: $('#batchType5Date').val(),
+		                  batchHour: $('#batchHour').val(),
+		                  batchMinute: $('#batchMinute').val()
+		             });
+		             
+		             $("#jsGrid").jsGrid(isNew ? "insertItem" : "updateItem", item);
+		
+		             $("#tableDialog").dialog("close");
+		         };	 
+		         
+		        $( "#batchType1Date" ).datepicker({
+		       	  	dateFormat: "yy/mm/dd",
+		     		minDate: new Date()         
+		        });
+		        
+		        $( "#batchType" ).change(function() {
+		        	$("#batchType1Date").parent().hide();
+		        	$("#batchType4EveryWeek").parent().hide();
+		        	$("#batchType5Date").parent().hide();
+		        	$("#batchHour").parent().hide();
+		        	$("#batchMinute").parent().hide();
+		        	
+		         	if(this.value == 1){
+		         		$("#batchType1Date").parent().show();
+			        	$("#batchHour").parent().show();
+			        	$("#batchMinute").parent().show();
+		        	}else if(this.value == 2){
+			        	$("#batchMinute").parent().show();
+		        	}else if(this.value == 3){
+			        	$("#batchHour").parent().show();
+		        	}else if(this.value == 4){
+			        	$("#batchType4EveryWeek").parent().show();
+			        	$("#batchHour").parent().show();
+			        	$("#batchMinute").parent().show();
+		        	}else if(this.value == 5){
+			        	$("#batchType5Date").parent().show();
+			        	$("#batchHour").parent().show();
+			        	$("#batchMinute").parent().show();
+		        	}
+		        	  
+		        });
+            
+        });
 });
 </script>

@@ -1,7 +1,6 @@
 package tcb.shms.module.service;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,12 +31,31 @@ public class ErrorLogService extends GenericService<ErrorLog>{
 		try {
 			ErrorLog errorLog = new ErrorLog();
 			errorLog.setErrorClass(className);
-			errorLog.setErrorMsg(Arrays.toString(e.getStackTrace()));
+			errorLog.setErrorMsg(cretaeErrorMsg(className, e));
 			errorLog.setErrorTime(new Timestamp(System.currentTimeMillis()));
 			errorLogDao.save(errorLog);
 		} catch (Exception e1) {
 			log.error(e1);
 		}
+	}
+	
+	private String cretaeErrorMsg(String className, Exception e) {
+		String result = "";
+		int count = 0;
+		for(StackTraceElement stackTrace:e.getStackTrace()) {
+			if(count == 0) {
+				result = stackTrace.getClassName() + "." + stackTrace.getMethodName() + "." + 
+						stackTrace.getLineNumber() + System.getProperty("line.separator"); 
+				
+			}else {			
+				if(className.contains(stackTrace.getClassName())){
+					result = result + stackTrace.getClassName() + "." + stackTrace.getMethodName() + "." + 
+								stackTrace.getLineNumber() + System.getProperty("line.separator") + e.getMessage(); 	
+				}
+			}
+			count++;
+		}
+		return result;
 	}
 	
 	

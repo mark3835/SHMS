@@ -78,6 +78,7 @@ public class CertificateAction extends GenericAction<Certificate> {
 					firstLine = false;
 					continue;
 				}				
+				//後面三欄是否為負責人 只有第三個有勾會到15 其他都空長度會不到15
 				if(csvData.size() < 15){
 					int count = csvData.size();
 					for(;count<15;count++) {
@@ -139,6 +140,7 @@ public class CertificateAction extends GenericAction<Certificate> {
 					ceritficate.setCreateId("system");
 					ceritficate.setCreateTime(new Timestamp(System.currentTimeMillis()));
 					User findUser = new User();
+					//找審核人
 					if(reviewName != null && StringUtils.isNotBlank(reviewName)) {
 						findUser.setName(reviewName);				
 						List<User> userList = userService.getList(findUser);
@@ -161,7 +163,7 @@ public class CertificateAction extends GenericAction<Certificate> {
 					//轉檔給審核時間  是以審核時間判斷審核過了沒
 					//這邊從人資來的都算審核過但是沒審核時間 給轉檔當下時間
 					ceritficate.setReviewTime(new Timestamp(System.currentTimeMillis()));
-					
+					//是否為負責人
 					if(StringUtils.isNotBlank(saveManager) || StringUtils.isNotBlank(helper) || StringUtils.isNotBlank(fireHelper)) {
 						Unit unit = unitService.getByUnitId(user.getUnitId());
 						boolean isChanged = false;
@@ -198,6 +200,11 @@ public class CertificateAction extends GenericAction<Certificate> {
 		return jsonInString;
 	}
 	
+	/**
+	 * 人資給的資料跟受訓單位都不是代號 要自己找
+	 * @param unitName
+	 * @return
+	 */
 	private String getUnitIdByName(String unitName) {
 		if(unitMap == null) {
 			try {
@@ -219,11 +226,21 @@ public class CertificateAction extends GenericAction<Certificate> {
 		}
 	}
 	
+	/**
+	 * 人資智障 要帳號 資料不給帳號 說EMAIL有帳號  還要email自己拆出帳號
+	 * @param email
+	 * @return
+	 */
 	private String getAccount(String email) {
 		String[] stringArray = email.split("@");
 		return stringArray[0];
 	}
 		
+	/**
+	 * 轉成西元年
+	 * @param strDate
+	 * @return
+	 */
 	private static Date parseDate(String strDate) {
 		if(StringUtils.isBlank(strDate)) {
 			return new Date();
@@ -253,7 +270,7 @@ public class CertificateAction extends GenericAction<Certificate> {
 		String jsonInString = null;
 		try {
 			String sql = " SELECT c.*,users.name,unit.unit_name  , trainUnit .unit_name  as trainUnitName  " + 
-					" FROM CERTIFICATE as c,Users as users, unit as unit , unit as trainUnit " + 
+					" FROM CERTIFICATE as c,users as users, unit as unit , unit as trainUnit " + 
 					" WHERE c.roc_id = users.roc_id and users.unit_id = unit.unit_id  and c.GET_TRAIN_UNIT = trainUnit.unit_id   ";
 			List<Map> dataResult = certificateService.getListBySQLQuery(sql);
 			jsonInString = new GsonBuilder().setDateFormat(SystemConfig.DATE_FORMAT.BASIC_DATE_FORMATE_STRING).create().toJson(dataResult);

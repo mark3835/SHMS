@@ -7,7 +7,8 @@ requirejs.config({
         bootstrap: '../resources/js/bootstrap.min',
         jquery_validate: '../resources/js/jquery.validate.min',
         jsgrid: '../resources/js/jsgrid.min',
-        jquery_ui: '../resources/js/jquery-ui.min'
+        jquery_ui: '../resources/js/jquery-ui.min',
+        jquery_blockUI: '../resources/js/jquery.blockUI'
     },
     map: {
         '*': {
@@ -29,6 +30,9 @@ requirejs.config({
             deps: ['jquery']      
         },
         'jquery_ui': {
+            deps: ['jquery','bootstrap']      
+        },
+        'jquery_blockUI': {
             deps: ['jquery','bootstrap']      
         }
     }

@@ -143,7 +143,7 @@
 			$.each(data.eventSafeNotificationReturnList, function( index, item ) {
 				var tr = $('<tr/>');
 				tr.value = item;
-				var td = $('<td/>');			
+				var td = $('<td/>');	
 				tr.append(td.clone().html( getEvent(tempData.eventSafeNotificationList, item.eventId).eventKey ));
 				tr.append(td.clone().html( getEvent(tempData.eventSafeNotificationList, item.eventId).eventName ));
 				tr.append(td.clone().html( getUnit(tempData.unitList, item.unitId).unitName) );
@@ -335,7 +335,8 @@
 				$(iframe).append(newForm);
 				document.body.appendChild(iframe);
 			    newForm.submit();
-			    iframe.parentNode.removeChild(iframe);			    
+			    newForm.submit();
+			    iframe.parentNode.removeChild(iframe);
 		}
 		
 	});

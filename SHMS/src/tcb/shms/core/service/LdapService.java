@@ -25,8 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tcb.shms.module.config.SystemConfig;
+import tcb.shms.module.entity.Certificate;
 import tcb.shms.module.entity.Unit;
 import tcb.shms.module.entity.User;
+import tcb.shms.module.service.CertificateService;
 import tcb.shms.module.service.ErrorLogService;
 import tcb.shms.module.service.UnitService;
 import tcb.shms.module.service.UserService;
@@ -44,6 +46,9 @@ public class LdapService {
 	
 	@Autowired
 	ErrorLogService  errorLogService;
+	
+	@Autowired
+	CertificateService certificateService;
 	
 	static String returnedAtts[] = { 
 			"cn", 
@@ -152,6 +157,12 @@ public class LdapService {
 
 			int count = 0;
 			Map<String, Unit> unitMap = new HashedMap<String, Unit>();
+			//先撈取DB有的全部單位 
+			for(Unit unit:unitService.getList(new Unit())) {
+				if(!unitMap.containsKey(unit.getUnitId())) {
+					unitMap.put(unit.getUnitId(), unit);
+				}
+			}
 			List<String> rocIdList = new ArrayList<String>();
 			while (answer.hasMore()) {
 				SearchResult result = (SearchResult) answer.next();
@@ -212,32 +223,91 @@ public class LdapService {
 						isChange = true;
 					}else if(oldUser.getUnitId() != user.getUnitId()) {
 						isChange = true;
+						//單位換了  證照如果是負責人要拿掉
+						List<String> rocidList = new ArrayList<String>();
+						rocidList.add(user.getRocId());
+						List<Certificate> certificateList = certificateService.getByRocIds(rocidList);
+						for(Certificate certificate:certificateList) {
+							if(certificate.getIsResponsible() == SystemConfig.CERTIFICATE.IS_RESPONSIBLE_TRUE) {
+								certificate.setIsResponsible(SystemConfig.CERTIFICATE.IS_RESPONSIBLE_FALSE);
+								try {
+									certificateService.update(certificate);
+								} catch (Exception e) {
+									log.error(e);
+									errorLogService.addErrorLog(this.getClass().getName(), e);
+								}
+							}
+						}
+						//單位換了  如果是單位負責人或總務要拿掉
+						Unit oldUnit = unitMap.get(oldUser.getUnitId());
+						boolean needUpdateOldUnit = false; 
+						if(user.getRocId().equals(oldUnit.getAffairs())) {
+							oldUnit.setAffairs(null);
+							needUpdateOldUnit = true;
+						}
+						if(user.getRocId().equals(oldUnit.getFireHelper())) {
+							oldUnit.setFireHelper(null);
+							needUpdateOldUnit = true;
+						}
+						if(user.getRocId().equals(oldUnit.getHelper())) {
+							oldUnit.setHelper(null);
+							needUpdateOldUnit = true;
+						}
+						if(user.getRocId().equals(oldUnit.getSaveManager())) {
+							oldUnit.setSaveManager(null);
+							needUpdateOldUnit = true;
+						}
+						if(needUpdateOldUnit) {
+							try {
+								unitService.update(oldUnit);
+							} catch (Exception e) {
+								log.error(e);
+								errorLogService.addErrorLog(this.getClass().getName(), e);
+							}
+						}
+						
 					}else if(oldUser.getEmail() != user.getEmail()) {
 						isChange = true;
 					}else if(oldUser.getAccount() != user.getAccount()) {
 						isChange = true;
 					}
 					if(isChange) {
-						userService.update(user);
+						//更新AD使用者
+						try {
+							userService.update(user);
+						} catch (Exception e) {
+							log.error(e);
+							errorLogService.addErrorLog(this.getClass().getName(), e);
+						}
 					}
 				}else {
-					userService.save(user);
+					//儲存AD使用者
+					try {
+						userService.save(user);
+					} catch (Exception e) {
+						log.error(e);
+						errorLogService.addErrorLog(this.getClass().getName(), e);
+					}
 				}
 				rocIdList.add(user.getRocId());
 								
 				String unitId = String.valueOf(attrs.get("ou").get());
-				//建立單位
+				
+				//如果單位不存在 建立單位
 				if(!unitMap.containsKey(unitId)) {
 					Unit unit = new Unit();
 					unit.setUnitId(unitId);
-					List<Unit> unitList = unitService.getList(unit);
-					if(unitList.size() == 0) {
-						unit.setUnitName(String.valueOf(attrs.get("department").get()));
-						if(attrs.get("telephoneNumber") != null && attrs.get("telephoneNumber").get() != null) {
-							unit.setTel(String.valueOf(attrs.get("telephoneNumber").get()));
-						}
-						unitService.save(unit);
-					}	
+					unit.setUnitName(String.valueOf(attrs.get("department").get()));
+					if(attrs.get("telephoneNumber") != null && attrs.get("telephoneNumber").get() != null) {
+						unit.setTel(String.valueOf(attrs.get("telephoneNumber").get()));
+					}
+					try {
+						unit = unitService.save(unit);
+					} catch (Exception e) {
+						log.error(e);
+						errorLogService.addErrorLog(this.getClass().getName(), e);
+					}
+					
 					unitMap.put(unitId, unit);
 				}
 				
@@ -252,12 +322,11 @@ public class LdapService {
 			//判斷是否離職
 			checkLeave(rocIdList);
 			
-	        log.info("login successfully.");	        
-	        log.info("查詢筆數:" + count);
+	        log.info("getADUserAndUnitToDb finish");	        
+	        log.info("AD DC=tcb,DC=com (&(objectClass=user)(rocid=*)(ou=*)) 查詢筆數:" + count);
 	        
 	        
 	    } catch (Exception ex) {
-	    	ex.printStackTrace();
 	    	log.error(ex);
 			errorLogService.addErrorLog(this.getClass().getName(), ex);
 	    } finally {

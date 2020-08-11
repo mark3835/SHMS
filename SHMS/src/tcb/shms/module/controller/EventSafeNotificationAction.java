@@ -174,6 +174,12 @@ public class EventSafeNotificationAction extends GenericAction<EventSafeNotifica
 		HashMap<String,String> resultMap = new HashMap<String, String>();
 		try {
 			HashMap<String,Object> map = new Gson().fromJson(data, HashMap.class);	
+			EventSafeNotificationReturn eventSafeNotificationReturn = new EventSafeNotificationReturn();
+			eventSafeNotificationReturn.setEventId(MapUtils.getLong(map, "ID"));
+			List<EventSafeNotificationReturn> eventSafeNotificationReturnList = eventSafeNotificationReturnService.getList(eventSafeNotificationReturn);
+			for(EventSafeNotificationReturn eventSafeNotificationReturnObj:eventSafeNotificationReturnList){
+				eventSafeNotificationReturnService.deleteById(eventSafeNotificationReturnObj.getId());
+			}
 			eventSafeNotificationService.deleteById(MapUtils.getLong(map, "ID"));
 			resultMap.put("result", "success");
 		} catch (Exception e) {

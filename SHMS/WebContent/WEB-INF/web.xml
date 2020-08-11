@@ -13,9 +13,16 @@
 	<listener>
 		<listener-class>org.apache.logging.log4j.web.Log4jServletContextListener</listener-class>
 	</listener>
+	
+	
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>  
+	<context-param>
+	  <param-name>contextConfigLocation</param-name>
+	  <param-value>/WEB-INF/applicationContext.xml,/WEB-INF/spring-quartz.xml</param-value>
+	 </context-param>
+	
 
 	<filter>
         <description>登录过滤器</description>
@@ -23,7 +30,7 @@
         <filter-class>tcb.shms.core.filter.LoginSessionFilter</filter-class>
         <init-param>
             <param-name>passURL</param-name>
-            <param-value>js,jpg,jpeg,css,img,png,page/login.html,loginCheck,login/loginOut
+            <param-value>js,jpg,jpeg,css,img,png,gif,page/login.html,loginCheck,login/loginOut
             </param-value>
         </init-param>
         <init-param>

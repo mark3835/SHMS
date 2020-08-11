@@ -8,6 +8,7 @@
 <!-- 設定成馬上就過期 -->
 <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
 <!-- 與第一行是同樣的作用 -->
+<meta http-equiv="x-ua-compatible" content="IE=EmulateIE11" >
 <link rel="icon" href="/SHMS/resources/image/tcb.jpeg" type="image/x-icon" / >
 
 <title>職業安全衛生管理系統</title>
@@ -24,7 +25,7 @@
 				</div>
 			</div>
 		</div>
-	</body>
+	</body>	
 </html>
 <link rel="stylesheet" href="../resources/css/bootstrap.min.css">
 <link rel="stylesheet" href="../resources/css/jsgrid.min.css">
@@ -47,7 +48,7 @@
 
 	var bodyHref;
 	//需要用的JS
-	require(["jquery", "popper", "bootstrap", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, popper, bootstrap, jquery_validate, jsgrid, jquery_ui) {		
+	require(["jquery", "popper", "bootstrap", "jquery_validate", "jsgrid", "jquery_ui", "jquery_blockUI"], function (jquery, popper, bootstrap, jquery_validate, jsgrid, jquery_ui, jquery_blockUI) {		
 		loadNoCache($("#headerContent"), "/" +CONFIG.SYSTEM_NAME + $("#headerContent").attr("src"));
 		loadNoCache($("#menuContent"), "/" +CONFIG.SYSTEM_NAME + $("#menuContent").attr("src"));
 		loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + $("#bodyContent").attr("src"));
@@ -57,6 +58,14 @@
 			$('.ui-dialog').empty().remove();
 			loadNoCache($("#bodyContent"), "/" +CONFIG.SYSTEM_NAME + page);
 		}
+		
+		$(document).ajaxStart(function(){
+			$.blockUI();
+		});
+		$(document).ajaxComplete(function(){
+			 $.unblockUI();
+		});
+		  
 	});
 	
 	//JQUERY 原生 LOAD ie會存CACHE 改用這個
@@ -64,6 +73,7 @@
 		$.ajax({
 		    url: url,
 		    cache: false,
+		    async: true,
 		    dataType: "html",
 		    success: function(data) {
 		    	$body.html(data);

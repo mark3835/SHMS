@@ -178,13 +178,13 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
 			                        headerTemplate: function() {
 			                            return $("<button>").attr("type", "button").text("新增")
 			                                .on("click", function () {
-			                                	showDetailsDialog("Add", {});
+			                                	showDetailsDialog("新增", {});
 			                                });
 			                        }
 			    	            }             
 			    	        ],
 				    	 	rowClick: function(args) {
-				    	 		 showDetailsDialog("Edit", args.item);
+				    	 		 showDetailsDialog("修改", args.item);
 				            },
 			    		    deleteConfirm: function(item) {
 			                    return "參數\"" + item.menuName + "\"確認刪除?";
@@ -216,7 +216,7 @@ require(["jquery", "jquery_validate", "jsgrid", "jquery_ui"], function (jquery, 
              $("#menuOrder").val(item.menuOrder);
              $("#menuApiUrl").val(item.menuApiUrl);
              formSubmitHandler = function() {
-            	 saveItem(item, dialogType === "Add");
+            	 saveItem(item, dialogType === "新增");
              };
 
              $("#tableDialog").dialog("option", "title", dialogType + " menu").dialog("open");

@@ -65,10 +65,6 @@ public class ExcelService {
 				
 			}
 		}
-		for (int i = 0; i < titleList.size() ; i++) {
-            sheet.autoSizeColumn(i);
-            sheet.setColumnWidth(i,sheet.getColumnWidth(i)*17/10);
-        }
 		// 儲存Excel檔案
 		try {
 			String filePathName = SystemConfig.EXCEL_PATH.DEFAULT_CREATE_PATH + fileName + ".xls";

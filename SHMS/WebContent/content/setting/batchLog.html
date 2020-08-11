@@ -1,0 +1,56 @@
+<div>
+	<h4>登入LOG</h4>
+	
+	<div id="jsGrid" >
+	</div>
+</div>
+
+<script>
+//需要用的JS
+require(["jquery", "jsgrid"], function (jquery, jsgrid) {
+	//頁面讀取後執行
+	$(document).ready(function(){
+	    $.ajax({
+		    url: "/"+CONFIG.SYSTEM_NAME + '/batchLog/api/getBatchLog',
+		    contentType: "application/json;charset=utf-8", // 因為上面是JSON數據
+		    async: false,
+		    type: "GET",
+		    success: function(data, textStatus){  
+		    	
+		    	 if(data && data == "<script>alert('沒有權限')<\/script>"){
+		    		 alert("沒有權限");
+		    	 }else{
+		    	 
+			    	 $("#jsGrid").jsGrid({
+		    	        width: "100%",
+		    	 
+		    	        heading: true,
+		    		    filtering: false,
+		    		    inserting: false,
+		    		    editing: false,
+		    		    selecting: true,
+		    		    sorting: true,
+		    		    paging: true,
+		    		    pageLoading: false,
+		    		    pageSize: 20,
+		    		    
+		    	        data: data,
+		    	 
+		    	        fields: [
+		    	            { title:"批次名稱", name: "batchName", type: "text", width: 50 },
+		    	            { title:"批次結果", name: "batchResult", type: "text	", width: 150 },
+		    	            { title:"批次執行時間", name: "batchBeginTime", type: "text", width: 50 },
+		    	            { title:"批次結束時間", name: "batchEndTime", type: "text", width: 50 }
+		    	        ]
+		    	    });
+		    	 }
+		    	 
+		    },
+		    error: function (data, textStatus, errorThrown) {
+		        console.log(data);
+		    },
+		});
+    
+	});  
+});
+</script>
